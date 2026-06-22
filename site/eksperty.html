@@ -38,6 +38,7 @@
   Site.init('eksperty');
   var SCALES = Site.SCALES;
   var KIND = { tutor:'Репетитор', psy:'Психолог', mentor:'Наставник' };
+  var KIND_IC = { tutor:'cap', psy:'heart', mentor:'compass' };
   var active = 'all';
 
   function stars(r){ var full=Math.round(r); var s=''; for(var i=0;i<5;i++) s+= (i<full?'★':'☆'); return s; }
@@ -47,15 +48,19 @@
     var profile = e.avatar ? e.avatar : ('ekspert.html?i='+i);
     var ava = '<a href="'+profile+'"><div class="ava">'+initials+'</div></a>';
     var tags = e.tags.map(function(t){ return '<span class="tag '+t+'">'+SCALES[t]+'</span>'; }).join('');
-    var btn = '<a class="btn btn-green" href="'+profile+'" style="justify-content:center; width:100%">Профіль <span data-icon="step"></span></a>';
+    var kind = '<span class="ekind '+e.kind+'"><span data-icon="'+(KIND_IC[e.kind]||'users')+'"></span> '+(KIND[e.kind]||'')+'</span>';
+    var btn = '<a class="btn btn-green" href="'+profile+'" style="justify-content:center; width:100%">Переглянути профіль <span data-icon="step"></span></a>';
     var ratingHTML = e.rating
       ? '<div class="stars">'+stars(e.rating)+' <span class="muted" style="font-weight:700">'+e.rating.toFixed(1)+' · '+e.n+' відгуків</span></div>'
       : '<div class="stars" style="color:var(--green)">Перше заняття безкоштовне</div>';
+    var fmt = e.format ? '<div class="efmt"><span class="ink-ic" data-icon="compass"></span><span>'+e.format+'</span></div>' : '';
     return '<div class="expert" data-tags="'+e.tags.join(',')+'">'+
-      '<div class="ehead">'+ava+'<div><div class="en"><a href="'+profile+'" style="color:inherit">'+e.name+'</a></div><div class="er">'+(KIND[e.kind]||'')+' · '+e.city+'</div></div></div>'+
+      '<div class="ehead">'+ava+'<div><div class="en"><a href="'+profile+'" style="color:inherit">'+e.name+'</a></div><div class="er">'+e.city+'</div></div></div>'+
+      '<div style="margin:0 0 10px">'+kind+'</div>'+
       ratingHTML+
       '<div class="etags">'+tags+'</div>'+
       '<div class="ebody">'+e.bio+'</div>'+
+      fmt+
       '<div style="margin-top:14px">'+btn+'</div>'+
     '</div>';
   }

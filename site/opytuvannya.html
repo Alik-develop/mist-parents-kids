@@ -32,11 +32,11 @@
   .choice .ci{width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; background:var(--paper); border:1px solid var(--line); color:var(--green);}
   .choice .ci svg{width:22px; height:22px;}
   .choice .ctxt{font-weight:700; color:var(--ink); font-size:1.03rem;}
-  .choice .ck{margin-left:auto; width:24px; height:24px; border-radius:8px; border:2px solid #d8c9af; flex:0 0 auto; display:flex; align-items:center; justify-content:center;}
+  .choice .ck{margin-left:auto; width:24px; height:24px; border-radius:8px; border:2px solid var(--soft); flex:0 0 auto; display:flex; align-items:center; justify-content:center;}
   .choice.sel{border-color:var(--green); background:var(--green-bg);}
-  .choice.sel .ci{background:var(--green); color:#fff;}
+  .choice.sel .ci{background:var(--green); color:var(--on-accent);}
   .choice.sel .ck{background:var(--green); border-color:var(--green);}
-  .choice .ck svg{width:13px; height:13px; color:#fff; opacity:0;}
+  .choice .ck svg{width:13px; height:13px; color:var(--on-accent); opacity:0;}
   .choice.sel .ck svg{opacity:1;}
   .twogrid{display:grid; grid-template-columns:1fr 1fr; gap:15px; margin:6px 0 4px;}
   .vcard{padding:20px 18px; border-radius:18px; border:1.6px solid var(--line); background:var(--paper2); text-align:center;}
@@ -54,7 +54,7 @@
   .opts{display:flex; flex-wrap:wrap; gap:9px;}
   .opt{padding:9px 16px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper2); font-weight:700; font-size:.93rem; color:var(--ink); transition:.12s;}
   .opt:hover{border-color:var(--green2);}
-  .opt.sel{background:var(--green); color:#fff; border-color:var(--green);}
+  .opt.sel{background:var(--green); color:var(--on-accent); border-color:var(--green);}
   textarea{width:100%; min-height:122px; border-radius:16px; border:1.6px solid var(--line); background:var(--paper2); padding:15px 17px; font-family:inherit; font-size:1rem; color:var(--ink); resize:vertical;}
   textarea:focus{outline:none; border-color:var(--green); background:var(--paper);}
   .reassure{background:var(--green-bg); border:1px solid var(--line); border-radius:14px; padding:13px 16px; margin:0 0 16px; color:var(--ink); font-size:.96rem; display:flex; gap:11px; align-items:flex-start;}
@@ -69,9 +69,11 @@
   .rhead{text-align:center; margin-bottom:26px;}
   .rhead h2{font-size:2.1rem; margin:8px 0 4px;}
   .rhead p{color:var(--muted); margin:0;}
-  .zone{background:linear-gradient(135deg,var(--green-bg),var(--green-bg)); border:1px solid var(--line); border-radius:var(--r); padding:20px 24px; margin-bottom:16px;}
+  .zone{background:var(--green-bg); border:1px solid var(--line); border-radius:var(--r); padding:20px 24px; margin-bottom:16px; display:flex; gap:16px; align-items:center; box-shadow:var(--sh-s);}
+  .zone .zic{width:54px; height:54px; border-radius:15px; background:var(--paper); color:var(--green); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .zone .zic svg{width:27px; height:27px;}
   .zone .lab{color:var(--green);}
-  .zone .v{font-family:'Fraunces',serif; font-size:1.55rem; color:var(--head); margin:4px 0 0;}
+  .zone .v{font-family:'Fraunces',serif; font-size:1.55rem; color:var(--head); margin:4px 0 0; line-height:1.1;}
   .mirror{background:var(--paper); border:1px solid var(--line); border-left:5px solid var(--ochre); border-radius:16px; padding:17px 21px; margin-bottom:16px; font-size:1.07rem; color:var(--ink);}
   .views{background:var(--paper); border:1px solid var(--line); border-radius:var(--r); padding:20px 24px 22px; margin-bottom:16px; box-shadow:var(--sh-s);}
   .views .vh{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px;}
@@ -84,9 +86,9 @@
   .vrow:first-child{border-top:none;}
   .vlab{font-weight:800; font-size:.95rem; color:var(--ink);}
   .vtrack{position:relative; height:12px; border-radius:99px; background:var(--line2); border:1px solid var(--line);}
-  .vmark{position:absolute; top:50%; width:22px; height:22px; border-radius:50%; transform:translate(-50%,-50%); color:#fff; font-size:.66rem; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.18); transition:left .5s;}
-  .vmark.vpar{background:var(--clay); border:2px solid #fff;}
-  .vmark.vteen{background:var(--green); border:2px solid #fff;}
+  .vmark{position:absolute; top:50%; width:22px; height:22px; border-radius:50%; transform:translate(-50%,-50%); color:var(--on-accent); font-size:.66rem; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.18); transition:left .5s;}
+  .vmark.vpar{background:var(--clay); border:2px solid var(--paper);}
+  .vmark.vteen{background:var(--green); border:2px solid var(--paper);}
   .vrow.gap .vlab::after{content:'розходження'; display:block; font-size:.68rem; font-weight:800; letter-spacing:.4px; text-transform:uppercase; color:var(--clay); margin-top:2px;}
   .scenario{background:var(--paper); border:1px solid var(--line); border-radius:var(--r); padding:24px 26px; box-shadow:var(--sh-s); margin-bottom:16px;}
   .scenario h3{margin:0 0 4px; font-size:1.32rem; color:var(--head); display:flex; align-items:center; gap:11px;}
@@ -195,7 +197,7 @@
 
 <section id="resultScreen" class="wrap result" style="display:none">
   <div class="rwrap">
-    <div class="rhead"><h2>Ось що ми побачили</h2><p>Це не діагноз, а тепле дзеркало двох поглядів — і перший крок.</p></div>
+    <div class="rhead"><span class="eyebrow lab" style="margin-bottom:8px"><span class="ink-ic" data-icon="compass"></span> ваше тепле дзеркало</span><h2>Ось що ми побачили</h2><p>Це не діагноз, а тепле дзеркало двох поглядів — і перший крок.</p></div>
     <div class="risk" id="r-risk" style="display:none">
       <h3><span class="hic" data-icon="handheart"></span> Здається, зараз непросто</h3>
       <p id="r-risk-text">У відповідях дитини є сигнали, з якими краще не залишатися наодинці.</p>
@@ -206,7 +208,7 @@
       <p style="margin:12px 0 0; font-size:.86rem; color:var(--muted)">У фінальній версії тут будуть реальні контакти перевірених фахівців і безкоштовних ліній підтримки.</p>
     </div>
     <div id="r-zoneimg" style="display:none; border-radius:var(--r); overflow:hidden; border:1px solid var(--line); box-shadow:var(--sh-s); margin-bottom:16px; aspect-ratio:16/7; background:var(--green-bg)"></div>
-    <div class="zone"><div class="lab">Головна зона уваги зараз</div><div class="v" id="r-zone">—</div></div>
+    <div class="zone"><span class="zic" data-icon="target"></span><div><div class="lab">Головна зона уваги зараз</div><div class="v" id="r-zone">—</div></div></div>
     <div class="mirror" id="r-mirror">—</div>
     <div class="views">
       <div class="vh"><b>Два погляди поруч</b><div class="vleg"><span class="dot"><span class="d d-par"></span> Батьки</span><span class="dot"><span class="d d-teen"></span> Підліток</span></div></div>
@@ -429,4 +431,8 @@
     });
     if(state.concerns.length){ var n=$('#next1'); if(n) n.disabled=false; return true; }
     return false;
-  
+  })();
+  setStep(prefilled ? 2 : 1);
+</script>
+</body>
+</html>

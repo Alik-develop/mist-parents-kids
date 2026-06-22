@@ -107,4 +107,64 @@
           </div>
 
           <div class="promo">
-            <div class="ph"><span class="av">О</span><div><b style="color:var(--head); font-family:'Fraunces',serif; font-size:1.05rem">Безкоштовний урок з математики</b><div class="muted" style="font-size:.85rem; font-weight
+            <div class="ph"><span class="av">О</span><div><b style="color:var(--head); font-family:'Fraunces',serif; font-size:1.05rem">Безкоштовний урок з математики</b><div class="muted" style="font-size:.85rem; font-weight:700">з Оксаною · 1 заняття безкоштовно</div></div></div>
+            <p class="muted" style="margin:0 0 14px; font-size:.94rem">Спершу причина, потім математика. Підліток проходить сам, у своєму темпі.</p>
+            <a class="btn btn-green" href="urok.html" style="justify-content:center; width:100%"><span data-icon="play"></span> Почати урок</a>
+          </div>
+
+          <div class="panelbox">
+            <h3 style="margin:0 0 4px">Історія проходжень</h3>
+            <ul class="timeline">
+              <li><span class="dot" style="background:var(--clay)"></span><div><b>Стосунки вдома</b><div class="when">14 червня · гіпотеза: оцінки</div></div></li>
+              <li><span class="dot" style="background:var(--ochre)"></span><div><b>Школа та вчителі</b><div class="when">28 травня · гіпотеза: конфлікти</div></div></li>
+              <li><span class="dot" style="background:var(--green)"></span><div><b>Мотивація та стан</b><div class="when">5 травня · гіпотеза: лінь</div></div></li>
+              <li><span class="dot"></span><div><b>Перше проходження</b><div class="when">18 квітня</div></div></li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ВІДГУК -->
+      <div class="section" style="padding-top:6px">
+        <div class="testi">
+          <span class="qi" data-icon="quote"></span>
+          <div>
+            <div class="q">«Найголовніше — я перестала тривожитися наосліп. Видно, де болить насправді, і що з цим робити вже сьогодні.»</div>
+            <div class="who">Олена, мама Максима · приклад відгуку</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spacer-lg"></div>
+    </main>
+  </div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="assets/app.js"></script>
+<script>
+  Site.init('kabinet');
+
+  // предмети: [назва, %, тренд('up'|'flat'|'down'), іконка, колір, спарклайн 0..1]
+  var SUBJ = [
+    ['Математика', 78, 'up',   'sigma', 'var(--green)', [.42,.4,.5,.55,.62,.7,.78]],
+    ['Українська', 84, 'up',   'book',  'var(--blue)',  [.6,.62,.66,.7,.74,.8,.84]],
+    ['Англійська', 65, 'flat', 'globe', 'var(--ochre)', [.66,.62,.6,.64,.63,.65,.65]],
+    ['Природа',    72, 'up',   'flask', 'var(--clay)',  [.5,.48,.55,.6,.64,.68,.72]]
+  ];
+  var trendIc = {up:'chartup', down:'chartdown', flat:'sliders'};
+  var trendTx = {up:'росте', down:'спадає', flat:'стабільно'};
+  document.getElementById('subjects').innerHTML = SUBJ.map(function(s){
+    var colorClass = s[4].indexOf('green')>-1?'':(s[4].indexOf('blue')>-1?'blue':(s[4].indexOf('ochre')>-1?'ochre':'clay'));
+    var ticCls = s[4].indexOf('green')>-1?'green':(s[4].indexOf('blue')>-1?'blue':(s[4].indexOf('ochre')>-1?'ochre':'clay'));
+    return '<div class="subj">'+
+      '<div class="stop"><span class="sic tic '+ticCls+'" data-icon="'+s[3]+'"></span><span class="sn">'+s[0]+'</span><span class="sv">'+s[1]+'%</span></div>'+
+      Site.spark(s[5], s[4])+
+      '<div class="sfoot"><span class="trend '+s[2]+'"><span class="ink-ic" data-icon="'+trendIc[s[2]]+'" style="color:inherit"></span> '+trendTx[s[2]]+'</span><span>за 6 тижнів</span></div>'+
+    '</div>';
+  }).join('');
+  Site.paint();
+</script>
+</body>
+</html>

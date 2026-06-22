@@ -45,6 +45,7 @@
   Site.init('eksperty');
   var SCALES = Site.SCALES, E = Site.EXPERTS;
   var KIND = { tutor:'Репетитор', psy:'Психолог', mentor:'Наставник' };
+  var KIND_IC = { tutor:'cap', psy:'heart', mentor:'compass' };
   function getI(){ var m = location.search.match(/[?&]i=(\d+)/); return m ? parseInt(m[1],10) : 0; }
   var i = getI(); var e = E[i] || E[0];
   // Оксана має власну сторінку
@@ -56,6 +57,7 @@
   var ratingHTML = e.rating
     ? '<div class="stars">'+stars(e.rating)+' <span class="muted" style="font-weight:700">'+e.rating.toFixed(1)+' · '+e.n+' відгуків</span></div>'
     : '<div class="stars" style="color:var(--green)">Перше заняття безкоштовне</div>';
+  var kindBadge = '<span class="ekind '+e.kind+'"><span data-icon="'+(KIND_IC[e.kind]||'users')+'"></span> '+(KIND[e.kind]||'')+'</span>';
   var tags = e.tags.map(function(t){ return '<span class="tag '+t+'">'+SCALES[t]+'</span>'; }).join(' ');
   var method = (e.method||[]).map(function(m){ return '<li><span class="mi" data-icon="check"></span><span>'+m+'</span></li>'; }).join('');
   var reviews = (e.reviews||[]).map(function(r){ return '<div class="review"><div class="stars">★★★★★</div>«'+r.text+'»<div class="who">'+r.who+'</div></div>'; }).join('');
@@ -78,7 +80,7 @@
       '<div>'+
         '<h1 style="font-size:2.2rem; margin:2px 0 6px">'+e.name+'</h1>'+
         '<p style="color:var(--ink-soft); font-size:1.1rem; margin:0 0 12px">'+e.role+'</p>'+
-        '<div class="etags" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px">'+tags+'</div>'+
+        '<div class="etags" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:16px">'+kindBadge+tags+'</div>'+
         '<h3>Підхід</h3><p style="color:var(--ink)">'+(e.approach||e.bio)+'</p>'+
         '<div class="forzone"><b>Кому підійде:</b> '+(e.forZones||'Підбираємо під вашу головну зону з результату тесту.')+'</div>'+
         '<h3>Як працює</h3><ul class="methodlist">'+method+'</ul>'+

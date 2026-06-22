@@ -268,4 +268,56 @@
      teaser:'Коли підліток відчуває, що в школі його поважають і приймають, зростають мотивація, успішність і добробут. У середній школі це почуття часто падає — і тепле ставлення хоча б одного вчителя справді важить.',
      src:'Meta-analysis · School belonging', url:'https://www.tandfonline.com/doi/full/10.1080/02671522.2019.1615116',
      body:'<p>«Шкільна приналежність» — це відчуття підлітка, що в школі його бачать, поважають і приймають. Дослідження (зокрема метааналізи) стабільно повʼязують її з вищою мотивацією, успішністю й загальним добробутом. І навпаки: коли дитина почувається чужою, падає все — і оцінки, і настрій.</p>'+
-       '<p>Прикро, але саме в середній школі це почуття ч
+       '<p>Прикро, але саме в середній школі це почуття часто слабшає. Хороша новина: навіть тепле, справедливе ставлення <b>одного</b> вчителя здатне багато змінити — стати тією опорою, заради якої хочеться приходити.</p>'+
+       '<blockquote>Тому в історії з несправедливою оцінкою Оксана вчить не «качати права», а спокійно й гідно показати вчителю свої знання. Повага й контакт важать більше за саму оцінку.</blockquote>'+
+       '<h4>Як це вдома</h4><p>Спитайте не лише «що отримав», а й «з ким у школі тобі добре». Якщо є хоч один учитель чи предмет, де дитину цінують, — спирайтеся на це. А при конфлікті вчіть спокійної, поважної розмови, а не протистояння.</p>'}
+  ];
+
+  // <img> із мʼяким фолбеком: якщо файлу ще немає — лишається запасний HTML (SVG/плейсхолдер)
+  function imgFallback(src, alt, fallbackHTML, cls){
+    var safe = (fallbackHTML||'').replace(/"/g,'&quot;');
+    return '<img src="'+src+'" alt="'+(alt||'')+'"'+(cls?' class="'+cls+'"':'')+
+      ' loading="lazy" onerror="this.onerror=null;this.outerHTML=this.getAttribute(\'data-fb\')" data-fb="'+safe+'">';
+  }
+
+  // міні-спарклайн: значення 0..1, колір — CSS-змінна (напр. 'var(--green)')
+  function spark(vals, color){
+    color = color || 'var(--green)';
+    var w=100, h=34, pad=3, n=vals.length, id='sf'+Math.random().toString(36).slice(2,7);
+    var pts = vals.map(function(v,i){
+      var x = pad + i*(w-2*pad)/(n-1);
+      var y = h-pad - v*(h-2*pad);
+      return [x, y];
+    });
+    var line = pts.map(function(p,i){ return (i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1); }).join(' ');
+    var area = line+' L'+pts[n-1][0].toFixed(1)+' '+(h-pad)+' L'+pts[0][0].toFixed(1)+' '+(h-pad)+' Z';
+    return '<svg class="spark" viewBox="0 0 100 34" preserveAspectRatio="none">'+
+      '<defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" style="stop-color:'+color+'; stop-opacity:.28"/>'+
+        '<stop offset="1" style="stop-color:'+color+'; stop-opacity:0"/></linearGradient></defs>'+
+      '<path d="'+area+'" fill="url(#'+id+')"/>'+
+      '<path d="'+line+'" style="fill:none; stroke:'+color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '</svg>';
+  }
+
+  var Site = {
+    icons: ICONS,
+    paint: paintIcons,
+    toast: toast,
+    spark: spark,
+    SCALES: SCALES,
+    SCALE_IMG: SCALE_IMG,
+    EXPERTS: EXPERTS,
+    ARTICLES: ARTICLES,
+    img: imgFallback,
+    toggleTheme: toggleTheme,
+    init: function(active){
+      var h = document.getElementById('site-header');
+      if(h){ h.className='site'; h.innerHTML = buildHeader(active); }
+      var f = document.getElementById('site-footer');
+      if(f){ f.className='site'; f.innerHTML = buildFooter(); }
+      paintIcons();
+    }
+  };
+  window.Site = Site;
+})();
