@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>База знань — Міст для Батьків та Дітей</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="База знань — Міст для Батьків та Дітей">
+<meta property="og:description" content="Тепла порада на твердій основі: реальний досвід Оксани + перевірені механізми з психології, зі джерелами.">
+<meta property="og:image" content="assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .article .atop{display:flex; align-items:center; gap:12px;}
+  .article .ic{width:42px;height:42px;border-radius:12px;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .article .ic svg{width:22px;height:22px;}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header id="site-header"></header>
+
+<section class="wrap">
+  <div class="phero">
+    <span class="eyebrow lab"><span class="ink-ic" data-icon="book"></span> наука + живий досвід</span>
+    <h1>База знань і поради</h1>
+    <p>Тут поєднуються дві опори: реальний досвід Оксани та загальноприйняті механізми з психології — підтримка автономії, емоційний коучинг, мислення зростання. Коротко, по-людськи й зі джерелами.</p>
+  </div>
+
+  <div class="section">
+    <div class="note-box"><span class="ink-ic" data-icon="shield"></span><span>Це освітні матеріали, а не діагноз і не заміна фахівцю. Кожна порада спирається на визнані дослідження — посилання внизу карток. Наповнення розширюється.</span></div>
+    <div class="filters" id="filters"></div>
+    <div class="grid g3" id="cards"></div>
+  </div>
+
+  <div class="section">
+    <div class="panelbox">
+      <h3>Як ми поєднуємо досвід і науку</h3>
+      <p class="muted">Сценарії на сайті — з реальних історій Оксани. А «чому це працює» пояснюють перевірені рамки: підтримка автономії та базові потреби (теорія самодетермінації Deci &amp; Ryan), емоційний коучинг Готтмана, мислення зростання Керол Двек, логіка скринінгу SDQ. Так тепла порада стоїть на твердій основі.</p>
+    </div>
+  </div>
+  <div class="spacer-lg"></div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="assets/app.js"></script>
+<script>
+  Site.init('baza');
+  var SCALES = Site.SCALES;
+  var active = 'all';
+
+  function cardHTML(a, i){
+    return '<a class="article h" href="stattia.html?i='+i+'" data-scale="'+a.scale+'" style="text-decoration:none">'+
+      '<div class="atop"><span class="ic" data-icon="'+a.icon+'"></span><span class="tag '+a.scale+'">'+SCALES[a.scale]+'</span></div>'+
+      '<h3>'+a.title+'</h3>'+
+      '<p>'+a.teaser+'</p>'+
+      '<span class="lnk" style="margin-top:auto">Читати <span data-icon="step"></span></span>'+
+    '</a>';
+  }
+  function render(){
+    var list = Site.ARTICLES.map(function(a,i){ return {a:a,i:i}; }).filter(function(o){ return active==='all' || o.a.scale===active; });
+    document.getElementById('cards').innerHTML = list.map(function(o){ return cardHTML(o.a, o.i); }).join('');
+    Site.paint();
+  }
+  function buildFilters(){
+    var opts = [['all','Усі теми']].concat(Object.keys(SCALES).map(function(k){ return [k, SCALES[k]]; }));
+    document.getElementById('filters').innerHTML = opts.map(function(o){
+      return '<button class="chip'+(o[0]===active?' on':'')+'" onclick="setFilter(\''+o[0]+'\')">'+o[1]+'</button>';
+    }).join('');
+  }
+  function setFilter(k){ active=k; buildFilters(); render(); }
+  window.setFilter = setFilter;
+  buildFilters(); render();
+</script>
+</body>
+</html>

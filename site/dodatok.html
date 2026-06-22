@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Міст спілкування — Міст для Батьків та Дітей</title>
+<meta name="description" content="Підліток ділиться настроєм одним дотиком, а батьки отримують мʼякий сигнал — без тиску й контролю. Поряд — уроки й перевірені фахівці.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Міст спілкування — Міст для Батьків та Дітей">
+<meta property="og:description" content="Дитина ділиться самопочуттям, батьки бачать мʼякий сигнал. Конфіденційно, тепло, без контролю.">
+<meta property="og:image" content="assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<header id="site-header"></header>
+
+<section class="wrap wide">
+  <div class="phero">
+    <span class="eyebrow lab"><span class="ink-ic" data-icon="handheart"></span> щодня · одна хвилина <span class="soon">скоро</span></span>
+    <h1>Міст спілкування</h1>
+    <p>Підліток ділиться настроєм одним дотиком, а ви отримуєте мʼякий сигнал — без допиту й контролю. Поряд завжди уроки й жива людина.</p>
+  </div>
+
+  <div class="section" style="padding-top:18px">
+    <div class="bridge3">
+
+      <!-- ЛІВА КОЛОНКА: для батьків -->
+      <div>
+        <div class="bcol-h"><span class="bi tic green" data-icon="handheart"></span><h2>Підказки та підтримка</h2></div>
+
+        <div class="panelbox" style="padding:18px 20px">
+          <p style="margin:0 0 14px"><b style="color:var(--head); font-family:'Fraunces',serif">Доброго ранку, Олено!</b><br><span class="muted" style="font-size:.94rem">Максим уже поділився настроєм. Ось мʼякі підказки на сьогодні.</span></p>
+
+          <div class="sugg"><span class="si" data-icon="faceSmile"></span><div class="sb"><b>Настрій — радше світлий</b><p>Гарний момент, щоб просто побути поруч без приводу й розпитувань.</p></div></div>
+          <div class="sugg"><span class="si" data-icon="chat"></span><div class="sb"><b>Тема тижня — однолітки</b><p>Можна мʼяко спитати: «З ким зараз тобі добре?» — без оцінок.</p></div></div>
+          <div class="sugg"><span class="si" data-icon="leaf"></span><div class="sb"><b>Маленький крок</b><p>Похваліть зусилля, а не оцінку: «видно, що ти думав над задачею».</p></div></div>
+
+          <a class="btn btn-green" href="baza-znan.html" style="justify-content:center; width:100%; margin-top:4px"><span data-icon="book"></span> Як почати розмову</a>
+        </div>
+      </div>
+
+      <!-- ЦЕНТР: телефон дитини -->
+      <div class="col-phone">
+        <div class="phone">
+          <div class="screen">
+            <div class="notch"></div>
+            <div class="pkid"><span class="av">М</span><div><b>Привіт, Максиме!</b><span>вівторок, ранок</span></div></div>
+            <h3>Як ти сьогодні?</h3>
+            <p class="psub">Обери, що ближче. Це бачиш лише ти — батькам піде тільки мʼякий сигнал.</p>
+            <div class="moods" id="moods">
+              <button class="mood" data-icon="faceSad" onclick="pickMood(this,'важко')" style="color:var(--clay)"></button>
+              <button class="mood" data-icon="faceMeh" onclick="pickMood(this,'так собі')" style="color:var(--ochre)"></button>
+              <button class="mood" data-icon="faceNeutral" onclick="pickMood(this,'нормально')" style="color:var(--muted)"></button>
+              <button class="mood sel" data-icon="faceSmile" onclick="pickMood(this,'добре')" style="color:var(--green)"></button>
+              <button class="mood" data-icon="faceJoy" onclick="pickMood(this,'чудово')" style="color:var(--green)"></button>
+            </div>
+            <div class="moodlabel"><span>важко</span><span>чудово</span></div>
+            <div class="pfield">Що склалось у тебе на думці? (за бажанням — лише для себе)</div>
+            <button class="btn btn-green" onclick="sendMood()" style="justify-content:center; width:100%"><span data-icon="send"></span> Надіслати батькам</button>
+          </div>
+        </div>
+        <p class="center muted" style="font-size:.86rem; margin:14px auto 0; max-width:28em">Так це бачить підліток у застосунку. Слова лишаються в нього — батькам іде лише настрій і тема.</p>
+      </div>
+
+      <!-- ПРАВА КОЛОНКА: уроки + фахівці -->
+      <div>
+        <div class="bcol-h"><span class="bi tic ochre" data-icon="cap"></span><h2>Поряд завжди</h2></div>
+
+        <div class="promo" style="margin-bottom:14px">
+          <div class="ph"><span class="av">О</span><div><b style="color:var(--head); font-family:'Fraunces',serif; font-size:1.05rem">Безкоштовний урок дня</b><div class="muted" style="font-size:.85rem; font-weight:700">математика · 10 хвилин</div></div></div>
+          <p class="muted" style="margin:0 0 14px; font-size:.94rem">Маленька перемога, яку підліток здобуде сам — і повірить у себе.</p>
+          <a class="btn btn-green" href="urok.html" style="justify-content:center; width:100%"><span data-icon="play"></span> Почати урок</a>
+        </div>
+
+        <a class="xcard" href="eksperty.html"><span class="xi tic green" data-icon="users"></span><div class="xb"><b>Дитячий психолог</b><span>консультація · перша зустріч — знайомство</span></div><span class="ink-ic" data-icon="step" style="color:var(--soft)"></span></a>
+        <a class="xcard" href="eksperty.html"><span class="xi tic blue" data-icon="cap"></span><div class="xb"><b>Підбір репетитора</b><span>коли причину знайдено — повертаємось до предмета</span></div><span class="ink-ic" data-icon="step" style="color:var(--soft)"></span></a>
+        <a class="xcard" href="eksperty.html"><span class="xi tic ochre" data-icon="buoy"></span><div class="xb"><b>Сімейний терапевт</b><span>коли вдома спіраль «контроль → стіна»</span></div><span class="ink-ic" data-icon="step" style="color:var(--soft)"></span></a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- НИЖНІЙ ТРЕКЕР -->
+  <div class="section" style="padding-top:6px">
+    <div class="pill-row" style="margin-bottom:10px"><span class="kicker">Сьогодні в Максима</span></div>
+    <div class="tracker">
+      <div class="trk"><span class="ti tic green" data-icon="faceSmile"></span><div class="tt"><b>Настрій — добре</b><span>світлішає третій день поспіль</span></div></div>
+      <div class="trk"><span class="ti tic blue" data-icon="cap"></span><div class="tt"><b>Навчання — урок зроблено</b><span>математика, 10 хв, сам</span></div></div>
+      <div class="trk"><span class="ti tic ochre" data-icon="leaf"></span><div class="tt"><b>Розвиток — крок зроблено</b><span>вийшов до друзів увечері</span></div></div>
+    </div>
+  </div>
+
+  <!-- ПРИНЦИП + ПРЕДОХОРОНЕЦЬ -->
+  <div class="section">
+    <div class="grid g2">
+      <div class="note-box" style="margin:0"><span class="ink-ic" data-icon="lock"></span><span><b>Конфіденційність підлітка.</b> Батьки бачать настрій і тему, але не дослівні слова дитини. Довіра — головна умова, щоб міст працював.</span></div>
+      <div class="warn-box" style="margin:0"><span class="ink-ic" data-icon="shield"></span><span><b>Запобіжник безпеки.</b> Якщо зʼявляються тривожні сигнали, застосунок мʼяко виводить до живого фахівця або лінії підтримки. Сайт не заміна спеціалісту.</span></div>
+    </div>
+  </div>
+
+  <div class="section center">
+    <h2>Поки що це прев’ю</h2>
+    <p class="muted" style="max-width:34em; margin:0 auto 18px">Міст спілкування — наступний крок проєкту. А вже сьогодні безкоштовно працюють тест, дзеркало, кабінет і уроки.</p>
+    <div class="pill-row" style="justify-content:center">
+      <a class="btn btn-primary btn-lg" href="opytuvannya.html">Пройти тест <span data-icon="step"></span></a>
+      <a class="btn btn-soft btn-lg" href="kabinet.html">Відкрити кабінет</a>
+    </div>
+  </div>
+
+  <div class="spacer-lg"></div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="assets/app.js"></script>
+<script>
+  Site.init('dodatok');
+  var moodVal = 'добре';
+  function pickMood(btn, val){
+    btn.parentNode.querySelectorAll('.mood').forEach(function(m){ m.classList.remove('sel'); });
+    btn.classList.add('sel'); moodVal = val;
+  }
+  function sendMood(){ Site.toast('Дякуємо! Батькам пішов мʼякий сигнал: настрій — «'+moodVal+'»'); }
+  window.pickMood = pickMood; window.sendMood = sendMood;
+</script>
+</body>
+</html>

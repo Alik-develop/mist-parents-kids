@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Профіль фахівця — Міст для Батьків та Дітей</title>
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Каталог експертів — Міст для Батьків та Дітей">
+<meta property="og:description" content="Психологи, репетитори й наставники, яким довіряють батьки.">
+<meta property="og:image" content="assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .backlink{color:var(--muted); font-weight:800; font-size:.94rem; display:inline-flex; gap:7px; align-items:center;}
+  .ehero{display:grid; grid-template-columns:300px 1fr; gap:32px; align-items:start; margin-top:6px;}
+  @media (max-width:820px){ .ehero{grid-template-columns:1fr;} }
+  .ecard{background:var(--paper); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--sh-s); padding:24px; text-align:center;}
+  .ecard .ava{width:120px; height:120px; border-radius:50%; margin:0 auto 14px; background:var(--green-bg); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:3rem; color:var(--green); overflow:hidden;}
+  .ecard .ava img{width:100%; height:100%; object-fit:cover;}
+  .ecard .price{background:var(--green-bg); border:1px solid var(--line); color:var(--green); font-weight:800; border-radius:12px; padding:9px 12px; font-size:.92rem; margin:12px 0;}
+  .ecard .fmt{color:var(--muted); font-size:.9rem; font-weight:700; margin-bottom:14px;}
+  .ebadge{font-size:.86rem; color:var(--muted); font-weight:700;}
+  .methodlist{list-style:none; padding:0; margin:10px 0 0; display:grid; gap:10px;}
+  .methodlist li{display:flex; gap:11px; align-items:flex-start; color:var(--ink);}
+  .methodlist .mi{width:28px;height:28px;border-radius:8px;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .methodlist .mi svg{width:16px;height:16px;}
+  .forzone{background:var(--ochre-bg); border:1px solid var(--line); border-radius:14px; padding:14px 17px; color:var(--ochre); font-weight:700; margin:18px 0;}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header id="site-header"></header>
+
+<section class="wrap">
+  <div style="padding:26px 0 4px"><a class="backlink" href="eksperty.html">← Усі експерти</a></div>
+  <div id="prof"></div>
+  <div class="spacer-lg"></div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="assets/app.js"></script>
+<script>
+  Site.init('eksperty');
+  var SCALES = Site.SCALES, E = Site.EXPERTS;
+  var KIND = { tutor:'Репетитор', psy:'Психолог', mentor:'Наставник' };
+  function getI(){ var m = location.search.match(/[?&]i=(\d+)/); return m ? parseInt(m[1],10) : 0; }
+  var i = getI(); var e = E[i] || E[0];
+  // Оксана має власну сторінку
+  if(e.avatar){ location.replace(e.avatar); }
+  document.title = e.name + ' — Міст для Батьків та Дітей';
+
+  function stars(r){ var full=Math.round(r); var s=''; for(var k=0;k<5;k++) s+=(k<full?'★':'☆'); return s; }
+  var initials = e.name.charAt(0);
+  var ratingHTML = e.rating
+    ? '<div class="stars">'+stars(e.rating)+' <span class="muted" style="font-weight:700">'+e.rating.toFixed(1)+' · '+e.n+' відгуків</span></div>'
+    : '<div class="stars" style="color:var(--green)">Перше заняття безкоштовне</div>';
+  var tags = e.tags.map(function(t){ return '<span class="tag '+t+'">'+SCALES[t]+'</span>'; }).join(' ');
+  var method = (e.method||[]).map(function(m){ return '<li><span class="mi" data-icon="check"></span><span>'+m+'</span></li>'; }).join('');
+  var reviews = (e.reviews||[]).map(function(r){ return '<div class="review"><div class="stars">★★★★★</div>«'+r.text+'»<div class="who">'+r.who+'</div></div>'; }).join('');
+
+  document.getElementById('prof').innerHTML =
+    '<div class="ehero">'+
+      '<div>'+
+        '<div class="ecard">'+
+          '<div class="ava">'+initials+'</div>'+
+          '<div class="en" style="font-family:\'Fraunces\',serif; font-size:1.3rem; color:var(--head)">'+e.name+'</div>'+
+          '<div class="ebadge">'+(KIND[e.kind]||'')+' · '+e.city+'</div>'+
+          '<div style="margin:10px 0">'+ratingHTML+'</div>'+
+          '<div class="price">'+(e.price||'Перша зустріч — знайомство')+'</div>'+
+          '<div class="fmt">'+(e.format||'')+'</div>'+
+          '<button class="btn btn-green" style="width:100%; justify-content:center" onclick="Site.toast(\'Запис до фахівця зʼявиться у наступній версії\')">Записатися <span data-icon="step"></span></button>'+
+          '<div style="height:9px"></div>'+
+          '<a class="btn btn-soft" href="opytuvannya.html" style="width:100%; justify-content:center">Спершу пройти тест <span data-icon="step"></span></a>'+
+        '</div>'+
+      '</div>'+
+      '<div>'+
+        '<h1 style="font-size:2.2rem; margin:2px 0 6px">'+e.name+'</h1>'+
+        '<p style="color:var(--ink-soft); font-size:1.1rem; margin:0 0 12px">'+e.role+'</p>'+
+        '<div class="etags" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px">'+tags+'</div>'+
+        '<h3>Підхід</h3><p style="color:var(--ink)">'+(e.approach||e.bio)+'</p>'+
+        '<div class="forzone"><b>Кому підійде:</b> '+(e.forZones||'Підбираємо під вашу головну зону з результату тесту.')+'</div>'+
+        '<h3>Як працює</h3><ul class="methodlist">'+method+'</ul>'+
+        (reviews ? '<h3 style="margin-top:22px">Відгуки</h3><div class="reviews">'+reviews+'</div><p class="muted" style="font-size:.86rem; margin-top:10px">Приклади відгуків. Реальні зʼявляться з дозволу фахівця.</p>' : '')+
+        '<div class="note-box" style="margin-top:22px"><span class="ink-ic" data-icon="shield"></span><span>Це приклад картки для прототипу. Реальні фахівці проходитимуть перевірку перед публікацією.</span></div>'+
+      '</div>'+
+    '</div>';
+  Site.paint();
+</script>
+</body>
+</html>

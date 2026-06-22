@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кабінет батьків — Міст для Батьків та Дітей</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Кабінет батьків — Міст для Батьків та Дітей">
+<meta property="og:description" content="Прогрес за предметами, фокус і мотивація, рекомендовані кроки та план на тиждень — спокійна картина замість тривоги.">
+<meta property="og:image" content="assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<header id="site-header"></header>
+
+<section class="wrap wide">
+  <div class="appshell">
+
+    <!-- ЛІВИЙ РЕЛС -->
+    <aside class="siderail">
+      <div class="who">
+        <span class="av">О</span>
+        <div><div class="nm">Олена</div><div class="rl">мама Максима</div></div>
+      </div>
+      <nav class="railnav">
+        <a class="on" href="#oglyad"><span data-icon="grid"></span> Огляд</a>
+        <a href="#predmety"><span data-icon="cap"></span> Предмети</a>
+        <a href="#motyvatsiya"><span data-icon="flame"></span> Мотивація</a>
+        <a href="#kroky"><span data-icon="step"></span> Кроки</a>
+        <a href="#plan"><span data-icon="calendar"></span> План тижня</a>
+        <a href="dodatok.html"><span data-icon="handheart"></span> Спілкування</a>
+      </nav>
+    </aside>
+
+    <!-- ОСНОВНЕ -->
+    <main>
+      <div class="greet" id="oglyad">
+        <div>
+          <h1>Доброго ранку, Олено!</h1>
+          <p class="gsub">Ось спокійна картина по Максиму за останній місяць.</p>
+        </div>
+        <div class="kidpick">
+          <span class="kidchip"><span class="av">М</span> Максим · 8 клас</span>
+          <button class="btn btn-soft btn-sm" onclick="Site.toast('Профілі кількох дітей зʼявляться згодом')"><span data-icon="users"></span> Додати</button>
+        </div>
+      </div>
+
+      <div class="demo-banner" style="margin:14px 0 0"><span class="ink-ic" data-icon="spark" style="color:var(--ochre)"></span> Демонстраційні дані. Реальні зʼявляться після кількох проходжень тесту й використання застосунку.</div>
+
+      <!-- ПРЕДМЕТИ + ПРАВА КОЛОНКА -->
+      <div class="section dashgrid" style="padding-top:20px">
+
+        <!-- ЛІВА КОЛОНКА -->
+        <div class="colstack">
+
+          <div class="panelbox" id="predmety">
+            <div class="pill-row" style="justify-content:space-between; margin-bottom:14px">
+              <h3 style="margin:0">Як справи в навчанні</h3>
+              <span class="trend up"><span class="ink-ic" data-icon="chartup"></span> загалом росте</span>
+            </div>
+            <div class="subjects" id="subjects"></div>
+          </div>
+
+          <div class="panelbox" id="motyvatsiya">
+            <h3 style="margin:0 0 14px">Фокус і мотивація</h3>
+            <div class="focusrow">
+              <div class="gauge" style="--p:80; --c:var(--green)"><div class="gv"><b>8,0</b><span>з 10</span></div></div>
+              <div class="fmeta">
+                <p style="margin:0 0 2px"><b>Настрій тримається й покращується.</b></p>
+                <p class="muted" style="margin:0">За останні тижні менше дратівливості, повернувся інтерес до групи з математики.</p>
+                <div class="minibadges">
+                  <span class="pill"><span data-icon="check"></span> Сон у нормі</span>
+                  <span class="pill ochre"><span data-icon="users"></span> Однолітки — увага</span>
+                  <span class="pill clay"><span data-icon="home"></span> Вдома — теплішає</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panelbox" id="kroky">
+            <div class="pill-row" style="justify-content:space-between; margin-bottom:6px">
+              <h3 style="margin:0">Рекомендовані наступні кроки</h3>
+              <span class="muted" style="font-size:.85rem; font-weight:700">із вашого останнього результату</span>
+            </div>
+            <div class="rec"><span class="ri tic green" data-icon="handheart"></span><div class="rt"><b>Тепла розмова вдома</b><span>«Я бачу тебе, причина не в тобі» — одна спокійна розмова сьогодні.</span></div><a class="btn btn-green btn-sm" href="baza-znan.html">Почати</a></div>
+            <div class="rec"><span class="ri tic blue" data-icon="chat"></span><div class="rt"><b>Розмова з учителем</b><span>Спокійно попросити показати, де помилка — без протистояння.</span></div><a class="btn btn-soft btn-sm" href="baza-znan.html">Відкрити</a></div>
+            <div class="rec"><span class="ri tic ochre" data-icon="users"></span><div class="rt"><b>Своє середовище</b><span>Гурток із мотивованими однолітками часто вмикає інтерес краще за контроль.</span></div><a class="btn btn-soft btn-sm" href="eksperty.html">Підібрати</a></div>
+            <div class="rec"><span class="ri tic clay" data-icon="step"></span><div class="rt"><b>Повторити тест</b><span>Раз на 2–4 тижні — щоб бачити, чи рухається ситуація.</span></div><a class="btn btn-soft btn-sm" href="opytuvannya.html">Пройти</a></div>
+          </div>
+
+        </div>
+
+        <!-- ПРАВА КОЛОНКА -->
+        <div class="colstack">
+
+          <div class="panelbox" id="plan">
+            <h3 style="margin:0 0 14px">План на тиждень</h3>
+            <div class="week">
+              <div class="wk done"><div class="wd"><b>Пн</b><span>зроб.</span></div><div class="wbody"><b>Урок математики — 10 хв</b><p>Максим пройшов сам. Перша маленька перемога.</p></div></div>
+              <div class="wk"><div class="wd"><b>Вт</b><span>сьог.</span></div><div class="wbody"><b>Спитати про друзів</b><p>Без допиту — просто «з ким зараз тобі добре?».</p><span class="pill ochre wtag"><span data-icon="users"></span> однолітки</span></div></div>
+              <div class="wk"><div class="wd"><b>Чт</b><span>2 дні</span></div><div class="wbody"><b>Перевірити настрій у застосунку</b><p>Мʼякий сигнал від Максима — без контролю.</p></div></div>
+              <div class="wk"><div class="wd"><b>Сб</b><span>4 дні</span></div><div class="wbody"><b>Підсумок тижня разом</b><p>Що вдалося, що складно — спокійно й по-доброму.</p></div></div>
+            </div>
+          </div>
+
+          <div class="promo">
+            <div class="ph"><span class="av">О</span><div><b style="color:var(--head); font-family:'Fraunces',serif; font-size:1.05rem">Безкоштовний урок з математики</b><div class="muted" style="font-size:.85rem; font-weight

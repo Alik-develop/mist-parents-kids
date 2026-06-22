@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap — Міст для Батьків та Дітей</title>
+<style>
+  :root{
+    --ink:#2c2a26; --muted:#7b766c; --soft:#9a958b;
+    --paper:#fdfbf7; --line:#ece6da;
+    --a:#31507f; --a-bg:#eaf0f9; --a-line:#c2d2ea;
+    --b:#3a6440; --b-bg:#ebf4ec; --b-line:#c4dcc6;
+    --warm:#9a6b2f; --warm-bg:#fbf1de; --warm-line:#ecd9b4;
+  }
+  *{box-sizing:border-box;}
+  html{font-size:17px;}
+  body{
+    font-family:'DejaVu Sans',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+    color:var(--ink); background:var(--paper);
+    line-height:1.5; margin:0; padding:0;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding:26px 20px 48px;}
+  h1{font-size:1.7rem; margin:0 0 2px; letter-spacing:-.2px;}
+  .subtitle{font-size:1.02rem; color:var(--ink); margin:0 0 2px; font-weight:600;}
+  .meta{font-size:.82rem; color:var(--soft); margin:0 0 22px;}
+  h2{font-size:1.18rem; margin:30px 0 12px; padding-bottom:6px; border-bottom:2px solid var(--line);}
+  p{margin:0 0 12px;}
+  ul{margin:6px 0 14px; padding-left:0; list-style:none;}
+  li{margin:7px 0; padding-left:22px; position:relative;}
+  li::before{content:"•"; position:absolute; left:6px; color:var(--soft);}
+  .lead{color:var(--muted); font-size:.95rem;}
+  ol li::before{content:none;}
+
+  .chiprow{display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 16px;}
+  .chip{display:inline-flex; align-items:center; gap:7px; font-size:.86rem; font-weight:600;
+        padding:5px 11px; border-radius:999px; border:1px solid var(--line);}
+  .dot{width:11px; height:11px; border-radius:3px; display:inline-block;}
+  .dot-a{background:var(--a); border:none;}
+  .dot-b{background:var(--b); border:none;}
+
+  .principles{background:#fff; border:1px solid var(--line); border-left:5px solid var(--ink);
+        border-radius:12px; padding:14px 16px 6px; margin:10px 0 4px;}
+  .principles h3{margin:0 0 8px; font-size:1rem;}
+  .principles li::before{content:counter(p); counter-increment:p; color:#fff; background:var(--ink);
+        width:18px; height:18px; border-radius:50%; font-size:.7rem; font-weight:700;
+        display:flex; align-items:center; justify-content:center; left:0; top:1px;}
+  .principles ol{counter-reset:p; list-style:none; padding-left:0; margin:0 0 8px;}
+  .principles ol li{padding-left:26px;}
+
+  .phase{margin-top:26px;}
+  .phase-h{display:inline-block; font-weight:700; font-size:1.05rem; background:var(--warm-bg);
+        border:1px solid var(--warm-line); color:#5a4327; padding:6px 14px; border-radius:10px;}
+  .phase-note{font-size:.9rem; color:var(--muted); margin:10px 2px 4px; font-style:italic;}
+
+  .track{border-radius:12px; padding:12px 15px 4px; margin:12px 0; border:1px solid var(--line);}
+  .track-a{background:var(--a-bg); border-left:5px solid var(--a);}
+  .track-b{background:var(--b-bg); border-left:5px solid var(--b);}
+  .tlabel{font-size:.74rem; font-weight:700; letter-spacing:.6px; text-transform:uppercase; margin:0 0 6px;}
+  .track-a .tlabel{color:var(--a);} .track-b .tlabel{color:var(--b);}
+  .track-a li::before{content:"•"; color:var(--a);}
+  .track-b li::before{content:"?"; color:#fff; background:var(--b); width:16px; height:16px;
+        border-radius:50%; font-size:.72rem; font-weight:700; display:flex; align-items:center;
+        justify-content:center; left:0; top:2px;}
+  .track-b li{padding-left:24px;}
+  .done::before{content:"✓" !important; color:var(--b) !important; background:none !important;
+        font-weight:700; left:4px !important;}
+  em.tag{font-style:normal; color:var(--muted); font-size:.85em;}
+
+  .batch{background:var(--warm-bg); border:1px solid var(--warm-line); border-radius:12px;
+        padding:14px 16px 8px; margin:14px 0;}
+  .batch h3{margin:2px 0 4px; font-size:1rem; color:#5a4327;}
+  .batch h4{margin:14px 0 4px; font-size:.92rem; color:#5a4327;}
+  .batch .quote{background:#fff7e9; border-left:3px solid var(--warm-line); padding:8px 12px;
+        border-radius:6px; font-size:.9rem; color:#5a4327; margin:6px 0;}
+  .batch ol{padding-left:22px;}
+  .batch ol li{padding-left:4px;} .batch ol li::before{content:none;}
+
+  .cross{background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 16px 4px; margin:10px 0;}
+  .foot{margin-top:30px; padding-top:14px; border-top:1px solid var(--line); color:var(--soft); font-size:.85rem;}
+
+  @media (max-width:600px){
+    html{font-size:16px;}
+    .wrap{padding:20px 15px 40px;}
+  }
+  @media print{
+    html{font-size:11.5px;}
+    @page{size:108mm 192mm; margin:8mm 7mm;}
+    body{background:#fff;}
+    .wrap{padding:0; max-width:none;}
+    .track,.principles,.batch,.cross,.phase{break-inside:avoid;}
+    h2{break-after:avoid;} .phase-h{break-after:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>🗺 Roadmap</h1>
+  <p class="subtitle">«Міст для Батьків та Дітей»</p>
+  <p class="meta">Версия 1.0 · 21 июня 2026</p>
+
+  <h2>Как читать этот roadmap</h2>
+  <p class="lead">Проект движется по двум параллельным трекам:</p>
+  <div class="chiprow">
+    <span class="chip"><span class="dot dot-a"></span>Трек A — Продукт</span>
+    <span class="chip"><span class="dot dot-b"></span>Трек B — Знания мамы</span>
+  </div>
+  <p class="lead"><b>Трек A</b> — что строим: структура, сайт, приложение, экраны, функции, дизайн. <b>Трек B</b> — что узнаём у мамы, чтобы наполнить продукт реальными кейсами. Значок <b>?</b> — вопрос маме.</p>
+  <p class="lead"><b>Правило связки:</b> Трек A не ждёт Трек B по структуре и интерфейсу — стройка идёт всегда. Содержание (сценарии, тексты, опросник, тон) наполняется из Трека B. Где ответа ещё нет — ставим черновик «на проверку маме» и не блокируем работу.</p>
+
+  <div class="principles">
+    <h3>🔒 Неприкосновенные принципы (на всех фазах)</h3>
+    <ol>
+      <li>Результат = <b>расхождение «подросток ↔ родитель»</b>, а не оценка ребёнка.</li>
+      <li><b>Конфиденциальность подростка</b>: родитель видит темы, а не дословные ответы.</li>
+      <li><b>Предохранитель безопасности</b> при сигналах риска.</li>
+      <li><b>«Уроки» = реальные кейсы-сценарии мамы</b>, а не абстрактный контент.</li>
+      <li><b>V1 — вход к живому человеку</b>, а не его замена.</li>
+      <li><b>Тепло — это функция, а не оформление</b> (отличие от холодных сайтов).</li>
+    </ol>
+  </div>
+
+  <div class="phase">
+    <span class="phase-h">Фаза 0 — Фундамент (сейчас)</span>
+    <div class="track track-a">
+      <p class="tlabel">Трек A · Продукт</p>
+      <ul>
+        <li class="done">Зафиксировать принципы и позиционирование (этот документ)</li>
+        <li>Документ «Концепт V1» (принципы + Тёплый навигатор + 8 экранов + черновик опросника)</li>
+        <li>Визуальное направление «Тёплый навигатор»</li>
+        <li>Структура 8 экранов V1</li>
+        <li>Черновик опросника по 4 шкалам: ровесники, учитель, родители, мотивация</li>
+      </ul>
+    </div>
+    <div class="track track-b">
+      <p class="tlabel">Трек B · Знания мамы (см. Батч №1 ниже)</p>
+      <ul>
+        <li>5 реальных кейсов для сценариев</li>
+        <li>Тёплые фразы / «голос» мамы для текстов</li>
+        <li>Главные признаки по 4 шкалам опросника</li>
+        <li>«Красные флаги» для предохранителя</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phase">
+    <span class="phase-h">Фаза 1 — V1 «Первая дверь» (MVP)</span>
+    <p class="phase-note">Цель: за 5–7 минут родитель и подросток проходят раздельные опросы и получают зеркало расхождений + один живой сценарий. Без логина и сложной базы.</p>
+    <div class="track track-a">
+      <p class="tlabel">Трек A · Экраны</p>
+      <ul>
+        <li><b>Экран 1.</b> Тёплый вход — «причина не всегда в математике»</li>
+        <li><b>Экран 2.</b> Выбор ситуации — как <em class="tag">гипотеза родителя</em></li>
+        <li><b>Экран 3.</b> Два взгляда + объяснение конфиденциальности</li>
+        <li><b>Экран 4.</b> Самоопрос подростка + <b>момент катарсиса</b> (свои слова + тёплый ответ)</li>
+        <li><b>Экран 5.</b> Опрос родителя</li>
+        <li><b>Экран 6.</b> Результат-зеркало — совпадения / расхождения / главная зона</li>
+        <li><b>Экран 7.</b> Один сценарий действия (что сказать / чего не говорить / шаг сегодня / когда специалист)</li>
+        <li><b>Экран 8.</b> Следующий шаг</li>
+        <li>Сквозной слой: <b>предохранитель безопасности</b> (на экране 4)</li>
+        <li>Технически: интерактивный прототип (HTML), результат хранится локально</li>
+      </ul>
+    </div>
+    <div class="track track-b">
+      <p class="tlabel">Трек B · Что нужно от мамы</p>
+      <ul>
+        <li>5 реальных сценариев (ситуация → что сказать → чего не говорить → шаг → когда специалист)</li>
+        <li>Формулировки вопросов опросника человеческим языком по 4 шкалам</li>
+        <li>Пороги тревоги: какие ответы = «красный флаг»</li>
+        <li>«Голос» мамы: реальные тёплые фразы для текстов</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phase">
+    <span class="phase-h">Фаза 2 — Углубление (после запуска V1)</span>
+    <div class="track track-a">
+      <p class="tlabel">Трек A · Продукт</p>
+      <ul>
+        <li><b>«Кабинет родителя»</b>: повторные опросы, история, динамика <em class="tag">(нужны повторные данные — после V1)</em></li>
+        <li><b>Бесплатные мини-уроки</b>: первый — математика (конёк мамы)</li>
+        <li><b>Каталог экспертов</b>: психологи и репетиторы, подбор под корень <em class="tag">(монетизация)</em></li>
+        <li><b>Платная онлайн-консультация</b> по проблеме родителя</li>
+      </ul>
+    </div>
+    <div class="track track-b">
+      <p class="tlabel">Трек B · Знания мамы</p>
+      <ul>
+        <li>Контент мини-уроков: какие темы, какой первый бесплатный урок даёт «вау»</li>
+        <li>Приёмы концентрации, мотивации, подготовки к экзаменам</li>
+        <li>Критерии подбора: какому ребёнку какой психолог/репетитор подходит</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="phase">
+    <span class="phase-h">Фаза 3 — «Мост общения» (приложение, дальняя цель)</span>
+    <p class="phase-note">Изначальная эмоциональная сердцевина идеи: ребёнок делится тем, что вживую сказать боится.</p>
+    <div class="track track-a">
+      <p class="tlabel">Трек A · Продукт</p>
+      <ul>
+        <li>Мобильное приложение: ребёнок отмечает настроение/проблему → родитель получает мягкий сигнал и подсказку</li>
+        <li>Связь с результатами V1, приватность, безопасные уведомления</li>
+      </ul>
+    </div>
+    <div class="track track-b">
+      <p class="tlabel">Трек B · Знания мамы</p>
+      <ul>
+        <li>Что снимает барьер «не решаюсь сказать вживую»</li>
+        <li>Какие сигналы родителю показывать безопасно, а какие — нет</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>♾ Постоянные дорожки (на всех фазах)</h2>
+  <div class="cross">
+    <ul>
+      <li><b>Качество и безопасность</b>: соответствие психологическим стандартам, обновление предохранителя</li>
+      <li><b>Юридическое</b>: лицензии на опросники (напр. SDQ), обработка данных несовершеннолетних, согласие родителя — <b>проверить до публичного запуска</b></li>
+      <li><b>Единый тёплый тон</b> во всех текстах</li>
+      <li><b>Bug fix</b> и итерации UX</li>
+    </ul>
+  </div>
+
+  <h2>🤝 Как мы работаем вместе</h2>
+  <ol style="padding-left:22px;">
+    <li>В задачах помечаю <b>«? вопрос маме»</b>.</li>
+    <li>Ты получаешь ответы у мамы и передаёшь их.</li>
+    <li>Строю дальше; где ответа нет — черновик «на проверку маме», без блокировки.</li>
+    <li>Roadmap живой: обновляем статусы и добавляем пункты по ходу.</li>
+  </ol>
+
+  <div class="batch">
+    <h3>❓ Батч №1 — вопросы маме (можно передать прямо сейчас)</h3>
+
+    <h4>А. Пять реальных случаев — самое важное</h4>
+    <p class="lead" style="margin:2px 0 6px;">По каждому, как мама помнит:</p>
+    <ol>
+      <li>Несправедливая оценка учителя</li>
+      <li>Ссора с одноклассником / другом</li>
+      <li>Скандал дома из-за уроков</li>
+      <li>«Я ничего не хочу» / опустились руки</li>
+      <li>Ребёнок закрылся, не рассказывает</li>
+    </ol>
+    <div class="quote">Для каждого: что происходило → что подросток говорил и чувствовал → что мама сказала и сделала → чего <b>не</b> стоило говорить → какой маленький шаг помог → чем закончилось.</div>
+
+    <h4>Б. «Голос» мамы (тон сайта)</h4>
+    <p class="lead" style="margin:2px 0 6px;">5–7 реальных фраз, которыми мама начинает разговор и снимает напряжение.</p>
+    <div class="quote">Пример из практики: «не переживай, оценка роли не играет, мы с тобой столько выучили».</div>
+
+    <h4>В. Опросник — признаки по 4 шкалам</h4>
+    <p class="lead" style="margin:2px 0 6px;">По каждой теме — 2–3 главных признака, по которым мама понимает, что «здесь болит»: <b>ровесники, учитель, родители, мотивация / состояние</b>.</p>
+
+    <h4>Г. Красные флаги</h4>
+    <p class="lead" style="margin:2px 0 6px;">По каким словам или поведению мама понимает, что случай <b>серьёзный</b> и нужен специалист или срочная помощь.</p>
+  </div>
+
+  <p class="foot">Документ живой — обновляется по ходу проекта. · «Міст для Батьків та Дітей»</p>
+
+</div>
+</body>
+</html>

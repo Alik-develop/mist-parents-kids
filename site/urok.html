@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Безкоштовний урок — Міст для Батьків та Дітей</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Безкоштовний урок — Міст для Батьків та Дітей">
+<meta property="og:description" content="Маленький приклад самостійного онлайн-уроку: коротко, дружньо, з миттєвою підказкою.">
+<meta property="og:image" content="assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .progress-wrap{display:flex; align-items:center; gap:14px; margin:0 0 18px;}
+  .progress-wrap .ptrack{flex:1; height:8px; border-radius:99px; background:var(--line2); overflow:hidden;}
+  .progress-wrap .pfill{height:100%; width:0; background:linear-gradient(90deg,var(--green2),var(--green)); transition:.4s;}
+  .scorebox{display:none; text-align:center; padding:10px 0 0;}
+  .scorebox.show{display:block;}
+  .scorebox .big{font-family:'Fraunces',serif; font-size:2.4rem; color:var(--green);}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header id="site-header"></header>
+
+<section class="wrap narrow">
+  <div class="phero">
+    <span class="eyebrow lab"><span class="ink-ic" data-icon="book"></span> демо · математика</span>
+    <h1>Безкоштовний урок</h1>
+    <p>Маленький приклад того, як виглядатиме самостійний онлайн-урок: коротко, дружньо, з миттєвою підказкою. Тема — дроби та відсотки, 6–7 клас.</p>
+  </div>
+
+  <div class="section">
+    <div class="note-box"><span class="ink-ic" data-icon="spark"></span><span>Це демо на 3 завдання. У повній версії — серія уроків, які підліток проходить сам за компʼютером, з поясненнями голосом Оксани.</span></div>
+
+    <div class="lesson">
+      <div class="progress-wrap"><span class="lab" style="color:var(--green)">Прогрес</span><div class="ptrack"><div class="pfill" id="pfill"></div></div><span id="pnum" class="muted" style="font-weight:800">0 / 3</span></div>
+
+      <div class="problem" data-correct="1">
+        <div class="pq">1. Скільки це: <b>1/2 від 80</b>?</div>
+        <div class="opts">
+          <button class="opt" onclick="answer(this,0)">20</button>
+          <button class="opt" onclick="answer(this,1)">40</button>
+          <button class="opt" onclick="answer(this,0)">60</button>
+        </div>
+        <div class="fb"></div>
+      </div>
+
+      <div class="problem" data-correct="2">
+        <div class="pq">2. <b>25%</b> від 200 — це…</div>
+        <div class="opts">
+          <button class="opt" onclick="answer(this,0)">25</button>
+          <button class="opt" onclick="answer(this,0)">75</button>
+          <button class="opt" onclick="answer(this,1)">50</button>
+        </div>
+        <div class="fb"></div>
+      </div>
+
+      <div class="problem" data-correct="0">
+        <div class="pq">3. Що більше: <b>3/4</b> чи <b>2/3</b>?</div>
+        <div class="opts">
+          <button class="opt" onclick="answer(this,1)">3/4</button>
+          <button class="opt" onclick="answer(this,0)">2/3</button>
+          <button class="opt" onclick="answer(this,0)">вони рівні</button>
+        </div>
+        <div class="fb"></div>
+      </div>
+
+      <div class="scorebox" id="scorebox">
+        <div class="big" id="scoreval">3 / 3</div>
+        <p class="muted" id="scoremsg">Чудово! Саме так і виглядає маленька перемога, яка повертає віру в себе.</p>
+        <div class="pill-row" style="justify-content:center; margin-top:10px">
+          <a class="btn btn-green" href="pro-oksanu.html">Заняття з Оксаною <span data-icon="step"></span></a>
+          <a class="btn btn-soft" href="opytuvannya.html">Пройти тест <span data-icon="step"></span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="spacer-lg"></div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="assets/app.js"></script>
+<script>
+  Site.init('home');
+  var total = document.querySelectorAll('.problem').length;
+  var done = 0, correct = 0;
+
+  function answer(btn, isRight){
+    var prob = btn.closest('.problem');
+    if(prob.dataset.answered) return;
+    prob.dataset.answered = '1';
+    var fb = prob.querySelector('.fb');
+    if(isRight){
+      btn.classList.add('right'); correct++;
+      fb.textContent = 'Правильно! Так і є.'; fb.style.color = 'var(--green)';
+    } else {
+      btn.classList.add('wrong');
+      // підсвітити правильний
+      var opts = prob.querySelectorAll('.opt');
+      opts.forEach(function(o){ if(o.getAttribute('onclick').indexOf(',1)')>-1) o.classList.add('right'); });
+      fb.textContent = 'Майже! Подивись на правильну відповідь — наступного разу вийде.'; fb.style.color = 'var(--clay)';
+    }
+    fb.classList.add('show');
+    done++;
+    var pct = Math.round(done/total*100);
+    document.getElementById('pfill').style.width = pct+'%';
+    document.getElementById('pnum').textContent = done+' / '+total;
+    if(done===total) finish();
+  }
+  function finish(){
+    var box = document.getElementById('scorebox'); box.classList.add('show');
+    document.getElementById('scoreval').textContent = correct+' / '+total;
+    var msg = correct===total ? 'Чудово! Саме так і виглядає маленька перемога, яка повертає віру в себе.'
+      : correct>=2 ? 'Гарно! Ще трохи практики — і буде впевнено.'
+      : 'Це нормально — з цього й починається навчання. Головне, що ти спробував.';
+    document.getElementById('scoremsg').textContent = msg;
+    box.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  window.answer = answer;
+</script>
+</body>
+</html>

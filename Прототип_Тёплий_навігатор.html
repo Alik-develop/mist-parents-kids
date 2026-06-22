@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Міст для Батьків та Дітей — прототип V1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1E7D4; --paper:#FBF4E6; --paper2:#F5EAD6; --ink:#34302A; --muted:#857B6B; --soft:#A89C88;
+    --line:#E7DBC2; --line2:#EFE6D2;
+    --green:#3F6B4F; --green2:#6E9A77; --green-bg:#E5EDDC;
+    --clay:#C26A43; --clay2:#DA8A60; --clay-bg:#F6E3D3;
+    --ochre:#C39A3D; --ochre-bg:#F3E8C8;
+    --rose:#D08A72;
+    --sh:0 18px 44px rgba(108,72,30,.14); --sh-s:0 8px 22px rgba(108,72,30,.10);
+    --r:22px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Nunito Sans',-apple-system,'Segoe UI',Roboto,sans-serif;
+    color:var(--ink); line-height:1.58; font-size:17px;
+    background:
+      radial-gradient(1200px 760px at 86% -10%, #F7E2C8 0%, rgba(247,226,200,0) 58%),
+      radial-gradient(900px 760px at -8% 8%, #E6EDDB 0%, rgba(230,237,219,0) 52%),
+      linear-gradient(180deg,#F4EAD9 0%, #EFE3CD 100%);
+    background-attachment:fixed; min-height:100vh;
+  }
+  .grain{position:fixed; inset:0; pointer-events:none; z-index:1; opacity:.05; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif; font-weight:600; letter-spacing:-.4px;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px; position:relative; z-index:2;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+  .lab{font-size:.74rem; font-weight:800; letter-spacing:1.4px; text-transform:uppercase;}
+
+  [data-icon] svg{display:block;}
+  .ink-ic{width:16px; height:16px; display:inline-flex; vertical-align:-3px; color:var(--green);}
+  .ink-ic svg{width:16px; height:16px;}
+
+  /* header */
+  header{position:sticky; top:0; z-index:30;
+    background:linear-gradient(180deg, rgba(244,234,217,.96), rgba(244,234,217,.74)); backdrop-filter:blur(6px);}
+  .nav{display:flex; align-items:center; gap:30px; padding:15px 0;}
+  .logo{display:flex; align-items:center; gap:13px; cursor:pointer;}
+  .logo .mark{width:48px; height:48px; flex:0 0 auto;}
+  .logo .wm{font-family:'Fraunces',serif; font-weight:700; font-size:1.34rem; color:#2f4a39; line-height:1;}
+  .logo .tg{display:block; font-size:.7rem; letter-spacing:2.2px; text-transform:uppercase; color:var(--clay); font-weight:800; margin-top:3px;}
+  .nav .links{display:flex; gap:24px; margin-left:8px;}
+  .nav .links a{font-size:.96rem; color:#5b5246; font-weight:700; text-decoration:none; opacity:.92; cursor:pointer;}
+  .nav .links a:hover{color:var(--green);}
+  .nav .right{margin-left:auto; display:flex; gap:12px; align-items:center;}
+  .btn{border-radius:13px; font-weight:800; padding:12px 20px; font-size:.96rem; transition:.16s; display:inline-flex; align-items:center; gap:9px; white-space:nowrap;}
+  .btn svg{width:18px; height:18px;}
+  .btn-ghost{background:transparent; border:1.6px solid #d9cbab; color:#4d4438;}
+  .btn-ghost:hover{border-color:var(--green); color:var(--green);}
+  .btn-primary{background:var(--clay); color:#fff; box-shadow:0 10px 20px rgba(194,106,67,.26);}
+  .btn-primary:hover{background:#b25e39;}
+  .btn-green{background:var(--green); color:#fff; box-shadow:0 10px 20px rgba(63,107,79,.24);}
+  .btn-green:hover{background:#345c43;}
+  .btn-soft{background:var(--paper); border:1.6px solid var(--line); color:#4d4438;}
+  .btn-soft:hover{border-color:var(--green); color:var(--green);}
+  .btn[disabled]{opacity:.4; cursor:not-allowed; box-shadow:none;}
+
+  .screen{display:none;}
+  .screen.active{display:block; animation:fade .45s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
+
+  /* hero */
+  .hero{display:grid; grid-template-columns:1.02fr .98fr; gap:50px; align-items:center; padding:54px 0 30px;}
+  .eyebrow{display:inline-flex; align-items:center; gap:8px; color:var(--green); background:var(--green-bg);
+    border:1px solid #cfe0c4; padding:6px 13px; border-radius:999px; margin-bottom:20px;}
+  .hero h1{font-size:3.3rem; line-height:1.04; margin:0 0 20px; color:#2f4a39; font-weight:600;}
+  .hero h1 .u{position:relative; white-space:nowrap; color:var(--clay);}
+  .hero h1 .u svg{position:absolute; left:0; right:0; bottom:-12px; width:100%; height:14px;}
+  .lead{font-size:1.18rem; color:#5d5446; max-width:31em; margin:0 0 26px;}
+  .props{list-style:none; padding:0; margin:0 0 30px; display:grid; gap:14px;}
+  .props li{display:flex; align-items:center; gap:13px; font-weight:700; color:#4a4135; font-size:1.04rem;}
+  .props .ic{width:38px; height:38px; border-radius:12px; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .props .ic svg{width:20px; height:20px;}
+  .cta-row{display:flex; align-items:center; gap:20px; flex-wrap:wrap;}
+  .cta-row .btn{padding:16px 30px; font-size:1.06rem; border-radius:15px;}
+  .note{display:flex; align-items:center; gap:8px; color:var(--muted); font-size:.9rem; font-weight:700;}
+
+  .illu{position:relative;}
+  .frame{border-radius:28px; overflow:hidden; box-shadow:var(--sh); border:1px solid #ead9bb; background:#F3E3C6;}
+  .frame svg{display:block; width:100%; height:auto;}
+  .badge{position:absolute; bottom:-16px; left:24px; background:var(--paper); border:1px solid var(--line);
+    border-radius:14px; box-shadow:var(--sh-s); padding:10px 15px; display:flex; align-items:center; gap:10px; font-weight:800; font-size:.92rem;}
+  .badge .bi{width:30px; height:30px; border-radius:9px; background:var(--ochre-bg); color:var(--ochre); display:flex; align-items:center; justify-content:center;}
+  .badge .bi svg{width:18px; height:18px;}
+
+  /* tiles */
+  .tiles{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin:54px 0 70px;}
+  .tile{background:var(--paper); border:1px solid var(--line); border-radius:var(--r); padding:26px; box-shadow:var(--sh-s); transition:.2s;}
+  .tile:hover{transform:translateY(-4px); box-shadow:var(--sh);}
+  .tile .tic{width:54px; height:54px; border-radius:16px; display:flex; align-items:center; justify-content:center; margin-bottom:15px;}
+  .tile .tic svg{width:26px; height:26px;}
+  .tile h3{font-size:1.2rem; margin:0 0 7px; color:#2f4a39;}
+  .tile p{margin:0 0 14px; color:#6b6253; font-size:.98rem;}
+  .tile .lnk{color:var(--green); font-weight:800; font-size:.94rem; display:inline-flex; gap:7px; align-items:center; cursor:pointer;}
+  .tile .lnk svg{width:16px; height:16px;}
+
+  /* flow */
+  .flow{min-height:80vh; display:flex; align-items:center; justify-content:center; padding:44px 0 74px;}
+  .panel{width:100%; max-width:700px; background:var(--paper); border:1px solid var(--line);
+    border-radius:30px; box-shadow:var(--sh); padding:38px 40px 32px;}
+  .prog{display:flex; align-items:center; gap:14px; margin-bottom:22px;}
+  .prog .lbl{font-weight:800; font-size:.8rem; color:var(--green); white-space:nowrap; letter-spacing:.5px;}
+  .prog .bars{display:flex; gap:7px; flex:1;}
+  .prog .bars i{height:7px; border-radius:99px; background:var(--line); flex:1; transition:.35s;}
+  .prog .bars i.on{background:var(--green);}
+  .panel h2{font-size:1.95rem; margin:0 0 6px; color:#2f4a39;}
+  .panel .sub{color:#6b6253; margin:0 0 24px; font-size:1.04rem;}
+  .who{display:inline-flex; align-items:center; gap:8px; font-weight:800; font-size:.78rem; letter-spacing:.4px; text-transform:uppercase;
+    padding:5px 12px; border-radius:999px; margin-bottom:14px;}
+  .who-parent{background:var(--clay-bg); color:#9a4f2e; border:1px solid #ecccb6;}
+  .who-teen{background:var(--green-bg); color:#33503a; border:1px solid #cfe0c4;}
+  .who svg{width:15px; height:15px;}
+
+  .choices{display:grid; gap:12px; margin-bottom:22px;}
+  .choice{display:flex; align-items:center; gap:15px; padding:15px 17px; border-radius:16px;
+    border:1.6px solid var(--line); background:var(--paper2); text-align:left; transition:.15s; width:100%;}
+  .choice:hover{border-color:var(--green2); background:#fff;}
+  .choice .ci{width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; background:#fff; color:var(--green);}
+  .choice .ci svg{width:22px; height:22px;}
+  .choice .ctxt{font-weight:700; color:#463f34; font-size:1.03rem;}
+  .choice .ck{margin-left:auto; width:24px; height:24px; border-radius:8px; border:2px solid #d8c9af; flex:0 0 auto; display:flex; align-items:center; justify-content:center;}
+  .choice.sel{border-color:var(--green); background:var(--green-bg);}
+  .choice.sel .ci{background:var(--green); color:#fff;}
+  .choice.sel .ck{background:var(--green); border-color:var(--green);}
+  .choice .ck svg{width:13px; height:13px; color:#fff; opacity:0;}
+  .choice.sel .ck svg{opacity:1;}
+
+  /* two views intro / handoff */
+  .twogrid{display:grid; grid-template-columns:1fr 1fr; gap:15px; margin:6px 0 4px;}
+  .vcard{padding:20px 18px; border-radius:18px; border:1.6px solid var(--line); background:var(--paper2); text-align:center;}
+  .vcard .rc{width:52px; height:52px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center;}
+  .vcard .rc svg{width:26px; height:26px;}
+  .vcard.parent .rc{background:var(--clay-bg); color:var(--clay);}
+  .vcard.teen .rc{background:var(--green-bg); color:var(--green);}
+  .vcard b{display:block; font-size:1.1rem; margin:0 0 3px; color:#2f4a39; font-family:'Fraunces',serif;}
+  .vcard span{color:#6b6253; font-size:.9rem;}
+  .handoff{text-align:center; padding:8px 0 4px;}
+  .handoff .big{width:96px; height:96px; border-radius:28px; margin:6px auto 18px; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center;}
+  .handoff .big svg{width:48px; height:48px;}
+
+  .q{margin-bottom:20px;}
+  .q p{font-weight:800; margin:0 0 10px; color:#3f382e;}
+  .opts{display:flex; flex-wrap:wrap; gap:9px;}
+  .opt{padding:9px 16px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper2); font-weight:700; font-size:.93rem; color:#5b5246; transition:.12s;}
+  .opt:hover{border-color:var(--green2);}
+  .opt.sel{background:var(--green); color:#fff; border-color:var(--green);}
+
+  textarea{width:100%; min-height:122px; border-radius:16px; border:1.6px solid var(--line);
+    background:var(--paper2); padding:15px 17px; font-family:inherit; font-size:1rem; color:var(--ink); resize:vertical;}
+  textarea:focus{outline:none; border-color:var(--green); background:#fff;}
+
+  .reassure{background:var(--green-bg); border:1px solid #cfe0c4; border-radius:14px; padding:13px 16px; margin:0 0 16px; color:#33503a; font-size:.96rem; display:flex; gap:11px; align-items:flex-start;}
+  .reassure .ink-ic{color:var(--green); margin-top:2px;}
+  .privacy{display:flex; align-items:center; gap:9px; color:var(--muted); font-size:.87rem; font-weight:700; margin-top:14px;}
+  .privacy .ink-ic{color:var(--soft);}
+  .flow-actions{display:flex; align-items:center; justify-content:space-between; margin-top:24px; gap:12px;}
+  .back{color:var(--muted); font-weight:800; font-size:.94rem; cursor:pointer;}
+  .back:hover{color:var(--ink);}
+
+  /* result */
+  .result{padding:44px 0 74px; min-height:80vh;}
+  .rwrap{max-width:760px; margin:0 auto;}
+  .rhead{text-align:center; margin-bottom:26px;}
+  .rhead h2{font-size:2.15rem; margin:8px 0 4px; color:#2f4a39;}
+  .rhead p{color:#6b6253; margin:0;}
+  .zone{background:linear-gradient(135deg,var(--green-bg),#eef3e6); border:1px solid #cfe0c4; border-radius:var(--r); padding:20px 24px; margin-bottom:16px;}
+  .zone .lab{color:var(--green);}
+  .zone .v{font-family:'Fraunces',serif; font-size:1.55rem; color:#2f4a39; margin:4px 0 0;}
+  .mirror{background:var(--paper); border:1px solid var(--line); border-left:5px solid var(--ochre); border-radius:16px; padding:17px 21px; margin-bottom:16px; font-size:1.07rem; color:#4d4438;}
+
+  /* two-views comparison */
+  .views{background:var(--paper); border:1px solid var(--line); border-radius:var(--r); padding:20px 24px 22px; margin-bottom:16px; box-shadow:var(--sh-s);}
+  .views .vh{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px;}
+  .views .vh b{font-family:'Fraunces',serif; font-size:1.12rem; color:#2f4a39;}
+  .vleg{display:flex; gap:16px; font-size:.84rem; font-weight:700; color:#6b6253;}
+  .vleg .dot{display:inline-flex; align-items:center; gap:6px;}
+  .vleg .d{width:14px; height:14px; border-radius:50%; display:inline-block;}
+  .d-par{background:var(--clay);} .d-teen{background:var(--green);}
+  .vrow{display:grid; grid-template-columns:140px 1fr; align-items:center; gap:14px; padding:9px 0; border-top:1px solid var(--line2);}
+  .vrow:first-child{border-top:none;}
+  .vlab{font-weight:800; font-size:.95rem; color:#4d4438;}
+  .vtrack{position:relative; height:12px; border-radius:99px; background:var(--line2); border:1px solid var(--line);}
+  .vmark{position:absolute; top:50%; width:22px; height:22px; border-radius:50%; transform:translate(-50%,-50%);
+    color:#fff; font-size:.66rem; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,.18); transition:left .5s;}
+  .vmark.vpar{background:var(--clay); border:2px solid #fff;}
+  .vmark.vteen{background:var(--green); border:2px solid #fff;}
+  .vrow.gap .vlab::after{content:'розходження'; display:block; font-size:.68rem; font-weight:800; letter-spacing:.4px; text-transform:uppercase; color:var(--clay); margin-top:2px;}
+
+  .scenario{background:var(--paper); border:1px solid var(--line); border-radius:var(--r); padding:24px 26px; box-shadow:var(--sh-s); margin-bottom:16px;}
+  .scenario h3{margin:0 0 4px; font-size:1.32rem; color:#2f4a39; display:flex; align-items:center; gap:11px;}
+  .scenario h3 .hic{width:34px;height:34px;border-radius:10px;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;}
+  .scenario h3 .hic svg{width:20px;height:20px;}
+  .scenario .scase{color:var(--muted); font-size:.86rem; font-weight:700; margin:0 0 14px 45px;}
+  .srow{display:flex; gap:14px; padding:13px 0; border-top:1px solid var(--line2);}
+  .srow:first-of-type{border-top:none;}
+  .srow .si{width:30px;height:30px;border-radius:9px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+  .srow .si svg{width:18px;height:18px;}
+  .srow .sc .t{font-weight:800; font-size:.74rem; text-transform:uppercase; letter-spacing:.6px; margin-bottom:2px;}
+  .srow .sc .c{color:#4d4438;}
+  .si-say{background:var(--green-bg);color:var(--green);} .t-say{color:var(--green);}
+  .si-dont{background:var(--clay-bg);color:var(--clay);} .t-dont{color:var(--clay);}
+  .si-step{background:var(--ochre-bg);color:var(--ochre);} .t-step{color:#9a7d2a;}
+  .si-spec{background:#E7ECF6;color:#5B7BB0;} .t-spec{color:#5B7BB0;}
+
+  /* предохранитель */
+  .risk{background:linear-gradient(135deg,#F6E3D3,#F3D9C4); border:1px solid #e6b79a; border-radius:var(--r); padding:22px 24px; margin-bottom:18px;}
+  .risk h3{margin:0 0 8px; font-size:1.24rem; color:#8a4a30; display:flex; align-items:center; gap:11px;}
+  .risk h3 .hic{width:34px;height:34px;border-radius:10px;background:#fff;color:var(--clay);display:flex;align-items:center;justify-content:center;}
+  .risk p{margin:0 0 14px; color:#7a4129;}
+  .risk .rbtns{display:flex; gap:12px; flex-wrap:wrap;}
+
+  .safety{background:var(--clay-bg); border:1px solid #ecccb6; border-radius:16px; padding:15px 18px; margin-bottom:20px; color:#8a4a30; font-weight:700; display:flex; gap:11px; align-items:flex-start;}
+  .safety .ink-ic{color:var(--clay); margin-top:2px;}
+  .next{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px;}
+  .next .btn{justify-content:center;}
+  .restart{text-align:center;}
+
+  footer{padding:30px 0 46px; text-align:center; color:var(--soft); font-size:.9rem; position:relative; z-index:2;}
+
+  /* toast */
+  .toast{position:fixed; left:50%; bottom:28px; translate:-50% 8px;
+    background:#2f4a39; color:#fff; font-weight:700; font-size:.95rem; padding:13px 20px; border-radius:14px;
+    box-shadow:0 14px 30px rgba(47,74,57,.32); z-index:60; opacity:0; pointer-events:none; transition:.25s; max-width:88vw; text-align:center;}
+  .toast.show{opacity:1; translate:-50% -8px;}
+
+  /* друк плану (PDF) */
+  @media print{
+    body{background:#fff !important;}
+    .grain, header, footer, .next, .restart, .risk .rbtns, .safety{display:none !important;}
+    .result{padding:0 !important;}
+    .zone, .mirror, .views, .scenario, .risk{box-shadow:none !important; break-inside:avoid;}
+    .rhead h2{font-size:1.7rem;}
+  }
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr; gap:30px; padding-top:34px;}
+    .hero h1{font-size:2.6rem;}
+    .illu{order:-1;}
+    .tiles{grid-template-columns:1fr;}
+    .nav .links{display:none;}
+    .next{grid-template-columns:1fr;}
+    .panel{padding:28px 22px;}
+    .srow{align-items:flex-start;}
+    .twogrid{grid-template-columns:1fr;}
+    .vrow{grid-template-columns:104px 1fr; gap:10px;}
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo" onclick="go('landing')">
+      <svg class="mark" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1.5" y="1.5" width="53" height="53" rx="16" fill="#E5EDDC" stroke="#CFE0C4"/>
+        <path d="M9 36c8.5 0 8.5-13 19-13s10.5 13 19 13" stroke="#3F6B4F" stroke-width="3" stroke-linecap="round"/>
+        <path d="M9 36v8M47 36v8M20 28v16M36 28v16M28 24.5v19.5" stroke="#3F6B4F" stroke-width="3" stroke-linecap="round"/>
+        <path d="M9 44h38" stroke="#C26A43" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="28" cy="15" r="4" fill="#C26A43"/>
+      </svg>
+      <div><span class="wm">Міст</span><span class="tg">для батьків та дітей</span></div>
+    </div>
+    <div class="links">
+      <a onclick="go('landing')">Як ми допомагаємо</a>
+      <a onclick="go('landing')">Для батьків</a>
+      <a onclick="go('landing')">Експерти</a>
+      <a onclick="go('landing')">Про проєкт</a>
+    </div>
+    <div class="right">
+      <button class="btn btn-ghost">Увійти</button>
+      <button class="btn btn-primary" onclick="startFlow()">Почати</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ LANDING ============ -->
+<section id="landing" class="screen active">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <span class="eyebrow lab"><span class="ink-ic" data-icon="home" style="color:var(--green)"></span> теплий простір для родини</span>
+        <h1>Підтримка, яка<br>допомагає <span class="u">рости<svg viewBox="0 0 200 14" preserveAspectRatio="none"><path d="M3 9C40 3 150 2 197 7" stroke="#E0A36A" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span></h1>
+        <p class="lead">Допомагаємо зрозуміти, що насправді стоїть за оцінками, настроєм чи мовчанням підлітка — і зробити перший спокійний крок разом. По-домашньому, без оцінювання й тиску.</p>
+        <ul class="props">
+          <li><span class="ic" data-icon="leaf"></span> Живий досвід практика, а не сухі тести</li>
+          <li><span class="ic" data-icon="shield"></span> Безпечно та конфіденційно</li>
+          <li><span class="ic" data-icon="home"></span> Тепло, як розмова на кухні</li>
+        </ul>
+        <div class="cta-row">
+          <button class="btn btn-primary" onclick="startFlow()">Почати безкоштовно <span data-icon="step"></span></button>
+          <span class="note"><span class="ink-ic" data-icon="lock" style="color:var(--soft)"></span> Безкоштовно та конфіденційно</span>
+        </div>
+      </div>
+
+      <div class="illu">
+        <div class="frame">
+          <svg viewBox="0 0 560 470" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5E7CC"/><stop offset="1" stop-color="#EFDFC0"/></linearGradient>
+              <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBE6C8"/><stop offset="1" stop-color="#F6D6AE"/></linearGradient>
+              <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9D6B2"/><stop offset="1" stop-color="#E2CCA4"/></linearGradient>
+            </defs>
+            <rect width="560" height="470" fill="url(#wall)"/>
+            <rect x="0" y="330" width="560" height="140" fill="url(#floor)"/>
+            <rect x="312" y="44" width="206" height="180" rx="14" fill="url(#sky)" stroke="#D9B98A" stroke-width="3"/>
+            <circle cx="468" cy="96" r="26" fill="#F2C56A"/><circle cx="468" cy="96" r="38" fill="#F2C56A" opacity=".25"/>
+            <path d="M415 44v180M312 132h206" stroke="#D9B98A" stroke-width="3"/>
+            <path d="M312 44c10 60 0 120 12 180-22 2-28-6-28-6V50c0-4 4-6 16-6z" fill="#C9744F" opacity=".9"/>
+            <path d="M506 44c-8 60 2 120-10 180 20 2 28-6 28-6V50c0-4-4-6-18-6z" fill="#C9744F" opacity=".9"/>
+            <ellipse cx="270" cy="430" rx="210" ry="30" fill="#D98C72" opacity=".5"/>
+            <g>
+              <path d="M96 360c-2-40-18-58-44-66 22-16 44-2 50 30M96 360c0-44 12-66 40-78-8 26-22 44-40 60M96 360c4-34 24-52 52-54-10 22-30 36-52 46" fill="#5E8C66" stroke="#3F6B4F" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M70 360h54l-8 40H78z" fill="#C26A43"/><path d="M68 356h58v8H68z" fill="#D98456"/>
+            </g>
+            <g>
+              <ellipse cx="330" cy="416" rx="150" ry="22" fill="#9c6b3f" opacity=".18"/>
+              <rect x="250" y="250" width="170" height="120" rx="34" fill="#CE7C53"/>
+              <rect x="262" y="300" width="146" height="86" rx="26" fill="#D98C5F"/>
+              <rect x="236" y="296" width="40" height="92" rx="20" fill="#C26A43"/>
+              <rect x="394" y="296" width="40" height="92" rx="20" fill="#C26A43"/>
+              <rect x="288" y="312" width="94" height="64" rx="18" fill="#F0DFBD"/>
+              <rect x="262" y="372" width="22" height="46" rx="8" fill="#9C5C36"/>
+              <rect x="386" y="372" width="22" height="46" rx="8" fill="#9C5C36"/>
+            </g>
+            <g>
+              <rect x="120" y="408" width="14" height="40" rx="5" fill="#9C5C36"/><rect x="186" y="408" width="14" height="40" rx="5" fill="#9C5C36"/>
+              <rect x="104" y="392" width="112" height="18" rx="7" fill="#B07A47"/>
+              <rect x="116" y="360" width="74" height="12" rx="3" fill="#5E8C66"/>
+              <rect x="122" y="348" width="68" height="12" rx="3" fill="#C9974A"/>
+              <rect x="118" y="336" width="60" height="12" rx="3" fill="#C26A43"/>
+              <rect x="150" y="350" width="30" height="26" rx="6" fill="#F0DFBD" transform="translate(40,-2)"/>
+              <path d="M222 356c10 0 10 14 0 14" fill="none" stroke="#E0CDA6" stroke-width="4"/>
+              <path d="M200 344c-3-5 3-9 0-14M210 344c-3-5 3-9 0-14" stroke="#CBB799" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".8"/>
+              <g transform="translate(108,300)">
+                <rect x="0" y="0" width="64" height="56" rx="8" fill="#FBF4E6" stroke="#C9974A" stroke-width="3"/>
+                <circle cx="24" cy="26" r="8" fill="#3F6B4F"/><path d="M14 46c0-7 4-12 10-12s10 5 10 12z" fill="#3F6B4F"/>
+                <circle cx="44" cy="32" r="6" fill="#C26A43"/><path d="M36 46c0-5 3-9 8-9s8 4 8 9z" fill="#C26A43"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="badge"><span class="bi" data-icon="clock"></span> Перший крок — лише 5 хвилин</div>
+      </div>
+    </div>
+
+    <div class="tiles">
+      <div class="tile">
+        <div class="tic" style="background:var(--green-bg); color:var(--green)" data-icon="book"></div>
+        <h3>Безкоштовний урок</h3>
+        <p>Спробуйте онлайн-урок з математики з нашим викладачем і оцініть результат.</p>
+        <span class="lnk" onclick="startFlow()">Спробувати <span data-icon="step"></span></span>
+      </div>
+      <div class="tile">
+        <div class="tic" style="background:var(--clay-bg); color:var(--clay)" data-icon="chat"></div>
+        <h3>Поради батькам</h3>
+        <p>Живі поради педагога-практика для щоденної теплої підтримки.</p>
+        <span class="lnk" onclick="startFlow()">Читати <span data-icon="step"></span></span>
+      </div>
+      <div class="tile">
+        <div class="tic" style="background:var(--ochre-bg); color:var(--ochre)" data-icon="users"></div>
+        <h3>Підбір експерта</h3>
+        <p>Репетитори, психологи та коучі, яким довіряють батьки.</p>
+        <span class="lnk" onclick="startFlow()">Знайти <span data-icon="step"></span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FLOW ============ -->
+<section id="flow" class="screen">
+  <div class="wrap flow">
+    <div class="panel">
+
+      <!-- STEP 1: концерн родителя (гипотеза) -->
+      <div class="step" data-step="1">
+        <div class="prog"><span class="lbl" data-prog>КРОК 1 з 6</span><div class="bars" data-bars></div></div>
+        <span class="who who-parent"><span data-icon="home"></span> Питання до батьків</span>
+        <h2>Що вас зараз найбільше турбує?</h2>
+        <p class="sub">Оберіть до 2 — це лише ваше припущення. Далі ми порівняємо його з тим, що відчуває дитина.</p>
+        <div class="choices" id="concerns">
+          <button class="choice" data-key="attention" onclick="toggleConcern(this)"><span class="ci" data-icon="target"></span><span class="ctxt">Проблеми з увагою та концентрацією</span><span class="ck" data-icon="check"></span></button>
+          <button class="choice" data-key="motivation" onclick="toggleConcern(this)"><span class="ci" data-icon="spark"></span><span class="ctxt">Немає мотивації до навчання</span><span class="ck" data-icon="check"></span></button>
+          <button class="choice" data-key="grades" onclick="toggleConcern(this)"><span class="ci" data-icon="chartdown"></span><span class="ctxt">Оцінки погіршились</span><span class="ck" data-icon="check"></span></button>
+          <button class="choice" data-key="mood" onclick="toggleConcern(this)"><span class="ci" data-icon="cloud"></span><span class="ctxt">Перепади настрою, тривожність</span><span class="ck" data-icon="check"></span></button>
+          <button class="choice" data-key="communication" onclick="toggleConcern(this)"><span class="ci" data-icon="chat"></span><span class="ctxt">Складно спілкуватися з дитиною</span><span class="ck" data-icon="check"></span></button>
+          <button class="choice" data-key="conflict" onclick="toggleConcern(this)"><span class="ci" data-icon="bolt"></span><span class="ctxt">Конфлікти через уроки</span><span class="ck" data-icon="check"></span></button>
+        </div>
+        <div class="privacy"><span class="ink-ic" data-icon="shield"></span> Це ваша гіпотеза. Часто справжня причина — не там, де здається.</div>
+        <div class="flow-actions">
+          <span class="back" onclick="go('landing')">← На головну</span>
+          <button class="btn btn-green" id="next1" disabled onclick="setStep(2)">Далі <span data-icon="step"></span></button>
+        </div>
+      </div>
+
+      <!-- STEP 2: два взгляда + конфиденциальность -->
+      <div class="step" data-step="2" style="display:none">
+        <div class="prog"><span class="lbl" data-prog>КРОК 2 з 6</span><div class="bars" data-bars></div></div>
+        <h2>Подивимось на ситуацію з двох боків</h2>
+        <p class="sub">Найчесніша картина виходить, коли батьки й підліток відповідають окремо. Спершу — кілька питань вам, потім ви передасте пристрій дитині.</p>
+        <div class="twogrid">
+          <div class="vcard parent"><span class="rc" data-icon="home"></span><b>Спочатку батьки</b><span>як ви бачите ситуацію</span></div>
+          <div class="vcard teen"><span class="rc" data-icon="spark"></span><b>Потім підліток</b><span>про себе, наодинці</span></div>
+        </div>
+        <div class="reassure" style="margin-top:18px"><span class="ink-ic" data-icon="lock"></span><span>Відповіді підлітка конфіденційні: ви побачите теми, де дитині потрібна підтримка, але не дослівні відповіді. Це робить дитину чеснішою — і захищає довіру.</span></div>
+        <div class="flow-actions">
+          <span class="back" onclick="setStep(1)">← Назад</span>
+          <button class="btn btn-green" onclick="setStep(3)">Почати з питань батькам <span data-icon="step"></span></button>
+        </div>
+      </div>
+
+      <!-- STEP 3: опрос родителя -->
+      <div class="step" data-step="3" style="display:none">
+        <div class="prog"><span class="lbl" data-prog>КРОК 3 з 6</span><div class="bars" data-bars></div></div>
+        <span class="who who-parent"><span data-icon="home"></span> Погляд батьків</span>
+        <h2>Кілька коротких питань</h2>
+        <p class="sub">Без правильних і неправильних відповідей — як ви це бачите зараз.</p>
+        <div id="parentQ"></div>
+        <div class="flow-actions">
+          <span class="back" onclick="setStep(2)">← Назад</span>
+          <button class="btn btn-green" id="nextP" disabled onclick="setStep(4)">Далі <span data-icon="step"></span></button>
+        </div>
+      </div>
+
+      <!-- STEP 4: передача устройства -->
+      <div class="step" data-step="4" style="display:none">
+        <div class="prog"><span class="lbl" data-prog>КРОК 4 з 6</span><div class="bars" data-bars></div></div>
+        <div class="handoff">
+          <div class="big" data-icon="handheart"></div>
+          <h2>Дякуємо. Тепер — черга дитини</h2>
+          <p class="sub" style="max-width:30em; margin:0 auto 20px">Передайте, будь ласка, пристрій підлітку й дайте відповісти наодинці. Так відповіді будуть чеснішими.</p>
+          <div class="reassure" style="text-align:left"><span class="ink-ic" data-icon="lock"></span><span><b>Якщо ти підліток і читаєш це</b> — далі кілька питань про тебе. Тут немає правильних відповідей, і батьки не побачать твої слова дослівно. Можна бути чесним.</span></div>
+        </div>
+        <div class="flow-actions">
+          <span class="back" onclick="setStep(3)">← Назад</span>
+          <button class="btn btn-primary" onclick="setStep(5)">Я — підліток, продовжити <span data-icon="step"></span></button>
+        </div>
+      </div>
+
+      <!-- STEP 5: опрос подростка -->
+      <div class="step" data-step="5" style="display:none">
+        <div class="prog"><span class="lbl" data-prog>КРОК 5 з 6</span><div class="bars" data-bars></div></div>
+        <span class="who who-teen"><span data-icon="spark"></span> Це про тебе</span>
+        <h2>Кілька питань про тебе</h2>
+        <p class="sub">Як є — так і добре. Ніхто не оцінює.</p>
+        <div id="teenQ"></div>
+        <div class="flow-actions">
+          <span class="back" onclick="setStep(4)">← Назад</span>
+          <button class="btn btn-green" id="nextT" disabled onclick="setStep(6)">Далі <span data-icon="step"></span></button>
+        </div>
+      </div>
+
+      <!-- STEP 6: катарсис подростка -->
+      <div class="step" data-step="6" style="display:none">
+        <div class="prog"><span class="lbl" data-prog>КРОК 6 з 6</span><div class="bars" data-bars></div></div>
+        <span class="who who-teen"><span data-icon="spark"></span> Це про тебе</span>
+        <h2>Хочеш — розкажи, що відбувається</h2>
+        <p class="sub">Своїми словами. Тільки якщо хочеш — можна й пропустити.</p>
+        <div class="reassure"><span class="ink-ic" data-icon="shield"></span><span>Дякую, що ділишся. Тут можна написати будь-що — батьки не побачать це дослівно, лише теми, де тобі потрібна підтримка.</span></div>
+        <textarea id="words" placeholder="Можна почати з „Найбільше мене зараз…“"></textarea>
+        <div class="flow-actions">
+          <span class="back" onclick="setStep(5)">← Назад</span>
+          <button class="btn btn-primary" onclick="buildResult()">Подивитись результат <span data-icon="step"></span></button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ RESULT ============ -->
+<section id="result" class="screen">
+  <div class="wrap result">
+    <div class="rwrap">
+      <div class="rhead">
+        <h2>Ось що ми побачили</h2>
+        <p>Це не діагноз, а тепле дзеркало двох поглядів — і перший крок.</p>
+      </div>
+
+      <!-- предохранитель (показывается только при риске) -->
+      <div class="risk" id="r-risk" style="display:none">
+        <h3><span class="hic" data-icon="handheart"></span> Здається, зараз непросто</h3>
+        <p id="r-risk-text">У відповідях дитини є сигнали, з якими краще не залишатися наодинці. Це не діагноз — але саме той випадок, коли поряд має бути жива людина, якій можна довіряти.</p>
+        <div class="rbtns">
+          <button class="btn btn-primary" onclick="comingSoon('Звʼязок із фахівцем')"><span data-icon="handheart"></span> Поговорити з фахівцем</button>
+          <button class="btn btn-soft" onclick="comingSoon('Безкоштовна лінія підтримки')"><span data-icon="chat"></span> Безкоштовна лінія підтримки</button>
+        </div>
+        <p style="margin:12px 0 0; font-size:.86rem; color:#9a6a4f">У фінальній версії тут зʼявляться реальні контакти перевірених фахівців і безкоштовних ліній підтримки для підлітків та батьків.</p>
+      </div>
+
+      <div class="zone"><div class="lab">Головна зона уваги зараз</div><div class="v" id="r-zone">—</div></div>
+      <div class="mirror" id="r-mirror">—</div>
+
+      <!-- зеркало двух взглядов -->
+      <div class="views">
+        <div class="vh">
+          <b>Два погляди поруч</b>
+          <div class="vleg">
+            <span class="dot"><span class="d d-par"></span> Батьки</span>
+            <span class="dot"><span class="d d-teen"></span> Підліток</span>
+          </div>
+        </div>
+        <div id="r-views"></div>
+      </div>
+
+      <div class="scenario">
+        <h3><span class="hic" data-icon="handheart"></span> <span id="r-sctitle">Один крок, який працює</span></h3>
+        <p class="scase" id="r-scase"></p>
+        <div class="srow"><span class="si si-say" data-icon="quote"></span><div class="sc"><div class="t t-say">Скажіть</div><div class="c" id="r-say">—</div></div></div>
+        <div class="srow"><span class="si si-dont" data-icon="ban"></span><div class="sc"><div class="t t-dont">Не кажіть</div><div class="c" id="r-dont">—</div></div></div>
+        <div class="srow"><span class="si si-step" data-icon="step"></span><div class="sc"><div class="t t-step">Крок сьогодні</div><div class="c" id="r-step">—</div></div></div>
+        <div class="srow"><span class="si si-spec" data-icon="buoy"></span><div class="sc"><div class="t t-spec">Коли потрібен фахівець</div><div class="c" id="r-spec">—</div></div></div>
+      </div>
+
+      <div class="safety"><span class="ink-ic" data-icon="handheart"></span><span>Це перший крок, а не заміна живій людині. Якщо ситуація серйозніша — ми поруч і мʼяко допоможемо знайти фахівця.</span></div>
+      <div class="next">
+        <button class="btn btn-green" onclick="comingSoon('Безкоштовний урок з математики')"><span data-icon="book"></span> Безкоштовний урок</button>
+        <button class="btn btn-soft" onclick="comingSoon('Підбір фахівця')"><span data-icon="users"></span> Підібрати фахівця</button>
+        <button class="btn btn-soft" onclick="savePlan()"><span data-icon="check"></span> Зберегти план (PDF)</button>
+      </div>
+      <div class="restart"><span class="back" onclick="resetAll()">↺ Пройти ще раз</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<footer>Прототип V1 · «Міст для Батьків та Дітей» · опитник за 4 шкалами · дзеркало розходжень · сценарії з досвіду Оксани</footer>
+
+<script>
+  const ICONS = {
+    leaf:'<path d="M5 20c9 1 15-5 15-15-9-1-15 5-15 15Z"/><path d="M5 20C8 14 12 11 17 9"/>',
+    shield:'<path d="M12 3l7 3v5c0 4.5-3.2 7.4-7 8.6C8.2 18.4 5 15.5 5 11V6z"/><path d="M9 11.5l2 2 4-4.5"/>',
+    home:'<path d="M4 11l8-6 8 6"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/>',
+    book:'<path d="M12 6c-2-1.4-5-1.6-8-1v12c3-.6 6-.4 8 1 2-1.4 5-1.6 8-1V5c-3-.6-6-.4-8 1Z"/><path d="M12 6v13"/>',
+    chat:'<path d="M5 6h14v9H10l-4 3v-3H5z"/><path d="M9 10.5h.01M12.5 10.5h.01M16 10.5h.01"/>',
+    users:'<path d="M9 11a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/><path d="M3 19c0-3.3 2.7-5.6 6-5.6s6 2.3 6 5.6"/><path d="M16 5a3 3 0 0 1 0 6"/><path d="M17.5 13.6c2 .6 3.5 2.4 3.5 4.6"/>',
+    target:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.6"/><circle cx="12" cy="12" r="0.8" fill="currentColor" stroke="none"/>',
+    spark:'<path d="M12 3c.5 4.5 1.6 5.6 6 6-4.4.4-5.5 1.5-6 6-.5-4.5-1.6-5.6-6-6 4.4-.4 5.5-1.5 6-6Z"/>',
+    chartdown:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M12 11v6"/><path d="M9.6 14.4 12 17l2.4-2.6"/>',
+    cloud:'<path d="M8 18a4 4 0 0 1-.6-7.96 5 5 0 0 1 9.55-1.2A3.5 3.5 0 0 1 17 18z"/>',
+    bolt:'<path d="M13 3 5 13h5l-1 8 9-12h-6z"/>',
+    quote:'<path d="M10 8H6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h2v1a2 2 0 0 1-2 2"/><path d="M19 8h-4a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h2v1a2 2 0 0 1-2 2"/>',
+    ban:'<circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/>',
+    step:'<path d="M5 12h13"/><path d="M12 6l6 6-6 6"/>',
+    buoy:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/><path d="M7.2 7.2 9.6 9.6M16.8 7.2 14.4 9.6M16.8 16.8 14.4 14.4M7.2 16.8 9.6 14.4"/>',
+    handheart:'<path d="M12 20S5 15.6 5 10.6A3.5 3.5 0 0 1 12 9a3.5 3.5 0 0 1 7 1.6C19 15.6 12 20 12 20Z"/>',
+    lock:'<rect x="6" y="11" width="12" height="8" rx="2"/><path d="M9 11V8a3 3 0 0 1 6 0v3"/>',
+    clock:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+    check:'<path d="M5 12.5l4 4 10-10"/>'
+  };
+  function paintIcons(root){
+    (root||document).querySelectorAll('[data-icon]').forEach(function(el){
+      if(el.dataset.done) return;
+      var p = ICONS[el.dataset.icon]; if(!p) return;
+      el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+      el.dataset.done = 1;
+    });
+  }
+
+  var TOTAL = 6;
+  var state = { concerns: [], parent: {}, teen: {}, words: '' };
+  function $(s){ return document.querySelector(s); }
+  function $$(s){ return document.querySelectorAll(s); }
+
+  // ---- 4 шкали ----
+  var SCALES = { peers:'Однолітки', teacher:'Школа та вчителі', parents:'Стосунки вдома', motivation:'Мотивація та стан' };
+
+  // гіпотеза батьків -> шкала, до якої вона тяжіє
+  var HYP = {
+    attention:    {label:'увагу та концентрацію', scale:'motivation'},
+    motivation:   {label:'брак мотивації',        scale:'motivation'},
+    grades:       {label:'оцінки, що погіршились', scale:'teacher'},
+    mood:         {label:'настрій і тривожність',  scale:'motivation'},
+    communication:{label:'складне спілкування',    scale:'parents'},
+    conflict:     {label:'конфлікти через уроки',  scale:'parents'}
+  };
+
+  var PARENT_Q = [
+    {id:'p_peers', scale:'peers', q:'Як, на вашу думку, у дитини з однолітками та друзями?',
+      opts:[['Багато друзів, почувається своєю',0],['Загалом нормально',1],['Буває самотньо або сварки',2],['Здається, ні з ким не близька / уникає',3]]},
+    {id:'p_teacher', scale:'teacher', q:'Як складаються стосунки зі школою та вчителями?',
+      opts:[['Спокійно, її цінують',0],['Загалом ок',1],['Бувають конфлікти чи несправедливі оцінки',2],['Часто скаржиться / не хоче в школу',3]]},
+    {id:'p_open', scale:'parents', q:'Наскільки дитина відкрита з вами вдома?',
+      opts:[['Ділиться майже всім',0],['Іноді розповідає',1],['Радше закривається',2],['Майже не говорить, віддаляється',3]]},
+    {id:'p_conflict', scale:'parents', q:'Як часто вдома конфлікти через навчання?',
+      opts:[['Майже ніколи',0],['Іноді',1],['Часто',2],['Майже щодня',3]]},
+    {id:'p_state', scale:'motivation', q:'Як зараз із настроєм і силами в дитини?',
+      opts:[['Бадьора, в тонусі',0],['Зазвичай ок',1],['Часто втомлена або сумна',2],['Згасла, нічого не хоче',3]]}
+  ];
+
+  var TEEN_Q = [
+    {id:'t_peers', scale:'peers', q:'Як справи з однокласниками та друзями?',
+      opts:[['Класно, є свої',0],['Нормально',1],['Так собі, буває важко',2],['Самотньо / складно',3]]},
+    {id:'t_teacher', scale:'teacher', q:'Як відчувається школа і вчителі?',
+      opts:[['Спокійно',0],['Буває важко',1],['Іноді несправедливо',2],['Несправедливо, не хочу туди',3]]},
+    {id:'t_parents', scale:'parents', q:'Як вдома, з батьками?',
+      opts:[['Тепло, розуміють',0],['Загалом нормально',1],['Часто сваримось або тиснуть',2],['Мене не чують, краще мовчати',3]]},
+    {id:'t_energy', scale:'motivation', q:'Чи є сили та бажання вчитися?',
+      opts:[['Так',0],['Іноді',1],['Майже немає',2],['Зовсім ні',3]]},
+    {id:'t_mood', scale:'motivation', q:'Як часто останнім часом сумно або все набридло?',
+      opts:[['Майже ніколи',0],['Інколи',1],['Часто',2],['Майже завжди',3]]}
+  ];
+
+  // ---- сценарії з досвіду Оксани ----
+  var SCEN = {
+    teacher:{ title:'Один крок: спокійна розмова з учителем', scase:'З досвіду Оксани — історія Тими, 15 («несправедлива оцінка»)',
+      say:'«Ти знаєш більше, ніж показує оцінка. Спокійно й увічливо підійди до вчителя і попроси показати, де саме помилка — чому 8, якщо робота на 9–10.»',
+      dont:'Не радьте грубити чи «качати права», не звинувачуйте вчителя і не здавайтеся після першого разу.',
+      step:'Сьогодні — один ввічливий діалог про конкретну роботу. Наступного разу повторити так само спокійно.',
+      spec:'Якщо відчувається реальна упередженість чи конфлікт — варто підключити батьків і школу.' },
+    peers:{ title:'Один крок: знайти своє середовище', scase:'З досвіду Оксани — історія Насті («один не тягне — потрібне середовище»)',
+      say:'Для підлітка однолітки — найсильніший мотиватор. Скажіть: «Спробуймо середовище, де поруч ті, кому теж цікаво» — група, гурток, спільна підготовка.',
+      dont:'Не кажіть «він просто лінивий» і не ізолюйте «поки не виправить оцінки» — це лише підсилює замкнення.',
+      step:'Знайти одне середовище за інтересом чи навчанням, де поруч мотивовані однолітки.',
+      spec:'Якщо дитина уникає однолітків через тривогу чи цькування — варто поговорити з фахівцем.' },
+    parents:{ title:'Один крок: тепла розмова вдома', scase:'З досвіду Оксани — історії «причина не в тобі» та «контроль перетворюється на стіну»',
+      say:'Спершу дайте дитині виговоритися, не перебиваючи. Потім тихо: «Я бачу тебе, я поруч. Причина не в тобі.» Говоріть рівним, спокійним голосом — рекомендація, а не наказ.',
+      dont:'Не знецінюйте («дрібниці, забудь»), не тисніть на оцінки, не допитуйте і не наказуйте «я старша — мені видніше».',
+      step:'Сьогодні — одна спокійна тепла розмова. І віддайте одну зону під відповідальність дитини: довіра повертається через свободу.',
+      spec:'Якщо віддалення різке, з обривом контакту — мʼяко допоможемо знайти психолога.' },
+    motivation:{ title:'Один крок: повернути сили й інтерес', scase:'З досвіду Оксани — історія про закоханість і пріоритети («не „або–або“, а як розподілити увагу»)',
+      say:'Визнайте почуття: «Це нормально — і втомитися, і захопитися чимось іншим.» Покажіть, що йдеться не «або навчання, або життя», а як розподілити увагу.',
+      dont:'Не звинувачуйте в лінощах, не лякайте майбутнім і не порівнюйте з іншими дітьми.',
+      step:'Разом скласти мінімальний режим навчання, що не руйнує важливе для дитини, і знайти середовище, де хочеться старатися.',
+      spec:'Якщо сил немає тривало і ніщо не радує — це сигнал поговорити з фахівцем.' }
+  };
+
+  // ---- навігація ----
+  function go(id){
+    $$('.screen').forEach(function(s){ s.classList.remove('active'); });
+    $('#'+id).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function startFlow(){ go('flow'); setStep(1); }
+
+  function toggleConcern(el){
+    var k = el.dataset.key;
+    if(el.classList.contains('sel')){ el.classList.remove('sel'); state.concerns = state.concerns.filter(function(c){return c!==k;}); }
+    else { if(state.concerns.length>=2) return; el.classList.add('sel'); state.concerns.push(k); }
+    $('#next1').disabled = state.concerns.length===0;
+  }
+
+  function paintProg(n){
+    document.querySelectorAll('#flow .step[data-step="'+n+'"] [data-prog]').forEach(function(e){ e.textContent='КРОК '+n+' з '+TOTAL; });
+    var bars = document.querySelector('#flow .step[data-step="'+n+'"] [data-bars]');
+    if(bars){ bars.innerHTML=''; for(var i=1;i<=TOTAL;i++){ var b=document.createElement('i'); if(i<=n) b.className='on'; bars.appendChild(b);} }
+  }
+  function setStep(n){
+    $$('#flow .step').forEach(function(s){ s.style.display='none'; });
+    $('#flow .step[data-step="'+n+'"]').style.display='block';
+    paintProg(n);
+    if(n===3) renderForm(PARENT_Q,'parent','#parentQ','#nextP');
+    if(n===5) renderForm(TEEN_Q,'teen','#teenQ','#nextT');
+    paintIcons();
+    $('.flow').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function renderForm(list, side, container, nextSel){
+    $(container).innerHTML = list.map(function(it){ return (
+      '<div class="q"><p>'+it.q+'</p><div class="opts" data-qid="'+it.id+'">'+
+      it.opts.map(function(o){ return '<button class="opt" onclick="pickQ(this,\''+side+'\',\''+it.id+'\','+o[1]+')">'+o[0]+'</button>'; }).join('')+
+      '</div></div>'
+    ); }).join('');
+    checkComplete(list, side, nextSel);
+  }
+  function pickQ(el, side, id, score){
+    var sib = el.parentNode.querySelectorAll('.opt');
+    sib.forEach(function(o){ o.classList.remove('sel'); });
+    el.classList.add('sel');
+    state[side][id]=score;
+    var list = side==='parent'?PARENT_Q:TEEN_Q;
+    var nextSel = side==='parent'?'#nextP':'#nextT';
+    checkComplete(list, side, nextSel);
+  }
+  function checkComplete(list, side, nextSel){
+    var done = list.every(function(it){ return state[side][it.id]!==undefined; });
+    var btn = $(nextSel); if(btn) btn.disabled = !done;
+  }
+
+  // ---- скоринг по 4 шкалам ----
+  function scaleScores(side){
+    var list = side==='parent'?PARENT_Q:TEEN_Q;
+    var sums={}, cnt={};
+    Object.keys(SCALES).forEach(function(s){ sums[s]=0; cnt[s]=0; });
+    list.forEach(function(it){ var v=state[side][it.id]; if(v!==undefined){ sums[it.scale]+=v; cnt[it.scale]++; } });
+    var out={};
+    Object.keys(SCALES).forEach(function(s){ out[s]= cnt[s]? sums[s]/cnt[s] : 0; });
+    return out; // 0..3
+  }
+  var TIE=['parents','peers','teacher','motivation']; // корінь частіше у стосунках
+  function topScale(scores){
+    var best=null, bv=-1;
+    TIE.forEach(function(s){ if(scores[s]>bv){bv=scores[s]; best=s;} });
+    return best;
+  }
+  function sevWord(v){ return ['спокійно','загалом ок','напружено','важко'][Math.min(3,Math.round(v))]; }
+
+  // ---- предохранитель ----
+  function detectRisk(){
+    var t=state.teen, txt=(state.words||'').toLowerCase();
+    var reasons=[];
+    if(t.t_mood===3 && t.t_energy>=2) reasons.push('state');
+    if(t.t_parents===3 && (t.t_mood>=2||t.t_energy>=3)) reasons.push('home');
+    var kw=/(не хочу жити|не хочеться жити|нема сенсу|немає сенсу|ненавиджу себе|нікому не потріб|покінч|вбити себе|зникнути назавжди|алкогол|нарк|втекти з дому|втечу з дому|нема куди)/i;
+    if(kw.test(txt)) reasons.push('words');
+    return reasons;
+  }
+
+  // ---- результат ----
+  function buildResult(){
+    state.words = $('#words').value || '';
+    var ps = scaleScores('parent');
+    var ts = scaleScores('teen');
+    var zone = topScale(ts);
+    var hyp = HYP[state.concerns[0]] || {label:'навчання', scale:'motivation'};
+
+    // дзеркало
+    var parts=[];
+    if(zone!==hyp.scale && (ts[zone]-ts[hyp.scale])>=1){
+      parts.push('Ви прийшли із запитом про '+hyp.label+', але у відповідях дитини найсильніше звучить інше — «'+SCALES[zone].toLowerCase()+'». Часто корінь саме тут, а оцінки чи небажання вчитися — вже наслідок.');
+    } else if(ts[zone]<=1){
+      parts.push('Гострої зони не видно — і це хороший знак. Найбільше уваги зараз потребує тема «'+SCALES[zone].toLowerCase()+'», але радше як профілактика, ніж тривога.');
+    } else {
+      parts.push('Ваш погляд і відчуття дитини збігаються: найбільше уваги зараз потребує тема «'+SCALES[zone].toLowerCase()+'».');
+    }
+    // найбільше розходження
+    var dScale=null, dMax=-1;
+    Object.keys(SCALES).forEach(function(s){ var d=Math.abs(ps[s]-ts[s]); if(d>dMax){dMax=d; dScale=s;} });
+    if(dMax>=1.5){
+      parts.push('Найбільше ваші погляди розходяться у темі «'+SCALES[dScale].toLowerCase()+'»: ви оцінюєте її як «'+sevWord(ps[dScale])+'», а дитина відчуває її як «'+sevWord(ts[dScale])+'». Обидва погляди справжні — почніть розмову саме звідси.');
+    }
+    $('#r-zone').textContent = SCALES[zone];
+    $('#r-mirror').textContent = parts.join(' ');
+
+    renderViews(ps, ts, dScale, dMax);
+
+    // сценарій
+    var sc = SCEN[zone];
+    $('#r-sctitle').textContent = sc.title;
+    $('#r-scase').textContent = sc.scase;
+    $('#r-say').textContent = sc.say;
+    $('#r-dont').textContent = sc.dont;
+    $('#r-step').textContent = sc.step;
+    $('#r-spec').textContent = sc.spec;
+
+    // предохранитель
+    var risk = detectRisk();
+    var rEl = $('#r-risk');
+    if(risk.length){
+      var msg='У відповідях дитини є сигнали, з якими краще не залишатися наодинці. Це не діагноз — але саме той випадок, коли поряд має бути жива людина, якій можна довіряти.';
+      if(risk.indexOf('home')>-1) msg='Схоже, удома зараз непросто, і дитині бракує опори. Це не привід для звинувачень — це привід мʼяко підключити фахівця чи дорослого, якому можна довіряти.';
+      $('#r-risk-text').textContent = msg;
+      rEl.style.display='block';
+      $('#r-spec').textContent = 'Зараз — саме той випадок. Не залишайтеся з цим самі: поряд є фахівці та безкоштовні лінії підтримки, з якими можна поговорити будь-коли.';
+    } else {
+      rEl.style.display='none';
+    }
+
+    paintIcons();
+    go('result');
+  }
+
+  function renderViews(ps, ts, dScale, dMax){
+    var order=['parents','peers','teacher','motivation'];
+    $('#r-views').innerHTML = order.map(function(s){
+      var p=ps[s], t=ts[s];
+      var gap = (s===dScale && dMax>=1.5) ? ' gap':'';
+      return '<div class="vrow'+gap+'"><div class="vlab">'+SCALES[s]+'</div>'+
+        '<div class="vtrack">'+
+          '<span class="vmark vpar" style="left:'+(p/3*100)+'%">Б</span>'+
+          '<span class="vmark vteen" style="left:'+(t/3*100)+'%">П</span>'+
+        '</div></div>';
+    }).join('');
+  }
+
+  var toastT;
+  function toast(msg){
+    var el=$('#toast'); el.textContent=msg; el.classList.add('show');
+    clearTimeout(toastT); toastT=setTimeout(function(){ el.classList.remove('show'); }, 3200);
+  }
+  function comingSoon(name){ toast(name+' зʼявиться у наступній версії'); }
+  function savePlan(){
+    if(typeof window.print==='function'){ window.print(); }
+    else { toast('Скористайтесь меню «Поділитися → Друк», щоб зберегти план у PDF'); }
+  }
+
+  function resetAll(){
+    state.concerns=[]; state.parent={}; state.teen={}; state.words='';
+    $$('#concerns .choice').forEach(function(c){ c.classList.remove('sel'); });
+    $('#next1').disabled=true; $('#words').value='';
+    $('#r-risk').style.display='none';
+    go('landing');
+  }
+
+  paintIcons();
+</script>
+</body>
+</html>

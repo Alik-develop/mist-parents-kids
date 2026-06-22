@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Проверка прототипа — для мамы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1E7D4; --paper:#FBF4E6; --paper2:#F5EAD6; --ink:#34302A; --muted:#857B6B; --soft:#A89C88;
+    --line:#E7DBC2; --line2:#EFE6D2;
+    --green:#3F6B4F; --green2:#6E9A77; --green-bg:#E5EDDC;
+    --clay:#C26A43; --clay2:#DA8A60; --clay-bg:#F6E3D3;
+    --ochre:#C39A3D; --ochre-bg:#F3E8C8;
+    --sh:0 18px 44px rgba(108,72,30,.14); --sh-s:0 8px 22px rgba(108,72,30,.10);
+    --r:22px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Nunito Sans',-apple-system,'Segoe UI',Roboto,sans-serif;
+    color:var(--ink); line-height:1.6; font-size:17px;
+    background:
+      radial-gradient(1200px 760px at 86% -10%, #F7E2C8 0%, rgba(247,226,200,0) 58%),
+      radial-gradient(900px 760px at -8% 8%, #E6EDDB 0%, rgba(230,237,219,0) 52%),
+      linear-gradient(180deg,#F4EAD9 0%, #EFE3CD 100%);
+    background-attachment:fixed; min-height:100vh;
+    -webkit-text-size-adjust:100%;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif; font-weight:600; letter-spacing:-.4px; color:#2f4a39;}
+  .wrap{max-width:760px; margin:0 auto; padding:30px 20px 70px;}
+
+  .top{background:var(--paper); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--sh); padding:28px 26px; margin-bottom:22px;}
+  .logo{display:flex; align-items:center; gap:12px; margin-bottom:14px;}
+  .logo .mark{width:44px; height:44px;}
+  .logo .wm{font-family:'Fraunces',serif; font-weight:700; font-size:1.2rem; color:#2f4a39; line-height:1;}
+  .logo .tg{display:block; font-size:.66rem; letter-spacing:2px; text-transform:uppercase; color:var(--clay); font-weight:800; margin-top:2px;}
+  .top h1{font-size:1.9rem; margin:4px 0 8px;}
+  .top p{margin:0 0 8px; color:#5d5446;}
+
+  .how{background:var(--green-bg); border:1px solid #cfe0c4; border-radius:18px; padding:18px 20px; margin-bottom:22px;}
+  .how h2{font-size:1.16rem; margin:0 0 10px; color:#33503a;}
+  .how ol{margin:0; padding-left:20px;}
+  .how li{margin-bottom:7px; color:#3a4a3c;}
+  .how .tip{margin-top:12px; padding:12px 14px; background:#fff; border:1px dashed #bcd1ac; border-radius:12px; font-size:.95rem; color:#3a4a3c;}
+
+  .card{background:var(--paper); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--sh-s); padding:22px 24px; margin-bottom:18px;}
+  .card .lab{font-size:.72rem; font-weight:800; letter-spacing:1.2px; text-transform:uppercase; color:var(--clay);}
+  .card h3{font-size:1.3rem; margin:6px 0 4px;}
+  .card .ask{color:#5d5446; margin:0 0 14px;}
+  .quote{background:var(--paper2); border-left:4px solid var(--green2); border-radius:0 12px 12px 0; padding:11px 15px; margin:10px 0; color:#46403a;}
+  .quote .qh{font-size:.74rem; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin-bottom:4px;}
+  .quote ul{margin:6px 0 0; padding-left:18px;}
+  .quote li{margin-bottom:3px;}
+
+  .rate{display:flex; gap:10px; flex-wrap:wrap; margin:12px 0 12px;}
+  .rb{padding:10px 16px; border-radius:13px; border:1.8px solid var(--line); background:var(--paper2); font-weight:800; font-size:.95rem; color:#5b5246; cursor:pointer; transition:.13s;}
+  .rb:hover{border-color:var(--green2);}
+  .rb.sel-ok{background:var(--green); color:#fff; border-color:var(--green);}
+  .rb.sel-fix{background:var(--clay); color:#fff; border-color:var(--clay);}
+  .rb.sel-skip{background:#cabfa8; color:#fff; border-color:#cabfa8;}
+
+  label.fl{display:block; font-weight:700; font-size:.92rem; color:#6b6253; margin-bottom:6px;}
+  textarea{width:100%; min-height:74px; border-radius:14px; border:1.6px solid var(--line);
+    background:var(--paper2); padding:12px 14px; font-family:inherit; font-size:1rem; color:var(--ink); resize:vertical;}
+  textarea:focus{outline:none; border-color:var(--green); background:#fff;}
+
+  .send{background:var(--paper); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--sh); padding:24px 26px; margin-top:24px;}
+  .send h2{font-size:1.4rem; margin:0 0 6px;}
+  .send p{margin:0 0 16px; color:#5d5446;}
+  .who{margin-bottom:18px;}
+  .who input{width:100%; border-radius:13px; border:1.6px solid var(--line); background:var(--paper2); padding:12px 14px; font-family:inherit; font-size:1rem; color:var(--ink);}
+  .btns{display:flex; gap:12px; flex-wrap:wrap;}
+  .btn{border:none; border-radius:14px; font-weight:800; padding:15px 24px; font-size:1.02rem; cursor:pointer; display:inline-flex; align-items:center; gap:9px;}
+  .btn-clay{background:var(--clay); color:#fff; box-shadow:0 10px 20px rgba(194,106,67,.26);}
+  .btn-green{background:var(--green); color:#fff; box-shadow:0 10px 20px rgba(63,107,79,.24);}
+  .btn-soft{background:var(--paper2); border:1.6px solid var(--line); color:#4d4438;}
+  .out{width:100%; min-height:160px; margin-top:16px; border-radius:14px; border:1.6px solid var(--line); background:#fff; padding:13px 15px; font-family:inherit; font-size:.95rem; color:var(--ink); display:none;}
+  .done{margin-top:12px; color:var(--green); font-weight:800; display:none;}
+  footer{text-align:center; color:var(--soft); font-size:.85rem; padding-top:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="logo">
+      <svg class="mark" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1.5" y="1.5" width="53" height="53" rx="16" fill="#E5EDDC" stroke="#CFE0C4"/>
+        <path d="M9 36c8.5 0 8.5-13 19-13s10.5 13 19 13" stroke="#3F6B4F" stroke-width="3" stroke-linecap="round"/>
+        <path d="M9 36v8M47 36v8M20 28v16M36 28v16M28 24.5v19.5" stroke="#3F6B4F" stroke-width="3" stroke-linecap="round"/>
+        <path d="M9 44h38" stroke="#C26A43" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="28" cy="15" r="4" fill="#C26A43"/>
+      </svg>
+      <div><span class="wm">Міст</span><span class="tg">для батьків та дітей</span></div>
+    </div>
+    <h1>Проверка прототипа — нужен ваш взгляд</h1>
+    <p>Это рабочая анкета для самого важного человека в проекте — практика, который реально работает с подростками. Прокликайте прототип и отметьте ниже, где «звучит правильно», а где надо поправить вашими словами.</p>
+    <p style="color:var(--muted); font-size:.95rem">Сам сайт — на украинском (так увидят его семьи). Вопросы к вам — по-русски. Где надо проверить точную фразу — она приведена по-украински в рамке.</p>
+  </div>
+
+  <div class="how">
+    <h2>Как открыть прототип на iPhone или iPad</h2>
+    <ol>
+      <li>Откройте присланный файл <b>Прототип_Тёплий_навігатор.html</b>.</li>
+      <li>Если откроется код или просто текст — нажмите «Поделиться» и выберите <b>«Открыть в Safari»</b> (или сохраните в приложение «Файлы» и оттуда тапните по файлу).</li>
+      <li>Пройдите весь путь как обычная мама: тревога → ответы родителя → «передайте устройство ребёнку» → ответы подростка → результат-зеркало.</li>
+      <li>Пройдите <b>2–3 раза по-разному</b>, чтобы увидеть разные результаты.</li>
+    </ol>
+    <div class="tip">💡 Чтобы проверить «предохранитель» (когда нужен живой специалист): пройдите как подросток, выберите «Зовсім ні» про силы и «Майже завжди» про грусть, а в свободном поле напишите что-то тревожное — и посмотрите, мягко ли сайт выводит к человеку.</div>
+    <div class="tip" style="margin-top:8px">Эту анкету держите открытой во второй вкладке — заполняйте по ходу. В конце нажмёте кнопку, и все ответы соберутся, чтобы отправить их Алику.</div>
+  </div>
+
+  <!-- A -->
+  <div class="card" data-q="A. Общий тон и голос">
+    <span class="lab">Раздел A</span>
+    <h3>Общий тон — это «звучит как вы»?</h3>
+    <p class="ask">Главное в проекте — тепло, как разговор на кухне, а не «холодный тест». Прочувствуйте сайт целиком: он говорит вашим голосом, по-человечески?</p>
+    <div class="rate" data-rate></div>
+    <label class="fl">Что бы вы изменили в тоне? Какие ваши фразы сюда добавить?</label>
+    <textarea data-c placeholder="Например: «звучит слишком сухо, я бы сказала ребёнку…»"></textarea>
+  </div>
+
+  <!-- B -->
+  <div class="card" data-q="B. Экран тревог родителя">
+    <span class="lab">Раздел B</span>
+    <h3>Первый экран: «Что вас тревожит?»</h3>
+    <p class="ask">Родитель выбирает свою догадку. Варианты те? Чего из частых жалоб родителей не хватает?</p>
+    <div class="quote"><div class="qh">Сейчас на экране</div>
+      <ul>
+        <li>Проблеми з увагою та концентрацією</li>
+        <li>Немає мотивації до навчання</li>
+        <li>Оцінки погіршились</li>
+        <li>Перепади настрою, тривожність</li>
+        <li>Складно спілкуватися з дитиною</li>
+        <li>Конфлікти через уроки</li>
+      </ul>
+    </div>
+    <div class="rate" data-rate></div>
+    <label class="fl">Что добавить / убрать / переформулировать?</label>
+    <textarea data-c placeholder="Чего родители боятся чаще всего, но в списке этого нет?"></textarea>
+  </div>
+
+  <!-- C -->
+  <div class="card" data-q="C. Вопросы родителю">
+    <span class="lab">Раздел C</span>
+    <h3>Вопросы родителю (по 4 темам)</h3>
+    <p class="ask">Понятны и не обидны? Помогают ли честно оценить, что происходит?</p>
+    <div class="quote"><div class="qh">Вопросы родителю (укр.)</div>
+      <ul>
+        <li>Як, на вашу думку, у дитини з однолітками та друзями?</li>
+        <li>Як складаються стосунки зі школою та вчителями?</li>
+        <li>Наскільки дитина відкрита з вами вдома?</li>
+        <li>Як часто вдома конфлікти через навчання?</li>
+        <li>Як зараз із настроєм і силами в дитини?</li>
+      </ul>
+    </div>
+    <div class="rate" data-rate></div>
+    <label class="fl">Как бы вы спросили это вашими словами? Какого вопроса не хватает?</label>
+    <textarea data-c placeholder="Например, важный признак, который вы всегда проверяете…"></textarea>
+  </div>
+
+  <!-- D -->
+  <div class="card" data-q="D. Вопросы подростку">
+    <span class="lab">Раздел D</span>
+    <h3>Вопросы подростку</h3>
+    <p class="ask">На его языке? Ответит ли подросток честно, не закроется?</p>
+    <div class="quote"><div class="qh">Вопросы подростку (укр.)</div>
+      <ul>
+        <li>Як справи з однокласниками та друзями?</li>
+        <li>Як відчувається школа і вчителі?</li>
+        <li>Як вдома, з батьками?</li>
+        <li>Чи є сили та бажання вчитися?</li>
+        <li>Як часто останнім часом сумно або все набридло?</li>
+      </ul>
+    </div>
+    <div class="rate" data-rate></div>
+    <label class="fl">Что звучит «по-взрослому» и оттолкнёт подростка? Как сказать живее?</label>
+    <textarea data-c placeholder="Ваши формулировки, на которые подростки откликаются…"></textarea>
+  </div>
+
+  <!-- E -->
+  <div class="card" data-q="E. Зеркало-результат">
+    <span class="lab">Раздел E</span>
+    <h3>Результат-зеркало</h3>
+    <p class="ask">Сайт показывает родителю и подростку рядом и говорит, что настоящая причина часто не в оценках. Помогает увидеть корень? И — не звучит ли как упрёк родителю («вы не знаете своего ребёнка»)?</p>
+    <div class="rate" data-rate></div>
+    <label class="fl">Где формулировка может задеть родителя? Как смягчить, оставаясь честным?</label>
+    <textarea data-c placeholder="Помним: родитель защищается, если звучит «вы ошибаетесь»…"></textarea>
+  </div>
+
+  <!-- F -->
+  <div class="card" data-q="F. Сценарий «один шаг»">
+    <span class="lab">Раздел F</span>
+    <h3>Сценарий «один шаг, который работает»</h3>
+    <p class="ask">В результате даётся живой совет: что сказать / чего не говорить / шаг сегодня / когда нужен специалист. Это рабочий совет — ваш совет?</p>
+    <div class="quote"><div class="qh">Пример (тема «школа и оценки»)</div>
+      <ul>
+        <li><b>Сказать:</b> «Ти знаєш більше, ніж показує оцінка. Спокійно підійди і попроси показати, де помилка.»</li>
+        <li><b>Не говорить:</b> не грубить, не «качать права», не сдаваться после первого раза.</li>
+        <li><b>Шаг сегодня:</b> один вежливый разговор о конкретной работе.</li>
+      </ul>
+    </div>
+    <div class="rate" data-rate></div>
+    <label class="fl">Что бы вы добавили или поправили в советах? Какой шаг реально срабатывает?</label>
+    <textarea data-c placeholder="Ваш проверенный совет по этой ситуации…"></textarea>
+  </div>
+
+  <!-- G -->
+  <div class="card" data-q="G. Предохранитель / красные флаги">
+    <span class="lab">Раздел G · самое важное для безопасности</span>
+    <h3>Когда нужен живой специалист</h3>
+    <p class="ask">Сайт не лечит сам: при тревожных сигналах он мягко выводит к человеку. Сейчас он срабатывает на таких признаках:</p>
+    <div class="quote"><div class="qh">Текущие пороги</div>
+      <ul>
+        <li>Подросток отвечает «нет сил совсем» + «грустно почти всегда».</li>
+        <li>Дома тяжело («меня не слышат») + подавленность.</li>
+        <li>В свободном тексте — тревожные слова (про безнадёжность, дом, алкоголь, уйти и т.п.).</li>
+      </ul>
+    </div>
+    <div class="rate" data-rate></div>
+    <label class="fl">Те ли это пороги? По каким ещё словам/ответам вы понимаете, что случай серьёзный и нельзя оставлять на сайт?</label>
+    <textarea data-c placeholder="Ваши «красные флаги» из практики…"></textarea>
+  </div>
+
+  <!-- H -->
+  <div class="card" data-q="H. Свободно — что упустили">
+    <span class="lab">Раздел H</span>
+    <h3>Что мы упустили?</h3>
+    <p class="ask">Самое ценное — то, что видите только вы. Любая мысль, история, фраза, признак, которого тут нет.</p>
+    <textarea data-c placeholder="Пишите свободно — это золото проекта."></textarea>
+  </div>
+
+  <!-- SEND -->
+  <div class="send">
+    <h2>Готово — отправим Алику</h2>
+    <p>Нажмите «Собрать ответы». Можно отправить письмом или просто скопировать и прислать в любом мессенджере.</p>
+    <div class="who">
+      <label class="fl">Подпишитесь (необязательно):</label>
+      <input id="who" type="text" placeholder="Например: Оксана">
+    </div>
+    <div class="btns">
+      <button class="btn btn-clay" onclick="collect('mail')">✉️ Собрать и отправить письмом</button>
+      <button class="btn btn-green" onclick="collect('copy')">📋 Собрать и скопировать</button>
+    </div>
+    <div class="done" id="done">Скопировано! Теперь вставьте текст в сообщение Алику.</div>
+    <textarea class="out" id="out" readonly></textarea>
+  </div>
+
+  <footer>Анкета проверки V1 · «Міст для Батьків та Дітей»</footer>
+</div>
+
+<script>
+  // рейтинговые кнопки
+  document.querySelectorAll('[data-rate]').forEach(box=>{
+    [['ok','👍 Звучит правильно'],['fix','✏️ Надо поправить'],['skip','🤔 Не уверена']].forEach(([k,t])=>{
+      const b=document.createElement('button');
+      b.className='rb'; b.textContent=t; b.dataset.k=k;
+      b.onclick=()=>{ box.querySelectorAll('.rb').forEach(x=>x.className='rb'); b.className='rb sel-'+k; box.dataset.val=k; };
+      box.appendChild(b);
+    });
+  });
+
+  function rateText(v){ return v==='ok'?'Звучит правильно':v==='fix'?'НАДО ПОПРАВИТЬ':v==='skip'?'Не уверена':'—'; }
+
+  function build(){
+    const who=(document.getElementById('who').value||'').trim();
+    let out='ФІДБЕК ПО ПРОТОТИПУ V1 «Міст для Батьків та Дітей»\n';
+    out+= who? ('От: '+who+'\n') : '';
+    out+='Дата: '+new Date().toLocaleDateString('uk-UA')+'\n';
+    out+='————————————————————\n\n';
+    document.querySelectorAll('.card').forEach(card=>{
+      const title=card.dataset.q;
+      const rateBox=card.querySelector('[data-rate]');
+      const c=card.querySelector('[data-c]');
+      out+= '■ '+title+'\n';
+      if(rateBox){ out+= '  Оценка: '+rateText(rateBox.dataset.val)+'\n'; }
+      const txt=(c&&c.value||'').trim();
+      out+= '  Комментарий: '+(txt? txt : '—')+'\n\n';
+    });
+    return out;
+  }
+
+  function collect(mode){
+    const text=build();
+    const out=document.getElementById('out');
+    out.style.display='block'; out.value=text;
+    if(mode==='mail'){
+      const subj=encodeURIComponent('Фідбек мами по прототипу V1');
+      const body=encodeURIComponent(text);
+      window.location.href='mailto:ashot4444@gmail.com?subject='+subj+'&body='+body;
+    } else {
+      out.select(); out.setSelectionRange(0,99999);
+      const ok=()=>{ document.getElementById('done').style.display='block'; };
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(ok).catch(()=>{ try{document.execCommand('copy');ok();}catch(e){} });
+      } else { try{document.execCommand('copy');ok();}catch(e){} }
+    }
+    out.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+</script>
+</body>
+</html>
