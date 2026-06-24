@@ -46,7 +46,10 @@
   function cardHTML(e, i){
     var initials = e.name.charAt(0);
     var profile = e.avatar ? e.avatar : ('ekspert.html?i='+i);
-    var ava = '<a href="'+profile+'"><div class="ava">'+initials+'</div></a>';
+    var avaInner = e.photo
+      ? '<img src="'+e.photo+'" alt="'+e.name+'" loading="lazy" onerror="this.onerror=null;this.outerHTML=\''+initials+'\'">'
+      : initials;
+    var ava = '<a href="'+profile+'"><div class="ava">'+avaInner+'</div></a>';
     var tags = e.tags.map(function(t){ return '<span class="tag '+t+'">'+SCALES[t]+'</span>'; }).join('');
     var kind = '<span class="ekind '+e.kind+'"><span data-icon="'+(KIND_IC[e.kind]||'users')+'"></span> '+(KIND[e.kind]||'')+'</span>';
     var btn = '<a class="btn btn-green" href="'+profile+'" style="justify-content:center; width:100%">Переглянути профіль <span data-icon="step"></span></a>';

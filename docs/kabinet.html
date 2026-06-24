@@ -12,6 +12,40 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<style>
+  .empty-kab{text-align:center; padding:42px 28px;}
+  .empty-kab img{max-width:300px; width:72%; height:auto; margin:0 auto 20px; display:block; border-radius:22px;}
+  .empty-kab h2{margin:0 0 8px; font-size:1.7rem;}
+  .empty-kab p{max-width:34em; margin:0 auto 22px;}
+  .empty-kab .ebtns{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+  .timeline li.fresh{position:relative; background:var(--green-bg); border-radius:14px; margin:4px -10px; padding:13px 12px; border-top:none;}
+  .timeline li.fresh + li{border-top:none;}
+  .freshtag{display:inline-flex; align-items:center; gap:5px; font-size:.66rem; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--green); background:var(--paper); border:1px solid var(--line); padding:2px 8px; border-radius:999px; margin-left:8px; vertical-align:middle;}
+  .att-actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:14px 0 0;}
+  .dyngrid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:12px;}
+  @media (max-width:560px){ .dyngrid{grid-template-columns:1fr;} }
+  .dynnote{display:flex; gap:11px; align-items:flex-start; background:var(--green-bg); border:1px solid var(--line); border-radius:14px; padding:13px 14px; margin-top:8px;}
+  .dynnote .ink-ic{color:var(--green); flex:0 0 auto; margin-top:2px;}
+  .dynnote p{margin:0; font-size:.92rem;}
+  .dynsum{margin:14px 0 0; font-size:.92rem; color:var(--muted); font-weight:700;}
+  .dynsum b{color:var(--ink);}
+  /* перемикач дитини */
+  .kidchip{cursor:default;}
+  button.kidchip{cursor:pointer; transition:border-color .15s, color .15s, background .15s;}
+  button.kidchip:hover{border-color:var(--green); color:var(--green);}
+  .kidchip.on{border-color:var(--green); background:var(--green-bg); color:var(--green);}
+  .kidchip.on .av{background:var(--paper);}
+  .kidchip .kcount{font-weight:700; font-size:.74rem; color:var(--muted); margin-left:1px;}
+  .kidchip.on .kcount{color:var(--green2);}
+  /* банер мʼякого порога уваги */
+  .carebox{display:flex; gap:14px; align-items:flex-start; background:linear-gradient(160deg,var(--green-bg),var(--paper)); border:1px solid var(--line); border-radius:var(--r); padding:18px 20px; box-shadow:var(--sh-s); margin:14px 0 0;}
+  .carebox .cic{width:46px; height:46px; border-radius:13px; background:var(--paper); color:var(--green); display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+  .carebox .cic svg{width:24px; height:24px;}
+  .carebox h3{margin:0 0 5px; font-size:1.12rem; color:var(--head);}
+  .carebox p{margin:0 0 12px; font-size:.95rem; color:var(--ink);}
+  .carebox .cbtns{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  @media (max-width:560px){ .carebox{flex-direction:column; gap:11px;} .carebox .cbtns .btn{width:100%; justify-content:center;} }
+</style>
 </head>
 <body>
 <header id="site-header"></header>
@@ -22,8 +56,8 @@
     <!-- ЛІВИЙ РЕЛС -->
     <aside class="siderail">
       <div class="who">
-        <span class="av">О</span>
-        <div><div class="nm">Олена</div><div class="rl">мама Максима</div></div>
+        <span class="av" data-icon="home"></span>
+        <div><div class="nm">Ваш кабінет</div><div class="rl">батьки</div></div>
       </div>
       <nav class="railnav">
         <a class="on" href="#oglyad"><span data-icon="grid"></span> Огляд</a>
@@ -39,24 +73,37 @@
     <main>
       <div class="greet" id="oglyad">
         <div>
-          <h1>Доброго ранку, Олено!</h1>
-          <p class="gsub">Ось спокійна картина по Максиму за останній місяць.</p>
+          <h1 id="kabTitle">Ваш кабінет</h1>
+          <p class="gsub" id="kabSub">Спокійна картина за результатами тесту.</p>
         </div>
-        <div class="kidpick">
-          <span class="kidchip"><span class="av">М</span> Максим · 8 клас</span>
-          <button class="btn btn-soft btn-sm" onclick="Site.toast('Профілі кількох дітей зʼявляться згодом')"><span data-icon="users"></span> Додати</button>
-        </div>
+        <div class="kidpick" id="kidPick"></div>
       </div>
 
-      <div class="demo-banner" style="margin:14px 0 0"><span class="ink-ic" data-icon="spark" style="color:var(--ochre)"></span> Демонстраційні дані. Реальні зʼявляться після кількох проходжень тесту й використання застосунку.</div>
+      <!-- М'ЯКИЙ ПОРІГ УВАГИ: зʼявляється лише за умовою (теплий, без алармізму) -->
+      <div id="careBanner" style="display:none"></div>
+
+      <!-- ПОРОЖНІЙ СТАН: немає жодного проходження -->
+      <section id="emptyState" style="display:none">
+        <div class="panelbox empty-kab">
+          <img src="assets/empty-kabinet.png" alt="">
+          <h2>Тут зʼявиться ваша динаміка</h2>
+          <p class="muted">Пройдіть тест разом із дитиною — і кабінет покаже головну зону уваги, теплі кроки та історію проходжень. Поки що тут порожньо.</p>
+          <div class="ebtns">
+            <a class="btn btn-green" href="opytuvannya.html"><span data-icon="step"></span> Пройти тест</a>
+            <button class="btn btn-soft" onclick="setDemo(true)"><span data-icon="grid"></span> Показати приклад</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="demo-banner demo-only" id="demoBanner" style="margin:14px 0 0; display:none; justify-content:space-between"><span><span class="ink-ic" data-icon="spark" style="color:var(--ochre)"></span> Демонстраційні дані — це приклад того, який вигляд матиме кабінет. Ваші реальні дані зʼявляться після проходження тесту.</span><button class="btn btn-soft btn-sm" onclick="setDemo(false)">Приховати приклад</button></div>
 
       <!-- ПРЕДМЕТИ + ПРАВА КОЛОНКА -->
-      <div class="section dashgrid" style="padding-top:20px">
+      <div class="section dashgrid" id="dashGrid" style="padding-top:20px; display:none">
 
         <!-- ЛІВА КОЛОНКА -->
         <div class="colstack">
 
-          <div class="panelbox" id="predmety">
+          <div class="panelbox demo-only" id="predmety">
             <div class="pill-row" style="justify-content:space-between; margin-bottom:14px">
               <h3 style="margin:0">Як справи в навчанні</h3>
               <span class="trend up"><span class="ink-ic" data-icon="chartup"></span> загалом росте</span>
@@ -66,18 +113,15 @@
 
           <div class="panelbox" id="motyvatsiya">
             <h3 style="margin:0 0 14px">Фокус і мотивація</h3>
-            <div class="focusrow">
-              <div class="gauge" style="--p:80; --c:var(--green)"><div class="gv"><b>8,0</b><span>з 10</span></div></div>
-              <div class="fmeta">
-                <p style="margin:0 0 2px"><b>Настрій тримається й покращується.</b></p>
-                <p class="muted" style="margin:0">За останні тижні менше дратівливості, повернувся інтерес до групи з математики.</p>
-                <div class="minibadges">
-                  <span class="pill"><span data-icon="check"></span> Сон у нормі</span>
-                  <span class="pill ochre"><span data-icon="users"></span> Однолітки — увага</span>
-                  <span class="pill clay"><span data-icon="home"></span> Вдома — теплішає</span>
-                </div>
-              </div>
+            <div id="focusBody"></div>
+          </div>
+
+          <div class="panelbox" id="dynamika" style="display:none">
+            <div class="pill-row" style="justify-content:space-between; margin-bottom:6px">
+              <h3 style="margin:0">Динаміка між тестами</h3>
+              <span class="muted" style="font-size:.85rem; font-weight:700">від тесту до тесту</span>
             </div>
+            <div id="dynBody"></div>
           </div>
 
           <div class="panelbox" id="kroky">
@@ -85,10 +129,7 @@
               <h3 style="margin:0">Рекомендовані наступні кроки</h3>
               <span class="muted" style="font-size:.85rem; font-weight:700">із вашого останнього результату</span>
             </div>
-            <div class="rec"><span class="ri tic green" data-icon="handheart"></span><div class="rt"><b>Тепла розмова вдома</b><span>«Я бачу тебе, причина не в тобі» — одна спокійна розмова сьогодні.</span></div><a class="btn btn-green btn-sm" href="baza-znan.html">Почати</a></div>
-            <div class="rec"><span class="ri tic blue" data-icon="chat"></span><div class="rt"><b>Розмова з учителем</b><span>Спокійно попросити показати, де помилка — без протистояння.</span></div><a class="btn btn-soft btn-sm" href="baza-znan.html">Відкрити</a></div>
-            <div class="rec"><span class="ri tic ochre" data-icon="users"></span><div class="rt"><b>Своє середовище</b><span>Гурток із мотивованими однолітками часто вмикає інтерес краще за контроль.</span></div><a class="btn btn-soft btn-sm" href="eksperty.html">Підібрати</a></div>
-            <div class="rec"><span class="ri tic clay" data-icon="step"></span><div class="rt"><b>Повторити тест</b><span>Раз на 2–4 тижні — щоб бачити, чи рухається ситуація.</span></div><a class="btn btn-soft btn-sm" href="opytuvannya.html">Пройти</a></div>
+            <div id="recsBody"></div>
           </div>
 
         </div>
@@ -96,7 +137,7 @@
         <!-- ПРАВА КОЛОНКА -->
         <div class="colstack">
 
-          <div class="panelbox" id="plan">
+          <div class="panelbox demo-only" id="plan">
             <h3 style="margin:0 0 14px">План на тиждень</h3>
             <div class="week">
               <div class="wk done"><div class="wd"><b>Пн</b><span>зроб.</span></div><div class="wbody"><b>Урок математики — 10 хв</b><p>Максим пройшов сам. Перша маленька перемога.</p></div></div>
@@ -107,26 +148,22 @@
           </div>
 
           <div class="promo">
-            <div class="ph"><span class="av">О</span><div><b style="color:var(--head); font-family:'Fraunces',serif; font-size:1.05rem">Безкоштовний урок з математики</b><div class="muted" style="font-size:.85rem; font-weight:700">з Оксаною · 1 заняття безкоштовно</div></div></div>
+            <div class="ph"><span class="av" id="oksanaPromoAva">О</span><div><b style="color:var(--head); font-family:'Fraunces',serif; font-size:1.05rem">Безкоштовний урок з математики</b><div class="muted" style="font-size:.85rem; font-weight:700">з Оксаною · 1 заняття безкоштовно</div></div></div>
             <p class="muted" style="margin:0 0 14px; font-size:.94rem">Спершу причина, потім математика. Підліток проходить сам, у своєму темпі.</p>
             <a class="btn btn-green" href="urok.html" style="justify-content:center; width:100%"><span data-icon="play"></span> Почати урок</a>
           </div>
 
           <div class="panelbox">
             <h3 style="margin:0 0 4px">Історія проходжень</h3>
-            <ul class="timeline">
-              <li><span class="dot" style="background:var(--clay)"></span><div><b>Стосунки вдома</b><div class="when">14 червня · гіпотеза: оцінки</div></div></li>
-              <li><span class="dot" style="background:var(--ochre)"></span><div><b>Школа та вчителі</b><div class="when">28 травня · гіпотеза: конфлікти</div></div></li>
-              <li><span class="dot" style="background:var(--green)"></span><div><b>Мотивація та стан</b><div class="when">5 травня · гіпотеза: лінь</div></div></li>
-              <li><span class="dot"></span><div><b>Перше проходження</b><div class="when">18 квітня</div></div></li>
-            </ul>
+            <ul class="timeline" id="historyBody"></ul>
+            <div class="att-actions" id="historyActions"></div>
           </div>
 
         </div>
       </div>
 
       <!-- ВІДГУК -->
-      <div class="section" style="padding-top:6px">
+      <div class="section demo-only" id="testiSection" style="padding-top:6px; display:none">
         <div class="testi">
           <span class="qi" data-icon="quote"></span>
           <div>
@@ -145,26 +182,443 @@
 <script src="assets/app.js"></script>
 <script>
   Site.init('kabinet');
+  Site.setOksanaAva('oksanaPromoAva', 'О'); // фото Оксани в промо-уроці (фолбек на літеру)
 
-  // предмети: [назва, %, тренд('up'|'flat'|'down'), іконка, колір, спарклайн 0..1]
-  var SUBJ = [
-    ['Математика', 78, 'up',   'sigma', 'var(--green)', [.42,.4,.5,.55,.62,.7,.78]],
-    ['Українська', 84, 'up',   'book',  'var(--blue)',  [.6,.62,.66,.7,.74,.8,.84]],
-    ['Англійська', 65, 'flat', 'globe', 'var(--ochre)', [.66,.62,.6,.64,.63,.65,.65]],
-    ['Природа',    72, 'up',   'flask', 'var(--clay)',  [.5,.48,.55,.6,.64,.68,.72]]
-  ];
-  var trendIc = {up:'chartup', down:'chartdown', flat:'sliders'};
-  var trendTx = {up:'росте', down:'спадає', flat:'стабільно'};
-  document.getElementById('subjects').innerHTML = SUBJ.map(function(s){
-    var colorClass = s[4].indexOf('green')>-1?'':(s[4].indexOf('blue')>-1?'blue':(s[4].indexOf('ochre')>-1?'ochre':'clay'));
-    var ticCls = s[4].indexOf('green')>-1?'green':(s[4].indexOf('blue')>-1?'blue':(s[4].indexOf('ochre')>-1?'ochre':'clay'));
+  var SCALES = Site.SCALES; // {peers, teacher, parents, motivation}
+  // кольори зон (узгоджено з .tag.*): однолітки—вохра, школа—синій, дім—глина, мотивація—зелений
+  var ZONE_COLOR = { peers:'var(--ochre)', teacher:'var(--blue)', parents:'var(--clay)', motivation:'var(--green)' };
+  var ZONE_TIC   = { peers:'ochre', teacher:'blue', parents:'clay', motivation:'green' };
+  var ZONE_ICON  = { peers:'users', teacher:'cap', parents:'home', motivation:'spark' };
+  var MONTHS = ['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
+  function fmtDate(iso){
+    var d = new Date(iso); if(isNaN(d)) return '';
+    var s = d.getDate()+' '+MONTHS[d.getMonth()];
+    if(d.getFullYear() !== new Date().getFullYear()) s += ' '+d.getFullYear();
+    return s;
+  }
+
+  // ----- РЕКОМЕНДАЦІЇ за головною зоною останньої спроби -----
+  function recsFor(att){
+    var zone = att.zone, recs = [];
+    if(zone==='parents'){
+      if(att.scenarioKey==='parents_control'){
+        recs.push(['green','handheart','Менше контролю — більше довіри','Одну зону віддайте під відповідальність дитини. Рекомендація, а не наказ.','Відкрити','baza-znan.html']);
+      } else {
+        recs.push(['green','handheart','Тепла розмова вдома','«Я бачу тебе, причина не в тобі» — одна спокійна розмова, де ви більше слухаєте.','Почати','baza-znan.html']);
+      }
+      recs.push(['blue','chat','«Я-повідомлення» замість докорів','Говоріть про свої почуття, а не звинувачуйте — і конфлікт не загострюється.','Відкрити','baza-znan.html']);
+    } else if(zone==='teacher'){
+      recs.push(['blue','chat','Спокійна розмова з учителем','Дитина сама, ввічливо, просить показати, де помилка — без протистояння.','Відкрити','baza-znan.html']);
+      recs.push(['ochre','users','Своє середовище','Гурток із мотивованими однолітками часто вмикає інтерес краще за контроль.','Підібрати','eksperty.html']);
+    } else if(zone==='peers'){
+      recs.push(['ochre','users','Знайти своє середовище','Для підлітка однолітки — найсильніший мотиватор. Спробуйте групу за інтересом.','Підібрати','eksperty.html']);
+      recs.push(['blue','handheart','Підтримка при складних стосунках','Якщо є самотність чи цькування — поряд має бути фахівець, якому довіряють.','Відкрити','eksperty.html']);
+    } else { // motivation
+      recs.push(['green','spark','Повернути сили й інтерес','Не «або навчання, або життя», а як розподілити увагу. Визнайте почуття дитини.','Відкрити','baza-znan.html']);
+      recs.push(['ochre','users','Своє середовище','Поруч мотивовані однолітки — і старанність повертається сама.','Підібрати','eksperty.html']);
+    }
+    recs.push(['clay','step','Повторити тест','Раз на 2–4 тижні — щоб бачити, чи рухається ситуація.','Пройти','opytuvannya.html']);
+    return recs;
+  }
+  function renderRecs(att){
+    document.getElementById('recsBody').innerHTML = recsFor(att).map(function(r,i){
+      var btnCls = i===0 ? 'btn-green' : 'btn-soft';
+      return '<div class="rec"><span class="ri tic '+r[0]+'" data-icon="'+r[1]+'"></span>'+
+        '<div class="rt"><b>'+r[2]+'</b><span>'+r[3]+'</span></div>'+
+        '<a class="btn '+btnCls+' btn-sm" href="'+r[5]+'">'+r[4]+'</a></div>';
+    }).join('');
+  }
+
+  // ----- ФОКУС І МОТИВАЦІЯ за останньою спробою -----
+  function sevWord(v){ return ['спокійно','загалом ок','напружено','важко'][Math.min(3, Math.round(v))]; }
+  function renderFocus(att){
+    var t = att.teenScores || {};
+    var mot = (t.motivation!=null) ? t.motivation : 0;     // 0 добре … 3 згасло
+    var well = Math.max(0, Math.min(10, Math.round((3 - mot)/3*10*10)/10)); // 0..10, вище — краще
+    var gc = well>=6.5 ? 'var(--green)' : (well>=4 ? 'var(--ochre)' : 'var(--clay)');
+    var p = Math.round(well/10*100);
+    var headline, sub;
+    if(att.risk){
+      headline = 'Дитині зараз непросто.'; sub = 'У відповідях є сигнали, з якими краще не лишатися наодинці — поряд варто мати живу людину чи фахівця.';
+    } else if(mot>=2){
+      headline = 'Сил і мотивації зараз бракує.'; sub = 'Це не лінь, а стан. Допоможіть повернути сили — режим, інтерес, тепла підтримка без тиску.';
+    } else if(mot>=1){
+      headline = 'Настрій загалом тримається.'; sub = 'Гострого спаду немає. Варто мʼяко підтримувати інтерес і стежити за зонами уваги нижче.';
+    } else {
+      headline = 'Дитина в тонусі.'; sub = 'Стан добрий — це хороша опора. Нижче — теми, на які все одно варто звертати увагу.';
+    }
+    var well1 = (Math.round(well*10)/10).toString().replace('.', ',');
+    // зони уваги: шкали зі score>=2 (крім головної — вона окремо в «головній зоні»)
+    var badges = [];
+    badges.push('<span class="pill '+ZONE_TIC[att.zone]+'"><span data-icon="'+ZONE_ICON[att.zone]+'"></span> '+SCALES[att.zone]+' — головна зона</span>');
+    ['parents','peers','teacher','motivation'].forEach(function(s){
+      if(s===att.zone) return;
+      var v = t[s]!=null ? t[s] : 0;
+      if(v>=2) badges.push('<span class="pill '+ZONE_TIC[s]+'"><span data-icon="'+ZONE_ICON[s]+'"></span> '+SCALES[s]+' — увага</span>');
+    });
+    // найбільше розходження поглядів
+    if(att.topGapScale && att.topGapValue>=1.5){
+      badges.push('<span class="pill clay"><span data-icon="chat"></span> Розходження: '+SCALES[att.topGapScale]+'</span>');
+    }
+    if(badges.length===1) badges.push('<span class="pill"><span data-icon="check"></span> Інші зони — спокійно</span>');
+    document.getElementById('focusBody').innerHTML =
+      '<div class="focusrow">'+
+        '<div class="gauge" style="--p:'+p+'; --c:'+gc+'"><div class="gv"><b>'+well1+'</b><span>з 10</span></div></div>'+
+        '<div class="fmeta">'+
+          '<p style="margin:0 0 2px"><b>'+headline+'</b></p>'+
+          '<p class="muted" style="margin:0">'+sub+'</p>'+
+          '<div class="minibadges">'+badges.join('')+'</div>'+
+        '</div>'+
+      '</div>';
+  }
+
+  // ----- ІСТОРІЯ ПРОХОДЖЕНЬ -----
+  function renderHistory(attempts, newId){
+    document.getElementById('historyBody').innerHTML = attempts.map(function(a){
+      var color = ZONE_COLOR[a.zone] || 'var(--green)';
+      var fresh = (a.id && a.id===newId);
+      var hyp = a.hypLabel ? ' · гіпотеза: '+a.hypLabel : '';
+      return '<li class="'+(fresh?'fresh':'')+'"><span class="dot" style="background:'+color+'"></span>'+
+        '<div><b>'+(SCALES[a.zone]||'Проходження')+(fresh?'<span class="freshtag"><span data-icon="check" style="width:11px;height:11px"></span> нове</span>':'')+'</b>'+
+        '<div class="when">'+fmtDate(a.date)+hyp+'</div></div></li>';
+    }).join('');
+    document.getElementById('historyActions').innerHTML =
+      '<a class="btn btn-soft btn-sm" href="opytuvannya.html"><span data-icon="step"></span> Пройти ще раз</a>'+
+      '<button class="btn btn-soft btn-sm" onclick="exportData()"><span data-icon="send"></span> Експорт (JSON)</button>'+
+      '<button class="btn btn-ghost btn-sm" onclick="clearHistory()"><span data-icon="ban"></span> Очистити історію</button>';
+  }
+  function clearHistory(){
+    var kids = Site.getKids ? Site.getKids() : [];
+    var act = kids.filter(function(k){ return k.active; })[0];
+    var who = act ? ('профілю «'+act.name+'»') : 'цього профілю';
+    if(!confirm('Видалити всю історію проходжень '+who+' із цього пристрою? Інші профілі не постраждають. Дію не можна скасувати.')) return;
+    Site.clearAttempts();
+    render();
+    Site.toast('Історію очищено.');
+  }
+
+  // ----- ДЕМО-ДАНІ (приклад) -----
+  var demoMode = false;
+  function setDemo(on){ demoMode = on; render(); window.scrollTo({top:0, behavior:'smooth'}); }
+  function renderDemoSubjects(){
+    if(document.getElementById('subjects').dataset.done) return;
+    var SUBJ = [
+      ['Математика', 78, 'up',   'sigma', 'var(--green)', [.42,.4,.5,.55,.62,.7,.78]],
+      ['Українська', 84, 'up',   'book',  'var(--blue)',  [.6,.62,.66,.7,.74,.8,.84]],
+      ['Англійська', 65, 'flat', 'globe', 'var(--ochre)', [.66,.62,.6,.64,.63,.65,.65]],
+      ['Природа',    72, 'up',   'flask', 'var(--clay)',  [.5,.48,.55,.6,.64,.68,.72]]
+    ];
+    var trendIc = {up:'chartup', down:'chartdown', flat:'sliders'};
+    var trendTx = {up:'росте', down:'спадає', flat:'стабільно'};
+    document.getElementById('subjects').innerHTML = SUBJ.map(function(s){
+      var ticCls = s[4].indexOf('green')>-1?'green':(s[4].indexOf('blue')>-1?'blue':(s[4].indexOf('ochre')>-1?'ochre':'clay'));
+      return '<div class="subj">'+
+        '<div class="stop"><span class="sic tic '+ticCls+'" data-icon="'+s[3]+'"></span><span class="sn">'+s[0]+'</span><span class="sv">'+s[1]+'%</span></div>'+
+        Site.spark(s[5], s[4])+
+        '<div class="sfoot"><span class="trend '+s[2]+'"><span class="ink-ic" data-icon="'+trendIc[s[2]]+'" style="color:inherit"></span> '+trendTx[s[2]]+'</span><span>за 6 тижнів</span></div>'+
+      '</div>';
+    }).join('');
+    document.getElementById('subjects').dataset.done = 1;
+  }
+  function renderDemoFocus(){
+    document.getElementById('focusBody').innerHTML =
+      '<div class="focusrow">'+
+        '<div class="gauge" style="--p:80; --c:var(--green)"><div class="gv"><b>8,0</b><span>з 10</span></div></div>'+
+        '<div class="fmeta">'+
+          '<p style="margin:0 0 2px"><b>Настрій тримається й покращується.</b></p>'+
+          '<p class="muted" style="margin:0">За останні тижні менше дратівливості, повернувся інтерес до групи з математики.</p>'+
+          '<div class="minibadges">'+
+            '<span class="pill"><span data-icon="check"></span> Сон у нормі</span>'+
+            '<span class="pill ochre"><span data-icon="users"></span> Однолітки — увага</span>'+
+            '<span class="pill clay"><span data-icon="home"></span> Вдома — теплішає</span>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+  }
+  function renderDemoRecs(){
+    document.getElementById('recsBody').innerHTML =
+      '<div class="rec"><span class="ri tic green" data-icon="handheart"></span><div class="rt"><b>Тепла розмова вдома</b><span>«Я бачу тебе, причина не в тобі» — одна спокійна розмова сьогодні.</span></div><a class="btn btn-green btn-sm" href="baza-znan.html">Почати</a></div>'+
+      '<div class="rec"><span class="ri tic blue" data-icon="chat"></span><div class="rt"><b>Розмова з учителем</b><span>Спокійно попросити показати, де помилка — без протистояння.</span></div><a class="btn btn-soft btn-sm" href="baza-znan.html">Відкрити</a></div>'+
+      '<div class="rec"><span class="ri tic ochre" data-icon="users"></span><div class="rt"><b>Своє середовище</b><span>Гурток із мотивованими однолітками часто вмикає інтерес краще за контроль.</span></div><a class="btn btn-soft btn-sm" href="eksperty.html">Підібрати</a></div>'+
+      '<div class="rec"><span class="ri tic clay" data-icon="step"></span><div class="rt"><b>Повторити тест</b><span>Раз на 2–4 тижні — щоб бачити, чи рухається ситуація.</span></div><a class="btn btn-soft btn-sm" href="opytuvannya.html">Пройти</a></div>';
+  }
+  function renderDemoHistory(){
+    document.getElementById('historyBody').innerHTML =
+      '<li><span class="dot" style="background:var(--clay)"></span><div><b>Стосунки вдома</b><div class="when">14 червня · гіпотеза: оцінки</div></div></li>'+
+      '<li><span class="dot" style="background:var(--ochre)"></span><div><b>Школа та вчителі</b><div class="when">28 травня · гіпотеза: конфлікти</div></div></li>'+
+      '<li><span class="dot" style="background:var(--green)"></span><div><b>Мотивація та стан</b><div class="when">5 травня · гіпотеза: лінь</div></div></li>'+
+      '<li><span class="dot"></span><div><b>Перше проходження</b><div class="when">18 квітня</div></div></li>';
+    document.getElementById('historyActions').innerHTML = '';
+  }
+
+  // ----- ДИНАМІКА МІЖ ТЕСТАМИ (реальні дані) -----
+  function meanGapOf(a){
+    var g = a.gaps;
+    if(g && typeof g==='object'){
+      var ks = Object.keys(g), sum=0; if(!ks.length) return 0;
+      ks.forEach(function(k){ sum += Math.abs(+g[k]||0); });
+      return sum/ks.length;
+    }
+    // фолбек: рахуємо з оцінок, якщо gaps немає
+    var ps=a.parentScores||{}, ts=a.teenScores||{}, sum2=0, n=0;
+    Object.keys(SCALES).forEach(function(s){ sum2+=Math.abs((ps[s]||0)-(ts[s]||0)); n++; });
+    return n? sum2/n : 0;
+  }
+  function clamp01(v){ return Math.max(0, Math.min(1, v)); }
+  // тренд за «занепокоєнням» (вищий бал = гірше): повертає up=легшає / down=загострилось / flat
+  function concernTrend(firstC, lastC){
+    var d = lastC - firstC;
+    if(d < -0.34) return 'up';
+    if(d >  0.34) return 'down';
+    return 'flat';
+  }
+  function dynCard(title, icon, ticCls, vals, color, trendCls, trendTx, caption){
+    var trIc = {up:'chartup', down:'chartdown', flat:'sliders'}[trendCls];
     return '<div class="subj">'+
-      '<div class="stop"><span class="sic tic '+ticCls+'" data-icon="'+s[3]+'"></span><span class="sn">'+s[0]+'</span><span class="sv">'+s[1]+'%</span></div>'+
-      Site.spark(s[5], s[4])+
-      '<div class="sfoot"><span class="trend '+s[2]+'"><span class="ink-ic" data-icon="'+trendIc[s[2]]+'" style="color:inherit"></span> '+trendTx[s[2]]+'</span><span>за 6 тижнів</span></div>'+
+      '<div class="stop"><span class="sic tic '+ticCls+'" data-icon="'+icon+'"></span><span class="sn">'+title+'</span></div>'+
+      Site.spark(vals, color)+
+      '<div class="sfoot"><span class="trend '+trendCls+'"><span class="ink-ic" data-icon="'+trIc+'" style="color:inherit"></span> '+trendTx+'</span><span>'+caption+'</span></div>'+
     '</div>';
-  }).join('');
-  Site.paint();
+  }
+  function renderDynamics(attempts){
+    var panel = document.getElementById('dynamika');
+    var body = document.getElementById('dynBody');
+    if(!panel||!body) return;
+    panel.style.display='';
+    // одна точка — динаміки ще немає
+    if(attempts.length < 2){
+      body.innerHTML =
+        '<div class="dynnote"><span class="ink-ic" data-icon="spark"></span>'+
+        '<p>Поки що це лише одна точка. Пройдіть тест ще раз за 2–4 тижні — і тут зʼявиться жива динаміка: чи легшає головна зона і чи ближче ви з дитиною бачите ситуацію.</p></div>';
+      return;
+    }
+    var chron = attempts.slice().reverse();   // від найдавнішої до свіжої
+    var n = chron.length;
+    var latest = attempts[0];
+    var zone = latest.zone;
+    var COL = {up:'var(--green)', down:'var(--clay)', flat:'var(--blue)'};
+
+    // 1) головна зона уваги (бал занепокоєння підлітка по головній зоні)
+    var concernSeries = chron.map(function(a){ var t=a.teenScores||{}; return (t[zone]!=null? t[zone] : 0); });
+    var mVals = concernSeries.map(function(s){ return clamp01((3 - s)/3); }); // вище — спокійніше
+    var mTr = concernTrend(concernSeries[0], concernSeries[n-1]);
+    var mTx = {up:'легшає', down:'напруженіше', flat:'без різких змін'}[mTr];
+    var card1 = dynCard(SCALES[zone]||'Головна зона', ZONE_ICON[zone]||'target', ZONE_TIC[zone]||'green',
+      mVals, COL[mTr], mTr, mTx, 'вище — спокійніше');
+
+    // 2) розходження поглядів родитель/підліток (середнє по 4 зонах)
+    var gapSeries = chron.map(meanGapOf);
+    var gVals = gapSeries.map(function(g){ return clamp01((3 - g)/3); }); // вище — більше згоди
+    var gTr = concernTrend(gapSeries[0], gapSeries[n-1]); // менше розходжень = up (зближення)
+    var gTx = {up:'зближується', down:'розходиться', flat:'стабільно'}[gTr];
+    var card2 = dynCard('Згода поглядів', 'chat', 'clay', gVals, COL[gTr], gTr, gTx, 'вище — більше згоди');
+
+    // теплий підсумок
+    var s1 = {up:'Тема «'+(SCALES[zone]||'').toLowerCase()+'» помітно легшає — гарний знак.',
+              down:'Тема «'+(SCALES[zone]||'').toLowerCase()+'» стала напруженішою. Без тривоги — це радше привід мʼяко поговорити.',
+              flat:'Тема «'+(SCALES[zone]||'').toLowerCase()+'» тримається на тому ж рівні.'}[mTr];
+    var s2 = {up:' Ви з дитиною стали ближче бачити ситуацію — це велика опора.',
+              down:' Погляди трохи розійшлися — це нормально й теж корисно знати: гарний привід для теплої розмови.',
+              flat:' Згода поглядів лишається стабільною.'}[gTr];
+
+    // 3) динаміка по ВСІХ 4 зонах — згорнутий міні-грід (приватність: лише бали зон)
+    var allZones = ['parents','peers','teacher','motivation'];
+    var zoneCards = allZones.map(function(z){
+      var series = chron.map(function(a){ var t=a.teenScores||{}; return (t[z]!=null? t[z] : 0); });
+      var vals = series.map(function(s){ return clamp01((3 - s)/3); });   // вище — спокійніше
+      var tr = concernTrend(series[0], series[n-1]);
+      var tx = {up:'легшає', down:'напруженіше', flat:'рівно'}[tr];
+      var isMain = (z===zone);
+      return dynCard(SCALES[z]+(isMain?' · головна':''), ZONE_ICON[z], ZONE_TIC[z],
+        vals, COL[tr], tr, tx, 'вище — спокійніше');
+    }).join('');
+
+    body.innerHTML =
+      '<div class="dyngrid">'+card1+card2+'</div>'+
+      '<p class="dynsum"><b>За '+n+' '+plural(n,'тест','тести','тестів')+':</b> '+s1+s2+'</p>'+
+      '<div class="att-actions">'+
+        '<button class="btn btn-soft btn-sm" id="allZonesBtn" onclick="toggleAllZones(this)">'+
+          '<span data-icon="grid"></span> Показати всі зони</button>'+
+      '</div>'+
+      '<div id="allZonesGrid" style="display:none">'+
+        '<div class="dyngrid">'+zoneCards+'</div>'+
+      '</div>';
+  }
+  function toggleAllZones(btn){
+    var grid = document.getElementById('allZonesGrid');
+    if(!grid) return;
+    var open = grid.style.display==='none' || !grid.style.display;
+    grid.style.display = open ? 'block' : 'none';
+    btn.innerHTML = open
+      ? '<span data-icon="grid"></span> Згорнути зони'
+      : '<span data-icon="grid"></span> Показати всі зони';
+    Site.paint(btn);
+    if(open) Site.paint(grid);
+  }
+  function plural(n, one, few, many){
+    var n10=n%10, n100=n%100;
+    if(n10===1 && n100!==11) return one;
+    if(n10>=2 && n10<=4 && (n100<10||n100>=20)) return few;
+    return many;
+  }
+
+  // ----- ЕКСПОРТ ДАНИХ (JSON історії; без дослівних відповідей підлітка) -----
+  function exportData(){
+    var attempts = Site.getAttempts();
+    if(!attempts.length){ Site.toast('Немає що експортувати — історія порожня.'); return; }
+    var payload = { app:'Міст для Батьків та Дітей', kind:'mist-attempts-export', v:1,
+      exportedAt:new Date().toISOString(), count:attempts.length, attempts:attempts };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'mist-istoriya-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+    Site.toast('Збережено JSON історії. Дослівні відповіді не зберігаються.');
+  }
+
+  // ----- ПЕРЕМИКАЧ ДИТИНИ (профілі кількох дітей; той самий джерело правди) -----
+  function kidInitial(name){ var s=(name||'').trim(); return s ? s[0].toUpperCase() : 'Д'; }
+  function renderKids(){
+    var host = document.getElementById('kidPick');
+    if(!host || !Site.getKids) return;
+    var kids = Site.getKids();
+    var chips = kids.map(function(k){
+      var cnt = k.count ? '<span class="kcount">· '+k.count+'</span>' : '';
+      if(k.active){
+        return '<span class="kidchip on" title="Активний профіль"><span class="av" data-icon="spark"></span> '+
+          escapeHtml(k.name)+' '+cnt+'</span>';
+      }
+      return '<button class="kidchip" onclick="switchKid(\''+k.id+'\')" title="Перемкнутися на профіль">'+
+        '<span class="av">'+kidInitial(k.name)+'</span> '+escapeHtml(k.name)+' '+cnt+'</button>';
+    }).join('');
+    host.innerHTML = chips +
+      '<button class="btn btn-soft btn-sm" onclick="addKidUI()"><span data-icon="users"></span> Додати</button>';
+    Site.paint(host);
+  }
+  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function switchKid(id){
+    if(Site.setActiveKid(id)){
+      // нова дитина — нова картина; ховаємо демо й банер, перемальовуємо все
+      demoMode = false;
+      render();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+  }
+  function addKidUI(){
+    var name = prompt('Імʼя дитини (наприклад, «Максим»). Зберігається лише на цьому пристрої.', '');
+    if(name===null) return;            // скасування
+    name = name.trim();
+    if(!name){ Site.toast('Імʼя не може бути порожнім.'); return; }
+    Site.addKid(name);
+    demoMode = false;
+    render();
+    Site.toast('Додано профіль: '+name+'. Пройдіть тест для цієї дитини.');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  // ----- МʼЯКИЙ ПОРІГ УВАГИ -----
+  // Сигнал зʼявляється, якщо за останніми N (≤3) спробами головна зона
+  // стабільно «важко» АБО розходження поглядів зростає, або в останній є risk.
+  // Тон — турбота, без алармізму. Жодних дослівних відповідей.
+  function attentionSignal(attempts){
+    if(!attempts || attempts.length < 2) return null;
+    var N = Math.min(3, attempts.length);
+    var recent = attempts.slice(0, N);          // свіжі зверху
+    var zone = attempts[0].zone;
+    var hardAll = recent.every(function(a){
+      var t=a.teenScores||{}; return (t[zone]!=null?t[zone]:0) >= 2;
+    });
+    var gapsChron = recent.slice().reverse().map(meanGapOf);   // від давнішої до свіжої
+    var gapRising = gapsChron.length>=2 && (gapsChron[gapsChron.length-1] - gapsChron[0]) >= 0.6;
+    var riskNow = !!attempts[0].risk;
+    if(hardAll || gapRising || riskNow) return { zone:zone, hard:hardAll, gap:gapRising, risk:riskNow };
+    return null;
+  }
+  function renderCareBanner(attempts){
+    var box = document.getElementById('careBanner');
+    if(!box) return;
+    var sig = attentionSignal(attempts);
+    if(!sig){ box.style.display='none'; box.innerHTML=''; return; }
+    var zname = (SCALES[sig.zone]||'').toLowerCase();
+    var line;
+    if(sig.risk){
+      line = 'У відповідях дитини є сигнали, з якими краще не лишатися наодинці. Поряд варто мати живу людину — фахівця або дорослого, якому можна довіряти.';
+    } else if(sig.hard){
+      line = 'Уже кілька проходжень поспіль тема «'+zname+'» лишається непростою для дитини. Це не діагноз і не привід тривожитися — але, можливо, варто поговорити з фахівцем, який допоможе підібрати слова й кроки.';
+    } else {
+      line = 'Останнім часом ваші з дитиною погляди на ситуацію розходяться сильніше. Це нормально — і це гарний привід для спокійної розмови, а за потреби поряд є фахівець, який допоможе почути одне одного.';
+    }
+    box.innerHTML =
+      '<div class="carebox">'+
+        '<span class="cic" data-icon="handheart"></span>'+
+        '<div style="flex:1">'+
+          '<h3>Ми поряд — і ви не самі</h3>'+
+          '<p>'+line+' Звернутися по допомогу — це сила, а не слабкість.</p>'+
+          '<div class="cbtns">'+
+            '<a class="btn btn-green btn-sm" href="eksperty.html"><span data-icon="buoy"></span> Підібрати фахівця</a>'+
+            '<a class="btn btn-soft btn-sm" href="baza-znan.html"><span data-icon="book"></span> Спершу почитати</a>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    box.style.display='block';
+    Site.paint(box);
+  }
+
+  // ----- ГОЛОВНИЙ РЕНДЕР -----
+  function showDemoOnly(show){
+    document.querySelectorAll('.demo-only').forEach(function(el){ el.style.display = show ? '' : 'none'; });
+  }
+  function render(){
+    renderKids();
+    var attempts = Site.getAttempts();
+    var newId = (location.search.match(/[?&]new=([^&]+)/)||[])[1];
+    if(newId) newId = decodeURIComponent(newId);
+    var hasReal = attempts.length>0;
+
+    if(hasReal){
+      // РЕАЛЬНІ ДАНІ
+      document.getElementById('emptyState').style.display='none';
+      document.getElementById('dashGrid').style.display='';
+      showDemoOnly(false);
+      var latest = attempts[0];
+      document.getElementById('kabTitle').textContent = 'Ваш кабінет';
+      document.getElementById('kabSub').textContent = 'Головне з останнього проходження від '+fmtDate(latest.date)+'.';
+      renderCareBanner(attempts);
+      renderFocus(latest);
+      renderDynamics(attempts);
+      renderRecs(latest);
+      renderHistory(attempts, newId);
+    } else if(demoMode){
+      // ПРИКЛАД (демо)
+      document.getElementById('careBanner').style.display='none';
+      document.getElementById('emptyState').style.display='none';
+      document.getElementById('dashGrid').style.display='';
+      showDemoOnly(true);
+      document.getElementById('dynamika').style.display='none';
+      document.getElementById('demoBanner').style.display='flex';
+      document.getElementById('kabTitle').textContent = 'Кабінет — приклад';
+      document.getElementById('kabSub').textContent = 'Так виглядатиме кабінет, коли зʼявляться ваші дані.';
+      renderDemoSubjects();
+      renderDemoFocus();
+      renderDemoRecs();
+      renderDemoHistory();
+    } else {
+      // ПОРОЖНІЙ СТАН
+      document.getElementById('careBanner').style.display='none';
+      document.getElementById('dashGrid').style.display='none';
+      showDemoOnly(false);
+      document.getElementById('emptyState').style.display='';
+      document.getElementById('kabSub').textContent = 'Поки що порожньо — пройдіть тест, щоб побачити динаміку.';
+    }
+    Site.paint();
+    // підсвічена свіжа спроба — підкрутимо до неї
+    var fresh = document.querySelector('.timeline li.fresh');
+    if(fresh) fresh.scrollIntoView({block:'center', behavior:'smooth'});
+  }
+  render();
 </script>
 </body>
 </html>

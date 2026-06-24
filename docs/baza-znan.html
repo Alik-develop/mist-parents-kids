@@ -16,6 +16,9 @@
   .article .atop{display:flex; align-items:center; gap:12px;}
   .article .ic{width:42px;height:42px;border-radius:12px;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
   .article .ic svg{width:22px;height:22px;}
+  .article .acover{display:none; margin:-22px -24px 14px; aspect-ratio:16/9; overflow:hidden; background:var(--green-bg); border-bottom:1px solid var(--line);}
+  .article .acover.show{display:block;}
+  .article .acover img{width:100%; height:100%; object-fit:cover; display:block;}
 </style>
 </head>
 <body>
@@ -51,18 +54,29 @@
   var SCALES = Site.SCALES;
   var active = 'all';
 
+  var SCALE_IMG = Site.SCALE_IMG || {};
   function cardHTML(a, i){
     return '<a class="article h" href="stattia.html?i='+i+'" data-scale="'+a.scale+'" style="text-decoration:none">'+
+      '<div class="acover" data-cover="'+(SCALE_IMG[a.scale]||'')+'"></div>'+
       '<div class="atop"><span class="ic" data-icon="'+a.icon+'"></span><span class="tag '+a.scale+'">'+SCALES[a.scale]+'</span></div>'+
       '<h3>'+a.title+'</h3>'+
       '<p>'+a.teaser+'</p>'+
       '<span class="lnk" style="margin-top:auto">Читати <span data-icon="step"></span></span>'+
     '</a>';
   }
+  // мʼякий фолбек: показуємо обкладинку лише якщо файл реально завантажився
+  function loadCovers(){
+    document.querySelectorAll('.acover[data-cover]').forEach(function(box){
+      var src = box.getAttribute('data-cover'); if(!src) return;
+      var im = new Image();
+      im.onload = function(){ box.innerHTML = '<img src="'+src+'" alt="" loading="lazy">'; box.classList.add('show'); };
+      im.src = src;
+    });
+  }
   function render(){
     var list = Site.ARTICLES.map(function(a,i){ return {a:a,i:i}; }).filter(function(o){ return active==='all' || o.a.scale===active; });
     document.getElementById('cards').innerHTML = list.map(function(o){ return cardHTML(o.a, o.i); }).join('');
-    Site.paint();
+    Site.paint(); loadCovers();
   }
   function buildFilters(){
     var opts = [['all','Усі теми']].concat(Object.keys(SCALES).map(function(k){ return [k, SCALES[k]]; }));

@@ -117,6 +117,33 @@
   .restart{text-align:center;}
   @media print{ header.site, footer.site, .grain, .next, .restart, .risk .rbtns, .safety{display:none !important;} .result{padding:0 !important;} }
   @media (max-width:900px){ .panel{padding:28px 22px;} .next{grid-template-columns:1fr;} .twogrid{grid-template-columns:1fr;} .vrow{grid-template-columns:104px 1fr; gap:10px;} }
+  @media (max-width:560px){
+    .flow{padding:22px 0 56px;}
+    .panel{padding:22px 16px 20px; border-radius:22px;}
+    .panel h2{font-size:1.5rem;}
+    .panel .sub{font-size:.98rem; margin-bottom:18px;}
+    .choice{padding:13px 14px; gap:12px;}
+    .choice .ci{width:38px; height:38px;}
+    .choice .ctxt{font-size:.98rem;}
+    .rhead h2{font-size:1.6rem;}
+    .zone{padding:16px 18px; gap:13px;}
+    .zone .zic{width:46px; height:46px;}
+    .zone .v{font-size:1.32rem;}
+    .views{padding:18px 18px 20px;}
+    .vrow{grid-template-columns:84px 1fr; gap:10px;}
+    .vlab{font-size:.88rem;}
+    .scenario{padding:20px 18px;}
+    .scenario h3{font-size:1.18rem;}
+    .scenario .scase{margin-left:0;}
+    .risk{padding:20px 18px;}
+    .risk .rbtns .btn{width:100%; justify-content:center;}
+    .handoff .big{width:80px; height:80px;}
+    .handoff .big svg{width:40px; height:40px;}
+  }
+  @media (max-width:380px){
+    .vrow{grid-template-columns:72px 1fr; gap:8px;}
+    .vlab{font-size:.82rem;}
+  }
 </style>
 </head>
 <body>
@@ -131,7 +158,6 @@
       <h2>Що вас зараз найбільше турбує?</h2>
       <p class="sub">Оберіть до 2 — це лише ваше припущення. Далі ми порівняємо його з тим, що відчуває дитина.</p>
       <div class="choices" id="concerns">
-        <button class="choice" data-key="attention" onclick="toggleConcern(this)"><span class="ci" data-icon="target"></span><span class="ctxt">Проблеми з увагою та концентрацією</span><span class="ck" data-icon="check"></span></button>
         <button class="choice" data-key="motivation" onclick="toggleConcern(this)"><span class="ci" data-icon="spark"></span><span class="ctxt">Немає мотивації до навчання</span><span class="ck" data-icon="check"></span></button>
         <button class="choice" data-key="grades" onclick="toggleConcern(this)"><span class="ci" data-icon="chartdown"></span><span class="ctxt">Оцінки погіршились</span><span class="ck" data-icon="check"></span></button>
         <button class="choice" data-key="mood" onclick="toggleConcern(this)"><span class="ci" data-icon="cloud"></span><span class="ctxt">Перепади настрою, тривожність</span><span class="ck" data-icon="check"></span></button>
@@ -209,10 +235,16 @@
     </div>
     <div id="r-zoneimg" style="display:none; border-radius:var(--r); overflow:hidden; border:1px solid var(--line); box-shadow:var(--sh-s); margin-bottom:16px; aspect-ratio:16/7; background:var(--green-bg)"></div>
     <div class="zone"><span class="zic" data-icon="target"></span><div><div class="lab">Головна зона уваги зараз</div><div class="v" id="r-zone">—</div></div></div>
+    <div class="reassure" style="margin-bottom:16px"><span class="ink-ic" data-icon="leaf"></span><span>Ми, дорослі, часто такі заклопотані роботою й побутом, що не одразу помічаємо, як дитина змінилася — не лише зовні, а й усередині. Це нормально. Головне — побачити, де починається складність, і мʼяко підтримати, без звинувачень.</span></div>
     <div class="mirror" id="r-mirror">—</div>
     <div class="views">
       <div class="vh"><b>Два погляди поруч</b><div class="vleg"><span class="dot"><span class="d d-par"></span> Батьки</span><span class="dot"><span class="d d-teen"></span> Підліток</span></div></div>
       <div id="r-views"></div>
+    </div>
+    <div class="scenario" id="r-changed" style="display:none; border-left:5px solid var(--blue)">
+      <h3><span class="hic" data-icon="chartup"></span> Як змінилося з минулого разу</h3>
+      <p class="scase" id="r-changed-sub">Порівнюємо з вашим попереднім проходженням — спокійно, без оцінок.</p>
+      <div id="r-changed-body"></div>
     </div>
     <div class="scenario">
       <h3><span class="hic" data-icon="handheart"></span> <span id="r-sctitle">Один крок, який працює</span></h3>
@@ -221,6 +253,13 @@
       <div class="srow"><span class="si si-dont" data-icon="ban"></span><div class="sc"><div class="t t-dont">Не кажіть</div><div class="c" id="r-dont">—</div></div></div>
       <div class="srow"><span class="si si-step" data-icon="step"></span><div class="sc"><div class="t t-step">Крок сьогодні</div><div class="c" id="r-step">—</div></div></div>
       <div class="srow"><span class="si si-spec" data-icon="buoy"></span><div class="sc"><div class="t t-spec">Коли потрібен фахівець</div><div class="c" id="r-spec">—</div></div></div>
+    </div>
+    <div class="scenario" id="r-teen" style="border-left:5px solid var(--green)">
+      <h3><span class="hic" data-icon="spark"></span> А це — тобі, підлітку</h3>
+      <p class="scase" id="r-teen-sub">Дякуємо, що пройшов чесно. Тест не лише для батьків — ось що дзеркало показало для тебе.</p>
+      <div class="srow"><span class="si si-say" data-icon="compass"></span><div class="sc"><div class="t t-say">Що звучить найгучніше</div><div class="c" id="r-teen-zone">—</div></div></div>
+      <div class="srow"><span class="si" style="background:var(--green-bg);color:var(--green)" data-icon="users"></span><div class="sc"><div class="t" style="color:var(--green)">Ви з батьками</div><div class="c" id="r-teen-gap">—</div></div></div>
+      <div class="srow"><span class="si si-spec" data-icon="handheart"></span><div class="sc"><div class="t t-spec">Твій крок</div><div class="c" id="r-teen-step">—</div></div></div>
     </div>
     <div class="safety"><span class="ink-ic" data-icon="handheart"></span><span>Це перший крок, а не заміна живій людині. Якщо ситуація серйозніша — ми поруч і мʼяко допоможемо знайти фахівця.</span></div>
     <div class="next">
@@ -241,30 +280,35 @@
 <script>
   var TOTAL = 6;
   var state = { concerns: [], parent: {}, teen: {}, words: '' };
+  // знімок останнього обрахованого результату — для збереження в кабінет
+  var lastResult = null;
+  var savedAttemptId = null;
   function $(s){ return document.querySelector(s); }
   function $$(s){ return document.querySelectorAll(s); }
   var SCALES = { peers:'Однолітки', teacher:'Школа та вчителі', parents:'Стосунки вдома', motivation:'Мотивація та стан' };
   var HYP = {
-    attention:{label:'увагу та концентрацію', scale:'motivation'},
     motivation:{label:'брак мотивації', scale:'motivation'},
     grades:{label:'оцінки, що погіршились', scale:'teacher'},
     mood:{label:'настрій і тривожність', scale:'motivation'},
     communication:{label:'складне спілкування', scale:'parents'},
     conflict:{label:'конфлікти через уроки', scale:'parents'}
   };
+  // Питання за формулюваннями Оксани (фідбек V1, розділи C/D). 6 тем, дзеркально батьки/підліток.
   var PARENT_Q = [
-    {id:'p_peers', scale:'peers', q:'Як, на вашу думку, у дитини з однолітками та друзями?', opts:[['Багато друзів, почувається своєю',0],['Загалом нормально',1],['Буває самотньо або сварки',2],['Ні з ким не близька / уникає',3]]},
-    {id:'p_teacher', scale:'teacher', q:'Як складаються стосунки зі школою та вчителями?', opts:[['Спокійно, її цінують',0],['Загалом ок',1],['Конфлікти чи несправедливі оцінки',2],['Часто скаржиться / не хоче в школу',3]]},
-    {id:'p_open', scale:'parents', q:'Наскільки дитина відкрита з вами вдома?', opts:[['Ділиться майже всім',0],['Іноді розповідає',1],['Радше закривається',2],['Майже не говорить, віддаляється',3]]},
-    {id:'p_conflict', scale:'parents', q:'Як часто вдома конфлікти через навчання?', opts:[['Майже ніколи',0],['Іноді',1],['Часто',2],['Майже щодня',3]]},
-    {id:'p_state', scale:'motivation', q:'Як зараз із настроєм і силами в дитини?', opts:[['Бадьора, в тонусі',0],['Зазвичай ок',1],['Часто втомлена або сумна',2],['Згасла, нічого не хоче',3]]}
+    {id:'p_peers', scale:'peers', q:'Наскільки, на вашу думку, у дитини складно з однокласниками та друзями?', opts:[['Усе добре, є свої',0],['Загалом нормально',1],['Буває самотньо або сварки',2],['Майже ні з ким, уникає',3]]},
+    {id:'p_open', scale:'parents', q:'Наскільки серйозні зараз стосунки/конфлікти вдома, з вами?', opts:[['Тепло, ділиться',0],['Загалом нормально',1],['Часто напружено',2],['Закрилася, віддаляється',3]]},
+    {id:'p_teacher', scale:'teacher', q:'Чи є конфлікти з учителями у школі?', opts:[['Ні, спокійно',0],['Дуже рідко',1],['Деколи трапляються',2],['Так, часто',3]]},
+    {id:'p_school', scale:'teacher', q:'З яким настроєм дитина йде вранці до школи?', opts:[['Радо, спокійно',0],['Буває по-різному',1],['Часто не хоче',2],['Майже щодня важко',3]]},
+    {id:'p_home', scale:'motivation', q:'Уроки робить сама чи потрібна допомога/контроль?', opts:[['Сама, легко',0],['Здебільшого сама',1],['Часто потрібна допомога',2],['Лише під контролем',3]]},
+    {id:'p_feel', scale:'motivation', q:'Як дитина почувається останнім часом (настрій, сили)?', opts:[['Бадьора, в тонусі',0],['Зазвичай ок',1],['Часто втомлена або сумна',2],['Згасла, нічого не хоче',3]]}
   ];
   var TEEN_Q = [
-    {id:'t_peers', scale:'peers', q:'Як справи з однокласниками та друзями?', opts:[['Класно, є свої',0],['Нормально',1],['Так собі, буває важко',2],['Самотньо / складно',3]]},
-    {id:'t_teacher', scale:'teacher', q:'Як відчувається школа і вчителі?', opts:[['Спокійно',0],['Буває важко',1],['Іноді несправедливо',2],['Несправедливо, не хочу туди',3]]},
-    {id:'t_parents', scale:'parents', q:'Як вдома, з батьками?', opts:[['Тепло, розуміють',0],['Загалом нормально',1],['Часто сваримось або тиснуть',2],['Мене не чують, краще мовчати',3]]},
-    {id:'t_energy', scale:'motivation', q:'Чи є сили та бажання вчитися?', opts:[['Так',0],['Іноді',1],['Майже немає',2],['Зовсім ні',3]]},
-    {id:'t_mood', scale:'motivation', q:'Як часто останнім часом сумно або все набридло?', opts:[['Майже ніколи',0],['Інколи',1],['Часто',2],['Майже завжди',3]]}
+    {id:'t_peers', scale:'peers', q:'Наскільки складно тобі буває з однокласниками та друзями?', opts:[['Усе добре, є свої',0],['Загалом нормально',1],['Буває важко',2],['Часто складно / самотньо',3]]},
+    {id:'t_parents', scale:'parents', q:'Наскільки напружено зараз удома, з батьками?', opts:[['Тепло, розуміють',0],['Загалом нормально',1],['Часто напружено',2],['Мене не чують, краще мовчати',3]]},
+    {id:'t_teacher', scale:'teacher', q:'Чи є конфлікти з учителями у школі?', opts:[['Ні, спокійно',0],['Дуже рідко',1],['Деколи трапляються',2],['Так, часто',3]]},
+    {id:'t_school', scale:'teacher', q:'З яким настроєм ти йдеш уранці до школи?', opts:[['Радо, спокійно',0],['Буває по-різному',1],['Часто не хочеться',2],['Майже щодня важко',3]]},
+    {id:'t_home', scale:'motivation', q:'Уроки робиш сам чи потрібна допомога?', opts:[['Сам, легко',0],['Здебільшого сам',1],['Часто потрібна допомога',2],['Без допомоги не виходить',3]]},
+    {id:'t_feel', scale:'motivation', q:'Як ти почуваєшся останнім часом?', opts:[['Добре, є сили',0],['Нормально',1],['Часто втомлено чи сумно',2],['Погано, нічого не хочеться',3]]}
   ];
   var SCEN = {
     teacher:{ title:'Один крок: спокійна розмова з учителем', scase:'З досвіду Оксани — історія Тими, 15 («несправедлива оцінка»)',
@@ -277,16 +321,16 @@
       dont:'Не кажіть «він просто лінивий» і не ізолюйте «поки не виправить оцінки» — це лише підсилює замкнення.',
       step:'Знайти одне середовище за інтересом чи навчанням, де поруч мотивовані однолітки.',
       spec:'Якщо дитина уникає однолітків через тривогу чи цькування — варто поговорити з фахівцем.' },
-    parents_warm:{ title:'Один крок: тепла розмова вдома', scase:'З досвіду Оксани — історія «причина не в тобі» (Лёша, 16)',
-      say:'Спершу дайте дитині виговоритися, не перебиваючи. Потім тихо: «Я бачу тебе, я поруч. Причина не в тобі.» Говоріть рівним, спокійним голосом — рекомендація, а не наказ.',
+    parents_warm:{ title:'Один крок: тепла розмова вдома', scase:'З досвіду Оксани — як починати розмову, щоб дитина відкрилася',
+      say:'Почніть легко, не з «сідай, поговоримо», і не втомленою з порога: «Що новенького в школі? Розкажи, які там у вас плітки в класі» — атмосфера класу теж важлива. Далі — «Хотіла з тобою порадитися: як краще вчинити, так чи так?» Коли дитина бачить, що її слухають і з її думкою рахуються, вона відкривається. І лише потім, спокійно: «Я бачу тебе, причина не в тобі.»',
       dont:'Не знецінюйте («дрібниці, забудь»), не тисніть на оцінки, не допитуйте і не наказуйте «я старша — мені видніше».',
-      step:'Сьогодні — одна спокійна тепла розмова, де ви більше слухаєте, ніж говорите.',
-      spec:'Якщо туга чи замкнутість тримаються тижнями, порушені сон/апетит — мʼяко допоможемо знайти психолога.' },
+      step:'Сьогодні — одна легка, спокійна розмова, де ви більше слухаєте, ніж повчаєте, і навіть просите поради в дитини.',
+      spec:'Можна прямо й спокійно спитати саму дитину: «Може, тобі варто поговорити з психологом?» — і прийняти її відповідь. Якщо туга чи замкнутість тримаються тижнями, порушені сон/апетит — мʼяко допоможемо знайти фахівця.' },
     parents_control:{ title:'Один крок: менше контролю — більше довіри', scase:'З досвіду Оксани — «контроль перетворюється на стіну» та «чим сильніше тягнути, тим далі йде»',
       say:'Спокійно, рівним голосом: «Я тобі довіряю. Ось ця зона — твоя відповідальність.» Рекомендація, а не наказ. Іноді варто знайти авторитетного для підлітка наставника, якому він довіряє.',
       dont:'Не допитуйте, не контролюйте через знайомих, не наказуйте «я старша — мені видніше» і не замінюйте довіру подарунками.',
       step:'Сьогодні віддайте одну зону під його відповідальність і проведіть одну спокійну розмову без тиску.',
-      spec:'Якщо підліток пізно приходить, зникає, зʼявляються алкоголь/куріння — обовʼязково до живого фахівця.' },
+      spec:'Спокійно спитайте дитину, чи хоче вона поговорити з психологом, — і прийміть її відповідь. А якщо підліток пізно приходить, зникає, зʼявляються алкоголь/куріння — обовʼязково до живого фахівця.' },
     motivation:{ title:'Один крок: повернути сили й інтерес', scase:'З досвіду Оксани — історія про закоханість і пріоритети («не „або–або“, а як розподілити увагу»)',
       say:'Визнайте почуття: «Це нормально — і втомитися, і захопитися чимось іншим.» Покажіть, що йдеться не «або навчання, або життя», а як розподілити увагу.',
       dont:'Не звинувачуйте в лінощах, не лякайте майбутнім і не порівнюйте з іншими дітьми.',
@@ -346,8 +390,8 @@
   function sevWord(v){ return ['спокійно','загалом ок','напружено','важко'][Math.min(3,Math.round(v))]; }
   function detectRisk(){
     var t=state.teen, txt=(state.words||'').toLowerCase(); var reasons=[];
-    if(t.t_mood===3 && t.t_energy>=2) reasons.push('state');
-    if(t.t_parents===3 && (t.t_mood>=2||t.t_energy>=3)) reasons.push('home');
+    if(t.t_feel===3 && (t.t_school>=2||t.t_home>=2)) reasons.push('state');
+    if(t.t_parents===3 && (t.t_feel>=2||t.t_school>=3)) reasons.push('home');
     var kw=/(не хочу жити|не хочеться жити|нема сенсу|немає сенсу|ненавиджу себе|нікому не потріб|покінч|вбити себе|зникнути назавжди|алкогол|нарк|втекти з дому|втечу з дому|нема куди)/i;
     if(kw.test(txt)) reasons.push('words');
     return reasons;
@@ -382,7 +426,7 @@
     renderViews(ps, ts, dScale, dMax);
     var sKey = zone;
     if(zone==='parents'){
-      var control = (state.parent.p_conflict>=2) || (state.teen.t_parents>=2);
+      var control = (state.parent.p_home>=2) || (state.teen.t_parents>=2);
       sKey = control ? 'parents_control' : 'parents_warm';
     }
     var sc = SCEN[sKey];
@@ -395,6 +439,38 @@
       $('#r-risk-text').textContent = msg; rEl.style.display='block';
       $('#r-spec').textContent = 'Зараз — саме той випадок. Не залишайтеся з цим самі: поряд є фахівці та безкоштовні лінії підтримки, з якими можна поговорити будь-коли.';
     } else { rEl.style.display='none'; }
+    // H (фідбек мами V1): висновок для самого підлітка — дитина теж має побачити результат
+    (function(){
+      var z = SCALES[zone].toLowerCase();
+      $('#r-teen-zone').textContent = 'Найсильніше зараз звучить тема «'+z+'». Це не означає, що з тобою щось не так — це просто місце, де тобі зараз найважче, і саме звідси варто почати.';
+      var gaps=0, n=0; Object.keys(SCALES).forEach(function(s){ gaps+=Math.abs(ps[s]-ts[s]); n++; });
+      var mean = n ? gaps/n : 0;
+      if(mean < 0.8){
+        $('#r-teen-gap').textContent = 'Ви з батьками радше на одній хвилі — бачите ситуацію схоже. Це велика опора: вам буде легше домовлятися.';
+      } else {
+        $('#r-teen-gap').textContent = 'Ви з батьками поки що бачите це по-різному. Це не означає, що вони тебе не люблять — їм просто ще не видно того, що відчуваєш ти. Перший крок — спокійно показати їм це дзеркало.';
+      }
+      if(risk.length){
+        $('#r-teen-step').textContent = 'Зараз тобі важко — і це не назавжди. Будь ласка, не лишайся з цим сам: поговори з дорослим, якому довіряєш, або з фахівцем. Ти важливий, і попросити про допомогу — це сила.';
+      } else {
+        $('#r-teen-step').textContent = 'Спробуй чесно поговорити з тим, кому довіряєш. А якщо відчуваєш, що сам не витягуєш, — попросити про розмову з психологом це сила, а не слабкість.';
+      }
+    })();
+    // знімок результату для збереження в кабінет (без дослівних слів підлітка — приватність)
+    var gaps={}; Object.keys(SCALES).forEach(function(s){ gaps[s]=+(Math.abs(ps[s]-ts[s]).toFixed(2)); });
+    lastResult = {
+      concerns: state.concerns.slice(),
+      hypLabel: hyp.label, hypScale: hyp.scale,
+      zone: zone,
+      scenarioKey: sKey,
+      parentScores: Object.keys(SCALES).reduce(function(o,s){ o[s]=+ps[s].toFixed(2); return o; }, {}),
+      teenScores: Object.keys(SCALES).reduce(function(o,s){ o[s]=+ts[s].toFixed(2); return o; }, {}),
+      gaps: gaps,
+      topGapScale: dScale, topGapValue: +dMax.toFixed(2),
+      risk: risk.length>0
+    };
+    renderChanged(ts, ps);
+    savedAttemptId = null;
     $('#flowScreen').style.display='none';
     $('#resultScreen').style.display='block';
     Site.paint();
@@ -411,8 +487,59 @@
         '</div></div>';
     }).join('');
   }
+  // ----- «Як змінилося з минулого разу» (б): порівняння з попередньою спробою -----
+  var CH_MONTHS=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
+  function chFmtDate(iso){ var d=new Date(iso); if(isNaN(d)) return ''; var s=d.getDate()+' '+CH_MONTHS[d.getMonth()]; if(d.getFullYear()!==new Date().getFullYear()) s+=' '+d.getFullYear(); return s; }
+  function chMeanGap(p,t){ var sum=0,n=0; Object.keys(SCALES).forEach(function(s){ sum+=Math.abs((p[s]||0)-(t[s]||0)); n++; }); return n?sum/n:0; }
+  function chNames(list){ return list.map(function(s){ return '«'+SCALES[s].toLowerCase()+'»'; }).join(', '); }
+  function renderChanged(ts, ps){
+    var box=$('#r-changed'), body=$('#r-changed-body');
+    if(!box||!body) return;
+    // приватність: порівнюємо лише бали зон і розходження, без дослівних відповідей
+    var prev = (window.Site && Site.getLatest) ? Site.getLatest() : null;
+    if(!prev || !prev.teenScores){ box.style.display='none'; return; }
+    var pt = prev.teenScores;
+    var improved=[], worse=[];
+    Object.keys(SCALES).forEach(function(s){
+      var d=(ts[s]||0)-(pt[s]!=null?pt[s]:0);
+      if(d<=-0.5) improved.push(s); else if(d>=0.5) worse.push(s);
+    });
+    var gapNow=chMeanGap(ps, ts);
+    var gapPrev=(prev.parentScores && prev.teenScores)? chMeanGap(prev.parentScores, prev.teenScores) : null;
+    var rows=[];
+    if(improved.length){
+      rows.push('<div class="srow"><span class="si si-say" data-icon="chartup"></span><div class="sc"><div class="t t-say">Полегшало</div><div class="c">'+
+        (improved.length===1?'Дитині стало спокійніше у темі ':'Дитині стало спокійніше у темах ')+chNames(improved)+'. Гарний знак — ваші кроки працюють.</div></div></div>');
+    }
+    if(worse.length){
+      rows.push('<div class="srow"><span class="si si-dont" data-icon="chartdown"></span><div class="sc"><div class="t t-dont">Стало напруженіше</div><div class="c">'+
+        (worse.length===1?'Трохи загострилось у темі ':'Трохи загострилось у темах ')+chNames(worse)+'. Без тривоги — це просто місце, куди варто мʼяко придивитися.</div></div></div>');
+    }
+    if(gapPrev!=null){
+      if(gapNow <= gapPrev-0.3){
+        rows.push('<div class="srow"><span class="si si-say" data-icon="users"></span><div class="sc"><div class="t t-say">Ви ближче</div><div class="c">Ви з дитиною стали більше бачити ситуацію однаково, ніж минулого разу. Це велика опора для розмови.</div></div></div>');
+      } else if(gapNow >= gapPrev+0.3){
+        rows.push('<div class="srow"><span class="si si-step" data-icon="chat"></span><div class="sc"><div class="t t-step">Погляди розійшлися</div><div class="c">Цього разу ваші відчуття трохи розходяться сильніше. Це нормально й корисно знати — гарний привід спокійно поговорити саме про це.</div></div></div>');
+      }
+    }
+    if(!rows.length){
+      rows.push('<div class="srow"><span class="si si-spec" data-icon="leaf"></span><div class="sc"><div class="t t-spec">Картина стабільна</div><div class="c">Загалом усе схоже на минулий раз — різких змін немає. Це теж добра новина: ситуація рівна, можна спокійно робити маленькі кроки далі.</div></div></div>');
+    }
+    $('#r-changed-sub').textContent = 'Порівняння з попереднім проходженням від '+chFmtDate(prev.date)+' — спокійно, без оцінок.';
+    body.innerHTML = rows.join('');
+    box.style.display='block';
+    Site.paint(box);
+  }
+
   function savePlan(){ if(typeof window.print==='function'){ window.print(); } else { Site.toast('Меню «Поділитися → Друк», щоб зберегти PDF'); } }
-  function saveToKabinet(){ Site.toast('Збережено в кабінет (демо). Тут зʼявиться історія та динаміка.'); }
+  function saveToKabinet(){
+    if(!lastResult){ Site.toast('Спершу подивіться результат тесту.'); return; }
+    if(savedAttemptId){ Site.toast('Цей результат уже збережено в кабінет.'); return; }
+    savedAttemptId = Site.saveAttempt(lastResult);
+    if(!savedAttemptId){ Site.toast('Не вдалося зберегти (сховище недоступне).'); return; }
+    Site.toast('Збережено в кабінет. Відкриваємо історію та динаміку…');
+    setTimeout(function(){ location.href = 'kabinet.html?new=' + encodeURIComponent(savedAttemptId); }, 900);
+  }
   function resetAll(){
     state.concerns=[]; state.parent={}; state.teen={}; state.words='';
     $$('#concerns .choice').forEach(function(c){ c.classList.remove('sel'); });

@@ -23,6 +23,141 @@
   }
   initTheme();
 
+  // ---- слой данных попыток теста (localStorage; задел под бэкенд) ----
+  // Один источник правды. Схема версионирована.
+  //   v1 (старая): {v:1, attempts:[...]}                         — один подросток
+  //   v2 (текущая): {v:2, kids:[{id,name,attempts:[...]}], activeKidId}
+  // Миграция v1->v2 НЕразрушающая: имеющиеся attempts становятся первым
+  // ребёнком «Ваша дитина». Публичные saveAttempt/getAttempts/getLatest/
+  // clearAttempts работают над АКТИВНЫМ ребёнком — UI этих функций не трогаем.
+  // Чтобы позже перейти на бэкенд — достаточно переписать чтение/запись здесь.
+  var ATTEMPTS_KEY = 'mist-attempts';
+  var SCHEMA_V = 2;
+  var DEFAULT_KID_NAME = 'Ваша дитина';
+
+  function uid(p){ return (p||'k') + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+  function blankKid(name){ return { id:uid('k'), name:(name||DEFAULT_KID_NAME), attempts:[] }; }
+  function blankStore(){ var k=blankKid(); return { v:SCHEMA_V, kids:[k], activeKidId:k.id }; }
+
+  // Приводит любой прочитанный объект к целостной схеме v2 (включая миграцию v1->v2).
+  // Возвращает {store, migrated} — migrated=true, если форму пришлось менять (нужно сохранить).
+  function normalize(data){
+    if(!data || typeof data!=='object') return { store:blankStore(), migrated:true };
+    // --- миграция v1 -> v2 ---
+    if(Array.isArray(data.attempts) && !Array.isArray(data.kids)){
+      var kid = { id:uid('k'), name:DEFAULT_KID_NAME, attempts:data.attempts.slice() };
+      return { store:{ v:SCHEMA_V, kids:[kid], activeKidId:kid.id }, migrated:true };
+    }
+    // --- санитизация v2 ---
+    if(!Array.isArray(data.kids) || !data.kids.length){
+      return { store:blankStore(), migrated:true };
+    }
+    var changed = (data.v !== SCHEMA_V);
+    var kids = data.kids.map(function(k, i){
+      var nk = {
+        id: (k && k.id) ? k.id : uid('k'),
+        name: (k && typeof k.name==='string' && k.name.trim()) ? k.name : (i===0 ? DEFAULT_KID_NAME : 'Дитина '+(i+1)),
+        attempts: (k && Array.isArray(k.attempts)) ? k.attempts : []
+      };
+      if(!k || nk.id!==k.id || nk.name!==k.name || nk.attempts!==k.attempts) changed = true;
+      return nk;
+    });
+    var activeKidId = data.activeKidId;
+    if(!activeKidId || !kids.some(function(k){ return k.id===activeKidId; })){
+      activeKidId = kids[0].id; changed = true;
+    }
+    return { store:{ v:SCHEMA_V, kids:kids, activeKidId:activeKidId }, migrated:changed };
+  }
+
+  function readStore(){
+    try{
+      var raw = localStorage.getItem(ATTEMPTS_KEY);
+      if(!raw){ var fresh = blankStore(); try{ writeStore(fresh); }catch(e){} return fresh; } // стабільний id одразу
+      var res = normalize(JSON.parse(raw));
+      if(res.migrated){ try{ writeStore(res.store); }catch(e){} } // НЕразрушающе фиксируем миграцию
+      return res.store;
+    }catch(e){ return blankStore(); }
+  }
+  function writeStore(store){
+    try{ localStorage.setItem(ATTEMPTS_KEY, JSON.stringify(store)); return true; }
+    catch(e){ return false; }
+  }
+  function activeKidOf(store){
+    var k = store.kids.filter(function(x){ return x.id===store.activeKidId; })[0];
+    return k || store.kids[0];
+  }
+
+  // saveAttempt: додає нову спробу в історію АКТИВНОЇ дитини (не перезатирає), повертає її id
+  function saveAttempt(obj){
+    var store = readStore();
+    var kid = activeKidOf(store);
+    var attempt = obj || {};
+    if(!attempt.date) attempt.date = new Date().toISOString();
+    if(!attempt.id) attempt.id = 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+    kid.attempts.push(attempt);
+    writeStore(store);
+    return attempt.id;
+  }
+  // getAttempts: вся історія активної дитини (свіжі зверху)
+  function getAttempts(){
+    return activeKidOf(readStore()).attempts.slice().sort(function(a,b){
+      return (b.date||'').localeCompare(a.date||'');
+    });
+  }
+  // getLatest: остання (найсвіжіша) спроба активної дитини або null
+  function getLatest(){
+    var all = getAttempts();
+    return all.length ? all[0] : null;
+  }
+  // clearAttempts: очищає історію АКТИВНОЇ дитини (профіль лишається)
+  function clearAttempts(){
+    var store = readStore();
+    activeKidOf(store).attempts = [];
+    return writeStore(store);
+  }
+
+  // ---- профілі кількох дітей (поверх того ж джерела правди) ----
+  // getKids: легкий список профілів [{id,name,count,active}]
+  function getKids(){
+    var store = readStore();
+    return store.kids.map(function(k){
+      return { id:k.id, name:k.name, count:k.attempts.length, active:(k.id===store.activeKidId) };
+    });
+  }
+  function getActiveKidId(){ return readStore().activeKidId; }
+  function setActiveKid(id){
+    var store = readStore();
+    if(store.kids.some(function(k){ return k.id===id; })){ store.activeKidId=id; return writeStore(store); }
+    return false;
+  }
+  // addKid: додає нову дитину й робить її активною, повертає id
+  function addKid(name){
+    var store = readStore();
+    var nm = (name||'').trim() || ('Дитина '+(store.kids.length+1));
+    var kid = blankKid(nm);
+    store.kids.push(kid);
+    store.activeKidId = kid.id;
+    writeStore(store);
+    return kid.id;
+  }
+  function renameKid(id, name){
+    var store = readStore();
+    var k = store.kids.filter(function(x){ return x.id===id; })[0];
+    if(!k) return false;
+    var nm = (name||'').trim(); if(!nm) return false;
+    k.name = nm; return writeStore(store);
+  }
+  // removeKid: видаляє профіль; завжди лишає хоча б одну дитину
+  function removeKid(id){
+    var store = readStore();
+    if(store.kids.length<=1) return false;
+    var idx = store.kids.map(function(k){return k.id;}).indexOf(id);
+    if(idx<0) return false;
+    store.kids.splice(idx,1);
+    if(store.activeKidId===id) store.activeKidId = store.kids[0].id;
+    return writeStore(store);
+  }
+
   var ICONS = {
     leaf:'<path d="M5 20c9 1 15-5 15-15-9-1-15 5-15 15Z"/><path d="M5 20C8 14 12 11 17 9"/>',
     shield:'<path d="M12 3l7 3v5c0 4.5-3.2 7.4-7 8.6C8.2 18.4 5 15.5 5 11V6z"/><path d="M9 11.5l2 2 4-4.5"/>',
@@ -104,13 +239,16 @@
 
   function buildHeader(active){
     var links = NAV.map(function(n){
-      return '<a href="'+n.href+'"'+(n.key===active?' class="on"':'')+'>'+n.label+'</a>';
+      return '<a href="'+n.href+'"'+(n.key===active?' class="on"':'')+' onclick="Site.closeNav()">'+n.label+'</a>';
     }).join('');
     return '<div class="wrap nav">'+LOGO+
-      '<div class="links">'+links+'</div>'+
+      '<div class="links">'+links+
+        '<a href="#" class="nav-login-m" onclick="Site.closeNav();Site.toast(\'Вхід зʼявиться згодом. Зараз усе працює без реєстрації\');return false;">Увійти</a>'+
+      '</div>'+
       '<div class="right">'+
         '<button class="btn btn-ghost theme-toggle" aria-label="Перемкнути тему" onclick="Site.toggleTheme()"><span class="t-moon" data-icon="moon"></span><span class="t-sun" data-icon="sun"></span></button>'+
-        '<button class="btn btn-ghost" onclick="Site.toast(\'Вхід зʼявиться згодом. Зараз усе працює без реєстрації\')">Увійти</button>'+
+        '<button class="btn btn-ghost nav-login" onclick="Site.toast(\'Вхід зʼявиться згодом. Зараз усе працює без реєстрації\')">Увійти</button>'+
+        '<button class="nav-burger" aria-label="Меню" aria-expanded="false" onclick="Site.toggleNav(this)"><span></span><span></span><span></span></button>'+
       '</div>'+
     '</div>';
   }
@@ -148,9 +286,24 @@
     parents:'assets/scale-parents.png', motivation:'assets/scale-motivation.png'
   };
 
+  // Реальне фото Оксани. Зараз — з її профілю BUKI; щоб перейти на локальне,
+  // поклади файл у assets/oksana.jpg і заміни рядок на 'assets/oksana.jpg'.
+  var OKSANA_PHOTO = 'https://api.buki.com.ua/tutor_avatar/oI/Nn/avatar/oINnqxN58tUSjFTbvXywr0lv3yuVmDmhSxwQx04u.jpg';
+  // повертає <img> з фото Оксани і мʼяким фолбеком на літеру (якщо фото не завантажилось)
+  function oksanaImg(letter){
+    var l = (letter||'О').replace(/'/g,'');
+    return '<img src="'+OKSANA_PHOTO+'" alt="Оксана Лозовицька" loading="lazy" '+
+      'onerror="this.onerror=null;this.outerHTML=\''+l+'\'">';
+  }
+  // проставляє фото Оксани в аватар за id елемента (контейнер з класом .ava/.av)
+  function setOksanaAva(id, letter){
+    var el = (typeof id==='string') ? document.getElementById(id) : id;
+    if(el){ el.innerHTML = oksanaImg(letter); }
+  }
+
   var EXPERTS = [
     {name:'Оксана Лозовицька', role:'Репетитор з математики і фізики', city:'Київ · Берестейська', rating:null, n:0,
-     tags:['teacher','motivation'], kind:'tutor', avatar:'pro-oksanu.html',
+     tags:['teacher','motivation'], kind:'tutor', avatar:'pro-oksanu.html', photo:OKSANA_PHOTO,
      format:'Індивідуально та в групі · очно (Київ) й онлайн', price:'Перше (пробне) заняття — безкоштовне',
      bio:'20+ років стажу. Інженер-викладач за фахом. Готує до НМТ/ЗНО та ДПА (7–11 класи). Спершу причина — потім математика.',
      approach:'Оксана першою бачить, що «лінь» чи погані оцінки — майже завжди наслідок чогось іншого: стосунків, несправедливості в школі, того, що вдома. Спершу дає дитині виговоритися, знаходить корінь — і лише потім повертається до предмета.',
@@ -270,7 +423,38 @@
      body:'<p>«Шкільна приналежність» — це відчуття підлітка, що в школі його бачать, поважають і приймають. Дослідження (зокрема метааналізи) стабільно повʼязують її з вищою мотивацією, успішністю й загальним добробутом. І навпаки: коли дитина почувається чужою, падає все — і оцінки, і настрій.</p>'+
        '<p>Прикро, але саме в середній школі це почуття часто слабшає. Хороша новина: навіть тепле, справедливе ставлення <b>одного</b> вчителя здатне багато змінити — стати тією опорою, заради якої хочеться приходити.</p>'+
        '<blockquote>Тому в історії з несправедливою оцінкою Оксана вчить не «качати права», а спокійно й гідно показати вчителю свої знання. Повага й контакт важать більше за саму оцінку.</blockquote>'+
-       '<h4>Як це вдома</h4><p>Спитайте не лише «що отримав», а й «з ким у школі тобі добре». Якщо є хоч один учитель чи предмет, де дитину цінують, — спирайтеся на це. А при конфлікті вчіть спокійної, поважної розмови, а не протистояння.</p>'}
+       '<h4>Як це вдома</h4><p>Спитайте не лише «що отримав», а й «з ким у школі тобі добре». Якщо є хоч один учитель чи предмет, де дитину цінують, — спирайтеся на це. А при конфлікті вчіть спокійної, поважної розмови, а не протистояння.</p>'},
+    {scale:'parents', icon:'chat', title:'Як почати теплу розмову з підлітком',
+     teaser:'Не «сідай, поговоримо», а легко: «Що новенького?», «розкажи, які у вас плітки в класі», «хотіла з тобою порадитися». І головне — спершу заспокоїтися самій, не «з порога втомленій».',
+     src:'Gottman · Bids for connection (turning toward)', url:'https://www.gottman.com/blog/turn-toward-instead-of-away/',
+     body:'<p>Серйозні розмови майже ніколи не починаються зі слів «сідай, треба поговорити» — від них підліток одразу напружується й закривається. Джон Готтман десятиліттями спостерігав за стосунками й помітив: близькість будується не з великих розмов, а з безлічі маленьких «запрошень до контакту» (він називає їх <b>bids</b>) — і з того, чи повертаємось ми до них теплом, чи відмахуємось.</p>'+
+       '<p>Тому найдієвіший початок — легкий і ніби між іншим: «Що новенького у школі?», «Розкажи, які там у вас плітки в класі» (атмосфера класу важить більше, ніж здається), «Хотіла з тобою порадитися — як краще вчинити, так чи так?». Останнє особливо сильне: воно ставить підлітка не в позицію винного, а в позицію людини, до думки якої прислухаються.</p>'+
+       '<blockquote>Оксана наголошує: спершу спокійною має стати сама мама — не «з порога втомлена». Тоді дитина відчуває головне: «на мене не кричать, мене хочуть вислухати, до моєї думки прислухаються».</blockquote>'+
+       '<h4>Як це вдома</h4><p>Сьогодні не починайте з оцінок і уроків. Киньте один легкий «місток»: «що цікавого було?» або «порадь мені…». Мета першої розмови — не розвʼязати проблему, а щоб дитині захотілося говорити з вами ще.</p>'},
+    {scale:'motivation', icon:'buoy', title:'Психолог — це сила, а не слабкість',
+     teaser:'Звернутися по допомогу — ознака зрілості, а не «зі мною щось не так». І питати варто саму дитину: «як ти бачиш наші розмови? може, варто сходити до психолога?» — а тоді прийняти її відповідь.',
+     src:'ВООЗ · Психічне здоровʼя підлітків', url:'https://www.who.int/news-room/fact-sheets/detail/adolescent-mental-health',
+     body:'<p>За даними ВООЗ, значна частина труднощів із психічним станом починається ще до 14 років — і найчастіше лишається непоміченою. А вчасна, спокійна підтримка дорослого чи фахівця реально допомагає. Звернення до психолога — це не «діагноз» і не вирок, а турбота про себе, така ж нормальна, як піти до лікаря з кашлем.</p>'+
+       '<p>Важливий нюанс від Оксани: рішення про фахівця краще не «спускати згори», а обговорити з самою дитиною. Можна спитати прямо: «Як ти бачиш наші розмови? Може, мої поради не зовсім підходять і варто сходити на консультацію? Коли поговориш — можливо, сам побачиш і проблему, і рішення». А далі — прийняти її відповідь, не тиснути.</p>'+
+       '<blockquote>Просити про допомогу — це сила, а не слабкість. Той, хто вміє сказати «мені зараз важко, потрібна підтримка», насправді дорослішає швидше за того, хто все тримає в собі.</blockquote>'+
+       '<h4>Як це вдома</h4><p>Не лякайте словом «психолог» і не подавайте це як покарання («доходився»). Подайте як ресурс: «є людина, з якою можна спокійно розкласти все по поличках — хочеш спробувати?».</p>'+
+       '<h4>Крок для підлітка</h4><p>Якщо всередині важко й самому не вивозиться — попросити про розмову з психологом це твоє право і твоя сила. Це не означає, що з тобою «щось не так». Це означає, що ти дбаєш про себе по-дорослому.</p>'},
+    {scale:'teacher', icon:'target', title:'Несправедлива оцінка: спокійна гідність',
+     teaser:'Якщо дитина знає матеріал, а оцінки нижчі — вчимо не «качати права», а спокійно й поважно показати знання: «можна розібрати, де я помилився?». Теплий контакт з учителем важить не менше за саму оцінку.',
+     src:'APA · Стосунки «учитель — учень»', url:'https://www.apa.org/education-career/k12/relationships',
+     body:'<p>Дослідження APA стабільно показують: якість стосунків між учнем і вчителем сильно повʼязана з тим, наскільки дитина залучена й успішна. Там, де є повага й контакт, оцінки теж стають справедливішими — бо вчитель бачить у дитині людину, яка хоче розібратися, а не «прогулює».</p>'+
+       '<p>Тому при заниженій оцінці корисніше не конфлікт, а спокійна гідність. Підліток може сам, ввічливо й без грубощів, підійти й попросити розібрати роботу: «Можна подивитися, де саме помилка? Мені здавалося, я зробив на вищий бал». Часто достатньо одного-двох таких підходів, щоб ставлення (і оцінки) вирівнялись.</p>'+
+       '<blockquote>Саме так Оксана вчила Тиму: не «качати права», а спокійно показати реальні знання. Після кількох ввічливих підходів учитель почав оцінювати чесно — бо побачив упевненість, а не претензію.</blockquote>'+
+       '<h4>Як це вдома</h4><p>Не біжіть одразу «розбиратися» з учителем замість дитини. Спершу допоможіть їй самій підготувати спокійні слова — і будьте поряд як підтримка. Якщо ж ідеться про справжню упередженість чи конфлікт — тоді вже підключайтеся ви або школа.</p>'+
+       '<h4>Крок для підлітка</h4><p>Підійди після уроку й спокійно спитай: «Можна розібрати мою роботу — де я втратив бали?». Це не сварка, це нормальне право. Не вийшло з першого разу — спробуй ще, без образи. Гідність — це коли ти говориш про свої знання спокійно.</p>'},
+    {scale:'peers', icon:'heart', title:'Перше захоплення — і навчання «зʼїхало»',
+     teaser:'Закоханість поглинає — і це нормально, а не «дурниці». Питання не «або навчання, або стосунки», а як розподілити увагу до важливих іспитів. Забороняти й висміювати — найгірше, що можна зробити.',
+     src:'Психологія підліткового віку · APA', url:'https://www.apa.org/topics/teens',
+     body:'<p>Перша закоханість у підлітковому віці — це не примха й не «несерйозне». Це нормальна, важлива віха дорослішання: мозок підлітка особливо чутливий до нових сильних емоцій, і вони справді можуть на якийсь час «перекрити» все інше, зокрема навчання. Знецінити це («дурниці, мине») — означає втратити довіру дитини.</p>'+
+       '<p>Тому замість заборон і насмішок краще визнати почуття й мʼяко повернути реальність: попереду іспити, НМТ, вступ — і питання не «або кохання, або навчання», а <b>як розподілити увагу</b>, щоб вистачило на те й на те. Разом скласти легкий мінімальний навчальний ритм, який не руйнує стосунки.</p>'+
+       '<blockquote>Оксана це формулює тепло: «математику важко вивчити, коли нежить, коли спорт, коли жуйка в роті — і коли закоханий». Це сказано як емпатія, а не як докір.</blockquote>'+
+       '<h4>Як це вдома</h4><p>Не забороняйте стосунки й не висміюйте їх. Визнайте: «це класно й це нормально». А потім спокійно: «давай подумаємо, як устигнути й тут, і з навчанням». Тривожний дзвоник — лише якщо стосунки токсичні або падіння йде по всіх фронтах.</p>'+
+       '<h4>Крок для підлітка</h4><p>Закоханість і навчання не мусять воювати. Признач собі маленький щоденний мінімум на уроки — і спокійно лишай решту часу на важливе для серця. Так ти не зрадиш ні себе, ні майбутнє.</p>'}
   ];
 
   // <img> із мʼяким фолбеком: якщо файлу ще немає — лишається запасний HTML (SVG/плейсхолдер)
@@ -310,7 +494,32 @@
     EXPERTS: EXPERTS,
     ARTICLES: ARTICLES,
     img: imgFallback,
+    OKSANA_PHOTO: OKSANA_PHOTO,
+    oksanaImg: oksanaImg,
+    setOksanaAva: setOksanaAva,
     toggleTheme: toggleTheme,
+    // слой данных попыток (один источник правды; задел под бэкенд)
+    saveAttempt: saveAttempt,
+    getAttempts: getAttempts,
+    getLatest: getLatest,
+    clearAttempts: clearAttempts,
+    // профілі кількох дітей (той самий джерело правди)
+    getKids: getKids,
+    getActiveKidId: getActiveKidId,
+    setActiveKid: setActiveKid,
+    addKid: addKid,
+    renameKid: renameKid,
+    removeKid: removeKid,
+    toggleNav: function(btn){
+      var h = document.getElementById('site-header');
+      if(!h) return;
+      var open = h.classList.toggle('nav-open');
+      if(btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    },
+    closeNav: function(){
+      var h = document.getElementById('site-header');
+      if(h){ h.classList.remove('nav-open'); var b=h.querySelector('.nav-burger'); if(b) b.setAttribute('aria-expanded','false'); }
+    },
     init: function(active){
       var h = document.getElementById('site-header');
       if(h){ h.className='site'; h.innerHTML = buildHeader(active); }

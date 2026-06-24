@@ -151,6 +151,7 @@
   <div class="section" id="how">
     <h2>Як це працює</h2>
     <p class="sublead">П’ять спокійних хвилин — і ви бачите не оцінки, а справжню причину.</p>
+    <div class="howart" id="howArt"></div>
     <div class="grid g4 how-steps">
       <div class="card"><div class="num">1</div><h3>Два погляди</h3><p>Батьки й підліток відповідають окремо — чесно й конфіденційно.</p></div>
       <div class="card"><div class="num">2</div><h3>Дзеркало</h3><p>Бачите, де ваші погляди збігаються, а де розходяться — і де справжній корінь.</p></div>
@@ -192,7 +193,7 @@
   <!-- ===================== ОКСАНА ===================== -->
   <div class="section">
     <div class="oksana-strip">
-      <div class="ava">О</div>
+      <div class="ava" id="oksanaStripAva">О</div>
       <div>
         <div class="kicker">Жива основа проєкту</div>
         <h3 style="margin:4px 0 6px">Досвід Оксани — репетитора з математики і фізики</h3>
@@ -218,6 +219,16 @@
 <script src="assets/app.js"></script>
 <script>
   Site.init('home');
+  Site.setOksanaAva('oksanaStripAva', 'О'); // реальне фото Оксани з фолбеком на літеру
+
+  // ілюстрація «два береги — один міст» у блоці «Як це працює» (зникає, якщо файлу нема)
+  (function(){
+    var box = document.getElementById('howArt'); if(!box) return;
+    var im = new Image();
+    im.onload = function(){ box.innerHTML = '<img src="assets/scene-bridge.png" alt="Два погляди — один міст" loading="lazy">'; box.classList.add('show'); };
+    im.onerror = function(){ box.style.display='none'; };
+    im.src = 'assets/scene-bridge.png';
+  })();
 
   // hero: вибір тривог → передаємо в повний тест
   var heroSel = [];

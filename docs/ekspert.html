@@ -54,6 +54,9 @@
 
   function stars(r){ var full=Math.round(r); var s=''; for(var k=0;k<5;k++) s+=(k<full?'★':'☆'); return s; }
   var initials = e.name.charAt(0);
+  var avaInner = e.photo
+    ? '<img src="'+e.photo+'" alt="'+e.name+'" loading="lazy" onerror="this.onerror=null;this.outerHTML=\''+initials+'\'">'
+    : initials;
   var ratingHTML = e.rating
     ? '<div class="stars">'+stars(e.rating)+' <span class="muted" style="font-weight:700">'+e.rating.toFixed(1)+' · '+e.n+' відгуків</span></div>'
     : '<div class="stars" style="color:var(--green)">Перше заняття безкоштовне</div>';
@@ -66,7 +69,7 @@
     '<div class="ehero">'+
       '<div>'+
         '<div class="ecard">'+
-          '<div class="ava">'+initials+'</div>'+
+          '<div class="ava">'+avaInner+'</div>'+
           '<div class="en" style="font-family:\'Fraunces\',serif; font-size:1.3rem; color:var(--head)">'+e.name+'</div>'+
           '<div class="ebadge">'+(KIND[e.kind]||'')+' · '+e.city+'</div>'+
           '<div style="margin:10px 0">'+ratingHTML+'</div>'+
