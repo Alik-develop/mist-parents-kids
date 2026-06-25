@@ -155,7 +155,47 @@
           updated_at: new Date().toISOString()
         }).select();
       }
+    },
+
+    // зовнішні звіти навчання (ВШО) — особисті дані дитини, аналітика в кабінеті
+    reports: {
+      list: function(childId){
+        return need().from('external_reports').select('*').eq('child_id', childId)
+          .order('created_at', { ascending: false });
+      },
+      save: function(childId, r){
+        r = r || {};
+        var ov = r.overall || {};
+        return need().from('external_reports').insert({
+          child_id: childId,
+          source: r.source || 'vsho',
+          subject: (r.subject && r.subject.key) || null,
+          course: r.course || null,
+          report_date: r.date || null,
+          student_name: r.name || null,
+          overall_score: (ov.score != null ? ov.score : null),
+          overall_total: (ov.total != null ? ov.total : null),
+          overall_pct: (ov.pct != null ? ov.pct : null),
+          sections: r.sections || [],
+          gaps: r.gaps || []
+        }).select().single();
+      },
+      remove: function(id){ return need().from('external_reports').delete().eq('id', id); }
     }
+  };
+
+  // привести рядок БД назад до структури VSHO (для рендера в кабінеті/на сторінці)
+  MistDB.reportFromRow = function(row){
+    if(!row) return null;
+    return {
+      id: row.id, source: row.source || 'vsho',
+      name: row.student_name || '', course: row.course || '', date: row.report_date || '',
+      subject: (window.VSHO ? window.VSHO.subjectOf(row.course) : null),
+      overall: (row.overall_pct != null || row.overall_score != null)
+        ? { score: row.overall_score, total: row.overall_total, pct: row.overall_pct } : null,
+      sections: row.sections || [], gaps: row.gaps || [],
+      created_at: row.created_at
+    };
   };
 
   // видалити всі спроби дитини (для clearAttempts у хмарному режимі)

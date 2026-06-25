@@ -271,6 +271,7 @@
         '</div>'+
         '<div><h4>Проєкт</h4>'+
           '<a href="pro-proekt.html">Про проєкт</a><a href="pro-oksanu.html">Про Оксану</a><a href="uroky.html">Уроки</a>'+
+          '<a href="zvit.html">Звіт ВШО → аналітика</a>'+
           '<a href="urok.html">Безкоштовний урок</a><a href="index.html#how">Як це працює</a>'+
           '<a href="dopomoga.html">Підтримка та лінії довіри</a>'+
           '<a href="#" onclick="Site.toast(\'Контакти зʼявляться згодом\');return false;">Контакти</a>'+

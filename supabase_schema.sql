@@ -69,11 +69,16 @@ create table if not exists public.lessons (
   video_url    text,                          -- посилання на відео-пояснення/запис
   material     text,                          -- HTML/markdown матеріал
   zone         text,                          -- опц.: яку зону теста підсилює
+  topics       jsonb,                          -- теги тем (для авто-підбору під прогалини ВШО)
+  external_url text,                            -- якщо урок зовнішній (картка-посилання на ВШО)
   duration_min int not null default 25,
   position     int not null default 0,
   published    boolean not null default true,
   created_at   timestamptz not null default now()
 );
+-- безпечні add column для наявних інсталяцій
+alter table public.lessons add column if not exists topics jsonb;
+alter table public.lessons add column if not exists external_url text;
 
 -- Питання короткого тесту на закріплення (до уроку)
 create table if not exists public.lesson_questions (
@@ -93,6 +98,24 @@ create table if not exists public.lesson_progress (
   score       int,
   updated_at  timestamptz not null default now(),
   primary key (child_id, lesson_id)
+);
+
+-- Зовнішні звіти навчання (ВШО) → аналітика в кабінеті (особисті дані дитини)
+create table if not exists public.external_reports (
+  id            uuid primary key default gen_random_uuid(),
+  child_id      uuid not null references public.children(id) on delete cascade,
+  created_by    uuid references public.profiles(id),
+  source        text not null default 'vsho',
+  subject       text,
+  course        text,
+  report_date   text,
+  student_name  text,
+  overall_score numeric,
+  overall_total numeric,
+  overall_pct   numeric,
+  sections      jsonb,
+  gaps          jsonb,
+  created_at    timestamptz not null default now()
 );
 
 -- ── 2. ХЕЛПЕР проти рекурсії RLS ─────────────────────────────────────
@@ -140,6 +163,7 @@ alter table public.attempts         enable row level security;
 alter table public.lessons          enable row level security;
 alter table public.lesson_questions enable row level security;
 alter table public.lesson_progress  enable row level security;
+alter table public.external_reports enable row level security;
 
 -- profiles: бачу/редагую лише свій профіль
 drop policy if exists p_profiles_self on public.profiles;
@@ -192,6 +216,15 @@ create policy p_lq_read on public.lesson_questions
 -- lesson_progress: CRUD прогресу лише для своїх дітей
 drop policy if exists p_progress_all on public.lesson_progress;
 create policy p_progress_all on public.lesson_progress
+  for all
+  using (child_id in (select id from public.children
+                      where family_id in (select public.my_family_ids())))
+  with check (child_id in (select id from public.children
+                      where family_id in (select public.my_family_ids())));
+
+-- external_reports: CRUD звітів для дітей із моїх сімей
+drop policy if exists p_reports_all on public.external_reports;
+create policy p_reports_all on public.external_reports
   for all
   using (child_id in (select id from public.children
                       where family_id in (select public.my_family_ids())))

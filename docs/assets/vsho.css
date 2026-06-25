@@ -1,0 +1,67 @@
+/* Стилі аналітичної картки зовнішнього звіту (ВШО). Підключати після styles.css. */
+.vsho-rep{ }
+.vsho-head{display:flex; align-items:center; gap:13px; margin-bottom:10px;}
+.vsho-si{width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
+.vsho-si svg{width:23px; height:23px;}
+.vsho-htext{flex:1; min-width:0;}
+.vsho-htext b{display:block; color:var(--head); font-family:'Fraunces',serif; font-size:1.12rem; line-height:1.25;}
+.vsho-htext span{display:block; color:var(--muted); font-size:.85rem; font-weight:700; overflow:hidden; text-overflow:ellipsis;}
+.vsho-headline{margin:2px 0 10px; font-size:1.02rem; color:var(--ink); font-weight:700;}
+.vsho-badges{margin-bottom:14px;}
+.vsho-cols{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:0 0 6px;}
+@media (max-width:620px){ .vsho-cols{grid-template-columns:1fr;} }
+.vsho-col h4{margin:0 0 9px; font-size:.86rem; font-weight:800; letter-spacing:.3px; color:var(--head); display:flex; align-items:center; gap:7px;}
+.vsho-col h4 [data-icon]{color:var(--green); width:16px; height:16px; display:inline-flex;}
+.vsho-pills{display:flex; flex-wrap:wrap; gap:7px;}
+.vsho-pills .pill{text-transform:none; letter-spacing:.2px; font-size:.8rem; font-weight:700;}
+.vsho-empty{font-size:.88rem; margin:0;}
+.vsho-gaps{margin-top:16px; padding-top:14px; border-top:1px solid var(--line2);}
+.vsho-gaps h4, .vsho-recs h4{margin:0 0 10px; font-size:.86rem; font-weight:800; letter-spacing:.3px; color:var(--head); display:flex; align-items:center; gap:7px;}
+.vsho-gaps h4 [data-icon], .vsho-recs h4 [data-icon]{color:var(--green); width:16px; height:16px; display:inline-flex;}
+.vsho-gaplist{list-style:none; margin:0; padding:0;}
+.vsho-gaplist li{display:flex; gap:10px; align-items:flex-start; padding:9px 0; border-top:1px solid var(--line2);}
+.vsho-gaplist li:first-child{border-top:none;}
+.vsho-gaplist .dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto; margin-top:6px;}
+.vsho-gaplist b{color:var(--ink); font-family:'Nunito Sans',sans-serif; font-size:.95rem; font-weight:700;}
+.vsho-cnt{font-size:.78rem; font-weight:800; color:var(--clay); margin-left:4px;}
+.vsho-mat{display:block; font-size:.8rem; color:var(--muted); font-weight:700; margin-top:2px;}
+.vsho-gapsum{font-size:.9rem; margin:12px 0 0; display:flex; align-items:center; gap:7px;}
+.vsho-gapsum [data-icon]{color:var(--ochre); width:15px; height:15px; display:inline-flex;}
+.vsho-recs{margin-top:16px; padding-top:14px; border-top:1px solid var(--line2);}
+
+/* зона завантаження файлу на сторінці імпорту */
+.upbox{border:2px dashed var(--line); border-radius:var(--r); background:var(--paper2); padding:30px 24px; text-align:center; transition:border-color .15s, background .15s; cursor:pointer;}
+.upbox.drag{border-color:var(--green); background:var(--green-bg);}
+.upbox .upic{width:54px; height:54px; border-radius:15px; background:var(--green-bg); color:var(--green); display:flex; align-items:center; justify-content:center; margin:0 auto 14px;}
+.upbox .upic svg{width:27px; height:27px;}
+.upbox h3{margin:0 0 6px; font-size:1.15rem;}
+.upbox p{margin:0 auto 14px; max-width:34em; color:var(--muted); font-size:.92rem;}
+.upbox input[type=file]{display:none;}
+.savedrep{margin-bottom:16px;}
+.repmeta{font-size:.82rem; color:var(--muted); font-weight:700; margin-bottom:8px;}
+
+/* підібрані уроки під прогалини */
+.vsho-lessons{margin-top:16px; padding-top:14px; border-top:1px solid var(--line2);}
+.vsho-lessons h4{margin:0 0 10px; font-size:.86rem; font-weight:800; letter-spacing:.3px; color:var(--head); display:flex; align-items:center; gap:7px;}
+.vsho-lessons h4 [data-icon]{color:var(--green); width:16px; height:16px; display:inline-flex;}
+.vsho-llist{list-style:none; margin:0; padding:0;}
+.vsho-llist li{display:flex; gap:11px; align-items:center; padding:10px 0; border-top:1px solid var(--line2);}
+.vsho-llist li:first-child{border-top:none;}
+.vsho-llist .dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto;}
+.vsho-lmeta{flex:1; min-width:0;}
+.vsho-lmeta b{color:var(--ink); font-family:'Nunito Sans',sans-serif; font-size:.95rem; font-weight:700;}
+.vsho-lmeta span{display:block; color:var(--muted); font-size:.82rem; font-weight:700;}
+.vsho-vtag{display:inline-block; font-size:.66rem; font-weight:800; letter-spacing:.5px; color:var(--blue); background:var(--blue-bg); border:1px solid var(--line); padding:1px 7px; border-radius:999px; margin-left:6px; vertical-align:middle;}
+
+/* динаміка між звітами */
+.vsho-dyn{ }
+.vsho-dynrow{padding:14px 0; border-top:1px solid var(--line2);}
+.vsho-dynrow:first-child{border-top:none; padding-top:0;}
+.vsho-dynhead{display:flex; align-items:center; gap:12px;}
+.vsho-dynhead .vsho-htext{flex:1; min-width:0;}
+.vsho-dynhead .trend{flex:0 0 auto;}
+.vsho-deltas{margin-top:9px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:.86rem;}
+.vsho-deltas .pill{text-transform:none; letter-spacing:.2px; font-size:.78rem; font-weight:700;}
+.vsho-dlab{font-weight:800; font-size:.78rem; letter-spacing:.3px; margin-right:2px;}
+.vsho-dlab.up{color:var(--green);}
+.vsho-dlab.down{color:var(--clay);}

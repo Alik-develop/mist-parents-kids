@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Звіт ВШО → аналітика — Міст для Батьків та Дітей</title>
+<meta name="description" content="Завантажте PDF-звіт ВШО — і кабінет покаже сильні та слабкі сторони дитини, теми для опрацювання та теплі рекомендації.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Звіт ВШО → аналітика — Міст для Батьків та Дітей">
+<meta property="og:description" content="PDF-звіт ВШО → сильні/слабкі сторони + рекомендації, що підтягнути. Приватно, для вашої дитини.">
+<meta property="og:image" content="assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/vsho.css">
+<style>
+  .kidnote{display:flex; gap:10px; align-items:center; background:var(--green-bg); border:1px solid var(--line); border-radius:14px; padding:12px 15px; margin-bottom:18px; font-size:.94rem; color:var(--ink);}
+  .privacy-note{display:flex; gap:11px; align-items:flex-start; background:var(--paper2); border:1px solid var(--line); border-radius:14px; padding:13px 15px; margin-top:16px; font-size:.86rem; color:var(--muted);}
+  .privacy-note .ink-ic{color:var(--green); flex:0 0 auto; margin-top:1px;}
+  .prevactions{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header id="site-header"></header>
+
+<section class="wrap">
+  <div class="phero">
+    <span class="eyebrow lab"><span class="ink-ic" data-icon="chartup"></span> зовнішні результати</span>
+    <h1>Звіт ВШО → аналітика</h1>
+    <p>Завантажте PDF «Індивідуального звіту» з Всеукраїнської школи онлайн — і ми перетворимо його на спокійну картину: сильні та слабкі сторони, конкретні теми для опрацювання й теплі рекомендації, що підтягнути. ВШО лишається підручником, ми — навігатором і щоденником.</p>
+  </div>
+
+  <div class="section" style="padding-top:8px">
+    <div id="kidNote"></div>
+
+    <div class="panelbox">
+      <label class="upbox" id="upbox" for="pdfInput">
+        <span class="upic" data-icon="cap"></span>
+        <h3>Перетягніть сюди PDF-звіт ВШО</h3>
+        <p>або натисніть, щоб обрати файл. Обробка відбувається у вашому браузері — файл нікуди не надсилається.</p>
+        <span class="btn btn-green" id="pickBtn"><span data-icon="step"></span> Обрати PDF</span>
+        <input type="file" id="pdfInput" accept="application/pdf,.pdf">
+      </label>
+      <div id="parseStatus" class="repmeta" style="margin-top:12px; display:none"></div>
+    </div>
+
+    <div id="preview" style="display:none; margin-top:18px"></div>
+
+    <div id="dynWrap" style="margin-top:18px"></div>
+
+    <div class="privacy-note">
+      <span class="ink-ic" data-icon="lock"></span>
+      <span>Звіт — це особисті дані вашої дитини (бали й прогалини), а не контент ВШО. Ми не копіюємо й не публікуємо їхні матеріали. Дані зберігаються приватно у вашому акаунті й доступні лише вашій сімʼї.</span>
+    </div>
+
+    <div id="savedWrap" style="margin-top:26px"></div>
+  </div>
+  <div class="spacer-lg"></div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.min.js"></script>
+<script src="assets/config.js" onerror="window.__noCfg=true"></script>
+<script src="assets/vsho.js"></script>
+<script src="assets/db.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  Site.init('kabinet');
+  if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/legacy/build/pdf.worker.min.js';
+  }
+
+  var lastParsed = null;
+  var allLessons = [];
+  function $(id){ return document.getElementById(id); }
+
+  function loadLessons(){
+    if(!(window.MistDB && MistDB.lessons && MistDB.configured)) return Promise.resolve([]);
+    return MistDB.lessons.list().then(function(r){ allLessons = (r && r.data) || []; return allLessons; })
+      .catch(function(){ allLessons = []; return []; });
+  }
+
+  // ---- стан дитини / входу ----
+  function activeChild(){
+    try{
+      if(window.MistDB && MistDB.isCloud && MistDB.isCloud() && Site.getActiveKidId){
+        var id = Site.getActiveKidId();
+        var ks = Site.getKids ? Site.getKids() : [];
+        var ak = ks.filter(function(k){ return k.active; })[0];
+        return { id: id, name: ak ? ak.name : null };
+      }
+    }catch(e){}
+    return { id: null, name: null };
+  }
+  function renderKidNote(){
+    var note = $('kidNote'); var c = activeChild();
+    if(c.id){
+      note.innerHTML = '<div class="kidnote"><span class="ink-ic" data-icon="spark"></span> Звіт збережеться для: <b style="margin:0 4px">'+escapeHtml(c.name||'вашої дитини')+'</b>. Змінити дитину можна в <a href="kabinet.html">кабінеті</a>.</div>';
+    } else {
+      note.innerHTML = '<div class="kidnote"><span class="ink-ic" data-icon="lock"></span> <a href="vhid.html">Увійдіть</a>, щоб зберегти звіт у кабінет і бачити аналітику разом з іншими даними дитини. Без входу можна лише переглянути розбір.</div>';
+    }
+    Site.paint(note);
+  }
+  function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  // ---- витяг тексту з PDF (pdf.js), реконструкція рядків за координатою y ----
+  function extractText(arrayBuffer){
+    if(!window.pdfjsLib) return Promise.reject(new Error('pdf.js не завантажився'));
+    return pdfjsLib.getDocument({ data: arrayBuffer }).promise.then(function(pdf){
+      var pages = [];
+      for(var i=1;i<=pdf.numPages;i++) pages.push(i);
+      var out = [];
+      return pages.reduce(function(chain, n){
+        return chain.then(function(){
+          return pdf.getPage(n).then(function(page){
+            return page.getTextContent().then(function(tc){
+              var rows = {};
+              tc.items.forEach(function(it){
+                if(!it.str) return;
+                var y = Math.round(it.transform[5]);
+                (rows[y] = rows[y] || []).push({ x: it.transform[4], s: it.str });
+              });
+              Object.keys(rows).map(Number).sort(function(a,b){ return b-a; }).forEach(function(y){
+                var line = rows[y].sort(function(a,b){ return a.x-b.x; })
+                  .map(function(o){ return o.s; }).join(' ');
+                out.push(line);
+              });
+            });
+          });
+        });
+      }, Promise.resolve()).then(function(){ return out.join('\n'); });
+    });
+  }
+
+  function looksLikeReport(rep){
+    return !!(rep && ((rep.sections && rep.sections.length) || (rep.gaps && rep.gaps.length) || rep.overall || /курс|вшо|тестуванн/i.test(rep.course||'')));
+  }
+
+  function handleFile(file){
+    if(!file){ return; }
+    if(!/pdf$/i.test(file.name) && file.type !== 'application/pdf'){
+      Site.toast('Потрібен PDF-файл звіту ВШО.'); return;
+    }
+    var st = $('parseStatus'); st.style.display='block'; st.textContent = 'Читаємо звіт…';
+    $('preview').style.display='none';
+    var reader = new FileReader();
+    reader.onload = function(){
+      extractText(reader.result).then(function(text){
+        var rep = VSHO.parseText(text);
+        if(!looksLikeReport(rep)){
+          st.textContent = 'Не вдалося розпізнати цей файл як «Індивідуальний звіт» ВШО. Перевірте, що це саме PDF-звіт із результатами.';
+          return;
+        }
+        lastParsed = rep;
+        st.style.display='none';
+        renderPreview(rep);
+      }).catch(function(e){
+        st.textContent = 'Не вдалося прочитати PDF. Спробуйте інший файл або збережіть звіт ще раз.';
+        try{ console.warn('PDF parse error', e); }catch(_){}
+      });
+    };
+    reader.onerror = function(){ st.textContent = 'Не вдалося відкрити файл.'; };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function renderPreview(rep){
+    var c = activeChild();
+    var box = $('preview');
+    var canSave = !!c.id;
+    var actions = '<div class="prevactions">'+
+      (canSave
+        ? '<button class="btn btn-green" id="saveBtn"><span data-icon="check"></span> Зберегти у кабінет</button>'
+        : '<a class="btn btn-green" href="vhid.html"><span data-icon="lock"></span> Увійти, щоб зберегти</a>')+
+      '<button class="btn btn-soft" onclick="clearPreview()"><span data-icon="ban"></span> Скасувати</button>'+
+    '</div>';
+    box.innerHTML = '<div class="panelbox">'+
+      '<div class="pill-row" style="justify-content:space-between; margin-bottom:10px"><h3 style="margin:0">Що показав звіт</h3>'+
+      '<span class="muted" style="font-size:.85rem; font-weight:700">попередній перегляд</span></div>'+
+      VSHO.renderCard(rep, { compact:false, lessons:allLessons })+
+      actions+
+    '</div>';
+    box.style.display='block';
+    Site.paint(box);
+    var sb = $('saveBtn'); if(sb) sb.onclick = saveReport;
+    box.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  function clearPreview(){ lastParsed=null; $('preview').style.display='none'; $('preview').innerHTML=''; $('pdfInput').value=''; }
+  window.clearPreview = clearPreview;
+
+  function saveReport(){
+    var c = activeChild();
+    if(!c.id){ Site.toast('Спершу увійдіть і оберіть дитину в кабінеті.'); return; }
+    if(!lastParsed){ Site.toast('Спершу завантажте звіт.'); return; }
+    var sb = $('saveBtn'); if(sb){ sb.disabled=true; sb.textContent='Зберігаємо…'; }
+    MistDB.reports.save(c.id, lastParsed).then(function(r){
+      if(r && r.error) throw r.error;
+      Site.toast('Звіт збережено в кабінет для «'+(c.name||'дитини')+'». 📊');
+      clearPreview();
+      loadSaved();
+    }).catch(function(e){
+      Site.toast('Не вдалося зберегти звіт.');
+      if(sb){ sb.disabled=false; sb.innerHTML='<span data-icon="check"></span> Зберегти у кабінет'; Site.paint(sb); }
+      try{ console.warn('save report failed', e); }catch(_){}
+    });
+  }
+
+  // ---- збережені звіти активної дитини ----
+  function renderDyn(reports){
+    var dw = $('dynWrap'); if(!dw) return;
+    var html = (window.VSHO && reports.length>1) ? VSHO.renderDynamics(reports) : '';
+    if(!html){ dw.innerHTML=''; dw.style.display='none'; return; }
+    dw.innerHTML = '<div class="panelbox"><div class="pill-row" style="justify-content:space-between; margin-bottom:8px">'+
+      '<h3 style="margin:0">Динаміка між звітами</h3>'+
+      '<span class="muted" style="font-size:.85rem; font-weight:700">від звіту до звіту</span></div>'+html+'</div>';
+    dw.style.display='block';
+    Site.paint(dw);
+  }
+
+  function loadSaved(){
+    var wrap = $('savedWrap'); var c = activeChild();
+    if(!c.id){ wrap.innerHTML=''; var dw=$('dynWrap'); if(dw){ dw.innerHTML=''; dw.style.display='none'; } return; }
+    wrap.innerHTML = '<h2 style="font-size:1.3rem; margin:0 0 12px">Збережені звіти — '+escapeHtml(c.name||'дитина')+'</h2><p class="muted">Завантажуємо…</p>';
+    MistDB.reports.list(c.id).then(function(res){
+      var rows = (res && res.data) || [];
+      var reports = rows.map(function(row){ return MistDB.reportFromRow(row); });
+      renderDyn(reports);
+      if(!rows.length){
+        wrap.innerHTML = '<h2 style="font-size:1.3rem; margin:0 0 12px">Збережені звіти</h2>'+
+          '<div class="panelbox"><p class="muted" style="margin:0">Поки що збережених звітів немає. Завантажте перший — і він зʼявиться тут і в кабінеті.</p></div>';
+        return;
+      }
+      var html = '<h2 style="font-size:1.3rem; margin:0 0 12px">Збережені звіти — '+escapeHtml(c.name||'дитина')+'</h2>';
+      html += rows.map(function(row){
+        var rep = MistDB.reportFromRow(row);
+        var when = row.created_at ? new Date(row.created_at).toLocaleDateString('uk-UA') : '';
+        var del = '<button class="btn btn-ghost btn-sm" onclick="delReport(\''+row.id+'\')"><span data-icon="ban"></span> Видалити</button>';
+        return '<div class="panelbox savedrep">'+
+          '<div class="repmeta">Завантажено: '+escapeHtml(when)+'</div>'+
+          VSHO.renderCard(rep, { compact:false, actions:del, lessons:allLessons })+
+        '</div>';
+      }).join('');
+      wrap.innerHTML = html;
+      Site.paint(wrap);
+    }).catch(function(){ wrap.innerHTML = '<p class="muted">Не вдалося завантажити збережені звіти.</p>'; });
+  }
+  function delReport(id){
+    if(!confirm('Видалити цей звіт? Дію не можна скасувати.')) return;
+    MistDB.reports.remove(id).then(function(){ Site.toast('Звіт видалено.'); loadSaved(); })
+      .catch(function(){ Site.toast('Не вдалося видалити.'); });
+  }
+  window.delReport = delReport;
+
+  // ---- події завантаження ----
+  (function bindUpload(){
+    var input = $('pdfInput'), box = $('upbox');
+    if(input) input.addEventListener('change', function(){ if(input.files && input.files[0]) handleFile(input.files[0]); });
+    if(box){
+      ['dragenter','dragover'].forEach(function(ev){ box.addEventListener(ev, function(e){ e.preventDefault(); box.classList.add('drag'); }); });
+      ['dragleave','drop'].forEach(function(ev){ box.addEventListener(ev, function(e){ e.preventDefault(); box.classList.remove('drag'); }); });
+      box.addEventListener('drop', function(e){ var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if(f) handleFile(f); });
+    }
+  })();
+
+  // ---- ініціалізація ----
+  (function init(){
+    if(!(window.MistDB && MistDB.configured)){
+      renderKidNote();
+      $('parseStatus').style.display='block';
+      $('parseStatus').textContent = 'Збереження запрацює після підключення бази. Розбір звіту працює і так.';
+      return;
+    }
+    MistDB.cloud.activate().catch(function(){}).then(function(){
+      renderKidNote();
+      return loadLessons();
+    }).then(function(){
+      loadSaved();
+    });
+  })();
+</script>
+</body>
+</html>

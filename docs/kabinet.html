@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/vsho.css">
 <style>
   .empty-kab{text-align:center; padding:42px 28px;}
   .empty-kab img{max-width:300px; width:72%; height:auto; margin:0 auto 20px; display:block; border-radius:22px;}
@@ -70,6 +71,7 @@
         <a href="#predmety"><span data-icon="cap"></span> Предмети</a>
         <a href="#motyvatsiya"><span data-icon="flame"></span> Мотивація</a>
         <a href="#kroky"><span data-icon="step"></span> Кроки</a>
+        <a href="#zvity"><span data-icon="chartup"></span> Звіти ВШО</a>
         <a href="#plan"><span data-icon="calendar"></span> План тижня</a>
         <a href="dodatok.html"><span data-icon="handheart"></span> Спілкування</a>
       </nav>
@@ -90,6 +92,15 @@
       <!-- М'ЯКИЙ ПОРІГ УВАГИ: зʼявляється лише за умовою (теплий, без алармізму) -->
       <div id="careBanner" style="display:none"></div>
 
+      <!-- ЗОВНІШНІ РЕЗУЛЬТАТИ (ВШО): показуємо, коли є збережені звіти (навіть без нашого тесту) -->
+      <div class="panelbox" id="zvitpanel" style="display:none; margin-top:14px">
+        <div class="pill-row" style="justify-content:space-between; margin-bottom:6px">
+          <h3 style="margin:0" id="zvity">Зовнішні результати навчання (ВШО)</h3>
+          <a class="lnk" href="zvit.html">Усі звіти · завантажити <span data-icon="step"></span></a>
+        </div>
+        <div id="zvitBody"></div>
+      </div>
+
       <!-- ПОРОЖНІЙ СТАН: немає жодного проходження -->
       <section id="emptyState" style="display:none">
         <div class="panelbox empty-kab">
@@ -98,6 +109,7 @@
           <p class="muted">Пройдіть тест разом із дитиною — і кабінет покаже головну зону уваги, теплі кроки та історію проходжень. Поки що тут порожньо.</p>
           <div class="ebtns">
             <a class="btn btn-green" href="opytuvannya.html"><span data-icon="step"></span> Пройти тест</a>
+            <a class="btn btn-soft" href="zvit.html"><span data-icon="chartup"></span> Завантажити звіт ВШО</a>
             <button class="btn btn-soft" onclick="setDemo(true)"><span data-icon="grid"></span> Показати приклад</button>
           </div>
         </div>
@@ -197,6 +209,7 @@
 <footer id="site-footer"></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/config.js" onerror="window.__noCfg=true"></script>
+<script src="assets/vsho.js"></script>
 <script src="assets/db.js"></script>
 <script src="assets/app.js"></script>
 <script>
@@ -635,6 +648,7 @@
     }
     Site.paint();
     try{ renderNavchannya(); }catch(e){}
+    try{ renderZvit(); }catch(e){}
     // підсвічена свіжа спроба — підкрутимо до неї
     var fresh = document.querySelector('.timeline li.fresh');
     if(fresh) fresh.scrollIntoView({block:'center', behavior:'smooth'});
@@ -659,6 +673,28 @@
         return '<li><span class="dot" style="background:var(--green)"></span><div><b>'+(titles[p.lesson_id]||'Урок')+'</b><div class="when">'+(p.score!=null?'результат: '+p.score:'пройдено')+'</div></div></li>';
       }).join('');
       body.innerHTML='<p class="muted" style="margin:0 0 8px; font-weight:700">Пройдено уроків: '+done.length+'</p><ul class="timeline">'+rows+'</ul>';
+      Site.paint(panel);
+    }).catch(function(){ panel.style.display='none'; });
+  }
+
+  // ---- зовнішні результати ВШО (аналітика сильних/слабких сторін) ----
+  function renderZvit(){
+    var panel=document.getElementById('zvitpanel'), body=document.getElementById('zvitBody');
+    if(!panel||!body) return;
+    if(!(window.MistDB && MistDB.isCloud && MistDB.isCloud() && MistDB.reports && Site.getActiveKidId)){ panel.style.display='none'; return; }
+    var childId=Site.getActiveKidId(); if(!childId){ panel.style.display='none'; return; }
+    Promise.all([ MistDB.reports.list(childId), MistDB.lessons.list() ]).then(function(rs){
+      var rows=(rs[0]&&rs[0].data)||[];
+      var lessons=(rs[1]&&rs[1].data)||[];
+      if(!rows.length || !window.VSHO){ panel.style.display='none'; return; }
+      var reports=rows.map(function(r){ return MistDB.reportFromRow(r); });
+      var latest=reports[0];
+      var dyn = reports.length>1 ? VSHO.renderDynamics(reports) : '';
+      var dynBlock = dyn
+        ? '<div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line2)"><h4 style="margin:0 0 8px; font-size:.86rem; font-weight:800; letter-spacing:.3px; color:var(--head)">Динаміка між звітами</h4>'+dyn+'</div>'
+        : (reports.length>1 ? '<p class="muted" style="margin:12px 0 0; font-weight:700">Ще збережених звітів: '+(reports.length-1)+' — <a href="zvit.html">переглянути всі</a>.</p>' : '');
+      body.innerHTML=VSHO.renderCard(latest,{compact:true, lessons:lessons})+dynBlock;
+      panel.style.display='';
       Site.paint(panel);
     }).catch(function(){ panel.style.display='none'; });
   }
