@@ -112,7 +112,7 @@
     $('#googleBtn').style.opacity = .55;
   }
 
-  function go(){ location.href = 'kabinet.html'; }
+  function go(){ var j=(location.search.match(/[?&]join=([^&]+)/)||[])[1]; location.href = 'kabinet.html'+(j?('?join='+encodeURIComponent(j)):''); }
 
   $('#authForm').addEventListener('submit', async function(){
     if(!configured) return;

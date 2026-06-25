@@ -45,6 +45,12 @@
   .carebox p{margin:0 0 12px; font-size:.95rem; color:var(--ink);}
   .carebox .cbtns{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
   @media (max-width:560px){ .carebox{flex-direction:column; gap:11px;} .carebox .cbtns .btn{width:100%; justify-content:center;} }
+  .acctbox{display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:13px 18px; box-shadow:var(--sh-s);}
+  .acctbox b{color:var(--head);}
+  .acctbtns{display:flex; gap:8px; flex-wrap:wrap;}
+  .invite{margin-top:10px; background:var(--green-bg); border:1px solid var(--line); border-radius:14px; padding:14px 16px;}
+  .invite p{margin:0 0 10px; font-size:.94rem; color:var(--ink);}
+  .invite input{width:100%; border:1.5px solid var(--line); border-radius:10px; padding:9px 11px; font-size:.84rem; color:var(--ink); background:var(--paper); margin-bottom:8px;}
 </style>
 </head>
 <body>
@@ -78,6 +84,8 @@
         </div>
         <div class="kidpick" id="kidPick"></div>
       </div>
+
+      <div id="acctBar" style="display:none"></div>
 
       <!-- М'ЯКИЙ ПОРІГ УВАГИ: зʼявляється лише за умовою (теплий, без алармізму) -->
       <div id="careBanner" style="display:none"></div>
@@ -622,9 +630,57 @@
     var fresh = document.querySelector('.timeline li.fresh');
     if(fresh) fresh.scrollIntoView({block:'center', behavior:'smooth'});
   }
-  // якщо користувач увійшов — підняти дані сімʼї з акаунту (з міграцією), потім рендер
+  // ---- акаунт + сімʼя (другий батько) ----
+  function renderAccount(){
+    var bar=document.getElementById('acctBar'); if(!bar) return;
+    if(!(window.MistDB && MistDB.isCloud && MistDB.isCloud() && MistDB.cloud.user)){ bar.style.display='none'; return; }
+    var email=(MistDB.cloud.user.email)||'ваш акаунт';
+    MistDB.family.members().then(function(mr){
+      var n=(mr.data||[]).length||1;
+      bar.innerHTML='<div class="acctbox">'+
+        '<div><span class="ink-ic" data-icon="users"></span> Ви увійшли як <b>'+email+'</b> · у сімʼї: '+n+' '+plural(n,'батько','батьки','батьків')+'</div>'+
+        '<div class="acctbtns">'+
+          '<button class="btn btn-soft btn-sm" onclick="inviteParent()"><span data-icon="users"></span> Запросити другого батька</button>'+
+          '<button class="btn btn-ghost btn-sm" onclick="Site.logout()">Вийти</button>'+
+        '</div></div>'+
+        '<div id="inviteBox" style="display:none"></div>';
+      bar.style.display='block'; Site.paint(bar);
+    }).catch(function(){ bar.style.display='none'; });
+  }
+  function inviteParent(){
+    MistDB.family.myId().then(function(fid){
+      if(!fid){ Site.toast('Не вдалося отримати код сімʼї.'); return; }
+      var link=location.origin+location.pathname.replace(/[^/]*$/,'vhid.html')+'?join='+fid;
+      var box=document.getElementById('inviteBox'); if(!box) return;
+      box.innerHTML='<div class="invite"><p>Надішліть це посилання другому з батьків. Він увійде (або зареєструється) — і побачить тих самих дітей та результати.</p>'+
+        '<input id="inviteLink" readonly value="'+link+'"><button class="btn btn-green btn-sm" onclick="copyInvite()"><span data-icon="send"></span> Скопіювати посилання</button></div>';
+      box.style.display='block'; Site.paint(box);
+      var i=document.getElementById('inviteLink'); if(i) i.focus();
+    });
+  }
+  function copyInvite(){ var i=document.getElementById('inviteLink'); if(!i) return; i.select();
+    function done(){ Site.toast('Посилання скопійовано.'); }
+    try{ if(navigator.clipboard){ navigator.clipboard.writeText(i.value).then(done,function(){ document.execCommand('copy'); done(); }); } else { document.execCommand('copy'); done(); } }catch(e){ Site.toast('Скопіюйте посилання вручну.'); }
+  }
+  window.inviteParent=inviteParent; window.copyInvite=copyInvite;
+
+  // ---- завантаження кабінету (+ обробка запрошення ?join) ----
+  var __joinId=(location.search.match(/[?&]join=([^&]+)/)||[])[1];
+  function bootCabinet(){
+    if(__joinId && window.MistDB && MistDB.configured){
+      if(!MistDB.cloud.user){ location.href='vhid.html?join='+__joinId; return; }
+      MistDB.family.join(decodeURIComponent(__joinId)).then(function(res){
+        Site.toast(res && res.ok ? 'Ви приєдналися до сімʼї.' : 'Не вдалося приєднатися — перевірте посилання.');
+        try{ history.replaceState({}, '', location.pathname); }catch(e){}
+        MistDB.cloud.on=false;
+        MistDB.cloud.activate().finally(function(){ renderAccount(); render(); });
+      });
+      return;
+    }
+    renderAccount(); render();
+  }
   if(window.MistDB && MistDB.configured){
-    MistDB.cloud.activate().then(function(){ render(); }).catch(function(){ render(); });
+    MistDB.cloud.activate().then(bootCabinet).catch(function(){ render(); });
   } else { render(); }
 </script>
 </body>

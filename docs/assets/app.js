@@ -23,6 +23,15 @@
   }
   initTheme();
 
+  // favicon (інлайн SVG-логотип) — прибирає 404 на /favicon.ico і дає іконку у вкладці
+  (function(){ try{
+    if(document.querySelector('link[rel="icon"]')) return;
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56"><rect x="1.5" y="1.5" width="53" height="53" rx="16" fill="#E5EDDC" stroke="#CFE0C4"/><path d="M9 36c8.5 0 8.5-13 19-13s10.5 13 19 13" stroke="#3F6B4F" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M9 36v8M47 36v8M20 28v16M36 28v16M28 24.5v19.5" stroke="#3F6B4F" stroke-width="3" stroke-linecap="round"/><path d="M9 44h38" stroke="#C26A43" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="15" r="4" fill="#C26A43"/></svg>';
+    var l=document.createElement('link'); l.rel='icon'; l.type='image/svg+xml';
+    l.href='data:image/svg+xml,'+encodeURIComponent(svg);
+    document.head.appendChild(l);
+  }catch(e){} })();
+
   // ---- слой данных попыток теста (localStorage; задел под бэкенд) ----
   // Один источник правды. Схема версионирована.
   //   v1 (старая): {v:1, attempts:[...]}                         — один подросток

@@ -163,6 +163,32 @@
     return need().from('attempts').delete().eq('child_id', childId);
   };
 
+  // ---- сімʼя: свій id (код запрошення), учасники, приєднання другого батька ----
+  MistDB.family.myId = function(){
+    return need().from('families').select('id').limit(1).maybeSingle().then(function(r){ return r.data ? r.data.id : null; });
+  };
+  MistDB.family.members = function(){
+    return need().from('family_members').select('profile_id, role');
+  };
+  // приєднатися до сімʼї за кодом (= family_id). Інваріант «1 сімʼя на батька»:
+  // після приєднання виходимо зі своїх інших (порожніх) сімей.
+  MistDB.family.join = function(targetFamilyId){
+    var s = need();
+    return s.auth.getUser().then(function(ur){
+      var uid = ur && ur.data && ur.data.user ? ur.data.user.id : null;
+      if(!uid) return { ok:false, error:'not-signed-in' };
+      return s.from('family_members').upsert({ family_id:targetFamilyId, profile_id:uid, role:'parent' }, { onConflict:'family_id,profile_id' })
+        .then(function(){ return s.from('family_members').select('family_id').eq('profile_id', uid); })
+        .then(function(mr){
+          var ids = (mr.data||[]).map(function(m){ return m.family_id; });
+          if(ids.indexOf(targetFamilyId) < 0) return { ok:false, error:'join-failed' };
+          var others = ids.filter(function(f){ return f !== targetFamilyId; });
+          if(!others.length) return { ok:true };
+          return s.from('family_members').delete().eq('profile_id', uid).in('family_id', others).then(function(){ return { ok:true }; });
+        });
+    }).catch(function(e){ return { ok:false, error:String(e) }; });
+  };
+
   // ===========================================================
   //  CLOUD-адаптер: коли користувач увійшов — дані сімʼї живуть в акаунті.
   //  Перевизначає синхронні Site-методи поверх памʼяті + пише в Supabase.
