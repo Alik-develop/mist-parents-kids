@@ -558,7 +558,8 @@
           '<h3>Ми поряд — і ви не самі</h3>'+
           '<p>'+line+' Звернутися по допомогу — це сила, а не слабкість.</p>'+
           '<div class="cbtns">'+
-            '<a class="btn btn-green btn-sm" href="eksperty.html"><span data-icon="buoy"></span> Підібрати фахівця</a>'+
+            (sig.risk ? '<a class="btn btn-green btn-sm" href="dopomoga.html"><span data-icon="handheart"></span> Лінія підтримки</a>' : '')+
+            '<a class="btn '+(sig.risk?'btn-soft':'btn-green')+' btn-sm" href="eksperty.html"><span data-icon="buoy"></span> Підібрати фахівця</a>'+
             '<a class="btn btn-soft btn-sm" href="baza-znan.html"><span data-icon="book"></span> Спершу почитати</a>'+
           '</div>'+
         '</div>'+

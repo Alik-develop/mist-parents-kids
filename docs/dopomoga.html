@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Підтримка та лінії довіри — Міст для Батьків та Дітей</title>
+<meta name="description" content="Безкоштовні гарячі лінії підтримки для підлітків і батьків в Україні. Якщо зараз важко — поряд є жива людина, якій можна зателефонувати чи написати.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Підтримка та лінії довіри — Міст для Батьків та Дітей">
+<meta property="og:description" content="Якщо зараз важко — ви не самі. Перевірені безкоштовні лінії підтримки для підлітків і батьків в Україні.">
+<meta property="og:image" content="assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+  .danger{background:var(--clay-bg); border:1px solid var(--clay); border-radius:var(--r); padding:20px 24px; margin:6px 0 22px; box-shadow:var(--sh-s);}
+  .danger h2{margin:0 0 6px; font-size:1.25rem; color:var(--ink); display:flex; align-items:center; gap:11px;}
+  .danger h2 .hic{width:34px;height:34px;border-radius:10px;background:var(--paper);color:var(--clay);display:flex;align-items:center;justify-content:center;}
+  .danger p{margin:0 0 14px; color:var(--ink);}
+  .danger .dbtns{display:flex; gap:12px; flex-wrap:wrap;}
+  .danger .dbtns .btn{font-size:1.05rem;}
+  .hotline{display:flex; gap:16px; justify-content:space-between; align-items:center; flex-wrap:wrap; background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:16px 18px; margin-bottom:12px; box-shadow:var(--sh-s);}
+  .hl-main{flex:1 1 240px;}
+  .hl-main b{display:block; color:var(--head); font-family:'Fraunces',serif; font-size:1.08rem; margin-bottom:2px;}
+  .hl-who{color:var(--muted); font-size:.9rem; font-weight:600;}
+  .hl-side{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .hl-when{font-size:.78rem; font-weight:800; color:var(--green); text-transform:uppercase; letter-spacing:.4px;}
+  .hl-alt{font-size:.82rem; color:var(--muted); font-weight:700;}
+  .cats{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;}
+  .cat{display:flex; gap:11px; align-items:flex-start; background:var(--paper2); border:1px solid var(--line); border-radius:14px; padding:13px 15px;}
+  .cat .ci{color:var(--clay); flex:0 0 auto; margin-top:1px;}
+  .cat span{color:var(--ink); font-weight:600; font-size:.96rem;}
+  @media (max-width:640px){ .cats{grid-template-columns:1fr;} }
+  @media (max-width:560px){ .hotline{padding:14px;} .hl-side{width:100%; justify-content:space-between;} }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header id="site-header"></header>
+
+<section class="wrap">
+  <div class="phero">
+    <span class="eyebrow lab"><span class="ink-ic" data-icon="handheart"></span> ти не сам · ви не самі</span>
+    <h1>Підтримка поряд</h1>
+    <p>Якщо зараз важко — це можна не нести самому. Нижче — безкоштовні лінії, де вислухають і допоможуть: для підлітків і для батьків. Дзвінки анонімні. Це не заміна лікарю чи швидкій, а перший крок до живої людини.</p>
+  </div>
+
+  <div class="section" style="padding-top:14px">
+
+    <!-- ГОСТРА НЕБЕЗПЕКА -->
+    <div class="danger">
+      <h2><span class="hic" data-icon="shield"></span> Якщо загроза прямо зараз</h2>
+      <p>Коли є пряма небезпека для життя чи здоров'я — твого або когось поруч — не чекайте. Зателефонуйте негайно:</p>
+      <div class="dbtns" id="urgentBtns"></div>
+    </div>
+
+    <!-- КОЛИ ВАРТО ЗВЕРНУТИСЯ -->
+    <div class="panelbox" style="margin-bottom:22px">
+      <h3 style="margin:0 0 4px">Коли варто подзвонити чи написати</h3>
+      <p class="muted" style="margin:0 0 14px; font-size:.95rem">Не обов'язково чекати, поки стане «зовсім погано». Звернутися можна вже тоді, коли:</p>
+      <div class="cats">
+        <div class="cat"><span class="ci ink-ic" data-icon="cloud"></span><span>з'являються думки про самоушкодження або що життя не має сенсу</span></div>
+        <div class="cat"><span class="ci ink-ic" data-icon="home"></span><span>удома страшно, є насильство, приниження чи погрози</span></div>
+        <div class="cat"><span class="ci ink-ic" data-icon="users"></span><span>цькування чи самотність, з якими важко впоратися самому</span></div>
+        <div class="cat"><span class="ci ink-ic" data-icon="clock"></span><span>різко збилися сон чи апетит, тримається важкий стан</span></div>
+        <div class="cat"><span class="ci ink-ic" data-icon="bolt"></span><span>сильна тривога, паніка або відчуття, що не витягуєш</span></div>
+        <div class="cat"><span class="ci ink-ic" data-icon="chat"></span><span>просто треба, щоб хтось спокійно вислухав без оцінок</span></div>
+      </div>
+    </div>
+
+    <!-- ЛІНІЇ ПІДТРИМКИ -->
+    <h3 style="margin:0 0 4px">Лінії, де вислухають і допоможуть</h3>
+    <p class="muted" style="margin:0 0 16px; font-size:.95rem">Усі — безкоштовні, анонімні й конфіденційні. Можна дзвонити або писати.</p>
+    <div id="hotlines"></div>
+
+    <!-- ТЕПЛА РАМКА -->
+    <div class="note-box" style="margin-top:20px"><span class="ink-ic" data-icon="handheart"></span><span><b>Просити про допомогу — це сила, а не слабкість.</b> Той, хто вміє сказати «мені зараз важко, потрібна підтримка», насправді дорослішає швидше. Ти важливий — і поряд є люди, які хочуть допомогти.</span></div>
+
+    <div class="section center" style="padding-top:26px">
+      <p class="muted" style="max-width:34em; margin:0 auto 16px">«Міст» — це перший крок, а не заміна живій людині. Коли потрібно більше — поряд завжди фахівець.</p>
+      <div class="pill-row" style="justify-content:center">
+        <a class="btn btn-soft btn-lg" href="eksperty.html">Підібрати фахівця</a>
+        <a class="btn btn-soft btn-lg" href="baza-znan.html">Спершу почитати</a>
+      </div>
+    </div>
+
+  </div>
+  <div class="spacer-lg"></div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="assets/app.js"></script>
+<script>
+  Site.init('dopomoga');
+  // ⚠ Контакти звірені 25.06.2026 (MH4U, оновлено 08.06.2026 + La Strada). Перед публікацією звірити ще раз.
+  var H = Site.HOTLINES || [];
+  // гострі (102/103) — у верхній банер; решта — карткою
+  var urgent = H.filter(function(h){ return h.urgent; });
+  var rest = H.filter(function(h){ return !h.urgent; });
+  document.getElementById('urgentBtns').innerHTML = urgent.map(function(h){
+    return '<a class="btn btn-primary" href="tel:'+h.tel+'"><span data-icon="phone"></span> '+h.show+' — '+h.name.replace(/ —.*$/,'')+'</a>';
+  }).join('');
+  document.getElementById('hotlines').innerHTML = rest.map(function(h){ return Site.hotlineHTML(h); }).join('');
+  Site.paint();
+</script>
+</body>
+</html>

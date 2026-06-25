@@ -262,6 +262,7 @@
         '</div>'+
         '<div><h4>Проєкт</h4>'+
           '<a href="pro-proekt.html">Про проєкт</a><a href="pro-oksanu.html">Про Оксану</a><a href="urok.html">Безкоштовний урок</a><a href="index.html#how">Як це працює</a>'+
+          '<a href="dopomoga.html">Підтримка та лінії довіри</a>'+
           '<a href="#" onclick="Site.toast(\'Контакти зʼявляться згодом\');return false;">Контакти</a>'+
         '</div>'+
       '</div>'+
@@ -457,6 +458,29 @@
        '<h4>Крок для підлітка</h4><p>Закоханість і навчання не мусять воювати. Признач собі маленький щоденний мінімум на уроки — і спокійно лишай решту часу на важливе для серця. Так ти не зрадиш ні себе, ні майбутнє.</p>'}
   ];
 
+  // ---- кризові лінії підтримки (звірено з MH4U, оновлено 08.06.2026, та La Strada-Україна).
+  //      ⚠ ПЕРЕД ПУБЛІКАЦІЄЮ ЗВІРИТИ ЩЕ РАЗ — лінії змінюють графік. LifeLine 7333 наразі призупинена, тому не додаємо. ----
+  var HOTLINES = [
+    {name:'Поліція — пряма загроза', tel:'102', show:'102', hours:'цілодобово', who:'коли небезпека прямо зараз — для життя чи через насильство', urgent:true},
+    {name:'Швидка медична допомога', tel:'103', show:'103', hours:'цілодобово', who:'коли потрібна термінова медична допомога', urgent:true},
+    {name:'Національна дитяча гаряча лінія', tel:'116111', show:'116 111', alt:'0 800 500 225', hours:'безкоштовно · анонімно', who:'для підлітків і батьків: стосунки, булінг, конфлікти, безпека', url:'https://la-strada.org.ua/'},
+    {name:'Ла Страда — небезпека вдома', tel:'116123', show:'116 123', alt:'0 800 500 335', hours:'цілодобово', who:'якщо вдома страшно, є насильство або приниження'},
+    {name:'Урядова лінія проти домашнього насильства', tel:'1547', show:'1547', hours:'цілодобово', who:'державна допомога при домашньому насильстві'},
+    {name:'«Людина в біді»', tel:'0800210160', show:'0 800 210 160', hours:'цілодобово', who:'кризова психологічна підтримка для всіх'},
+    {name:'Krisenchat — чат у Telegram', url:'https://t.me/krisenchatUA_bot', show:'написати в Telegram', hours:'цілодобово', who:'коли легше написати, ніж дзвонити — безкоштовно, з психологом'},
+    {name:'Teenergizer', url:'https://teenergizer.org/consultations/', show:'консультації онлайн', hours:'для підлітків', who:'підлітковий простір підтримки — онлайн'}
+  ];
+  // картка лінії підтримки (tel: або посилання)
+  function hotlineHTML(h){
+    var act = h.tel
+      ? '<a class="btn btn-green btn-sm" href="tel:'+h.tel+'"><span data-icon="phone"></span> '+h.show+'</a>'
+      : '<a class="btn btn-green btn-sm" href="'+(h.url||'#')+'" target="_blank" rel="noopener"><span data-icon="chat"></span> '+h.show+'</a>';
+    var alt = h.alt ? '<span class="hl-alt">або '+h.alt+'</span>' : '';
+    return '<div class="hotline'+(h.urgent?' urgent':'')+'">'+
+      '<div class="hl-main"><b>'+h.name+'</b><span class="hl-who">'+h.who+'</span></div>'+
+      '<div class="hl-side"><span class="hl-when">'+h.hours+'</span>'+act+alt+'</div></div>';
+  }
+
   // <img> із мʼяким фолбеком: якщо файлу ще немає — лишається запасний HTML (SVG/плейсхолдер)
   function imgFallback(src, alt, fallbackHTML, cls){
     var safe = (fallbackHTML||'').replace(/"/g,'&quot;');
@@ -493,6 +517,8 @@
     SCALE_IMG: SCALE_IMG,
     EXPERTS: EXPERTS,
     ARTICLES: ARTICLES,
+    HOTLINES: HOTLINES,
+    hotlineHTML: hotlineHTML,
     img: imgFallback,
     OKSANA_PHOTO: OKSANA_PHOTO,
     oksanaImg: oksanaImg,
