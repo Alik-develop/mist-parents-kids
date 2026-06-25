@@ -379,6 +379,7 @@ footer.site .fnote{color:var(--soft); font-size:.86rem; padding:0 0 30px; border
 .mood:hover{border-color:var(--green2); transform:translateY(-2px);}
 .mood svg{width:30px; height:30px;}
 .mood.sel{border-color:var(--green); background:var(--green-bg);}
+.mood:focus-visible{outline:2px solid var(--green); outline-offset:2px;}
 .mini-stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
 .mini-stat{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:10px 12px;}
 .mini-stat .k{font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--muted);}

@@ -51,11 +51,11 @@
             <h3>Як ти сьогодні?</h3>
             <p class="psub">Обери, що ближче. Це бачиш лише ти — батькам піде тільки мʼякий сигнал.</p>
             <div class="moods" id="moods">
-              <button class="mood" data-icon="faceSad" onclick="pickMood(this,'важко')" style="color:var(--clay)"></button>
-              <button class="mood" data-icon="faceMeh" onclick="pickMood(this,'так собі')" style="color:var(--ochre)"></button>
-              <button class="mood" data-icon="faceNeutral" onclick="pickMood(this,'нормально')" style="color:var(--muted)"></button>
-              <button class="mood sel" data-icon="faceSmile" onclick="pickMood(this,'добре')" style="color:var(--green)"></button>
-              <button class="mood" data-icon="faceJoy" onclick="pickMood(this,'чудово')" style="color:var(--green)"></button>
+              <button type="button" class="mood" data-icon="faceSad" onclick="pickMood(this,'важко')" style="color:var(--clay)" aria-label="Настрій: важко"></button>
+              <button type="button" class="mood" data-icon="faceMeh" onclick="pickMood(this,'так собі')" style="color:var(--ochre)" aria-label="Настрій: так собі"></button>
+              <button type="button" class="mood" data-icon="faceNeutral" onclick="pickMood(this,'нормально')" style="color:var(--muted)" aria-label="Настрій: нормально"></button>
+              <button type="button" class="mood sel" data-icon="faceSmile" onclick="pickMood(this,'добре')" style="color:var(--green)" aria-label="Настрій: добре"></button>
+              <button type="button" class="mood" data-icon="faceJoy" onclick="pickMood(this,'чудово')" style="color:var(--green)" aria-label="Настрій: чудово"></button>
             </div>
             <div class="moodlabel"><span>важко</span><span>чудово</span></div>
             <div class="pfield">Що склалось у тебе на думці? (за бажанням — лише для себе)</div>

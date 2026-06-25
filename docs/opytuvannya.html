@@ -115,6 +115,15 @@
   .next{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px;}
   .next .btn{justify-content:center;}
   .restart{text-align:center;}
+  .intro-points{display:grid; gap:13px; margin:8px 0 6px;}
+  .ipoint{display:flex; gap:14px; align-items:flex-start; padding:15px 17px; border-radius:16px; border:1.6px solid var(--line); background:var(--paper2);}
+  .ipoint .ii{width:40px; height:40px; border-radius:12px; flex:0 0 auto; display:flex; align-items:center; justify-content:center; background:var(--paper); border:1px solid var(--line);}
+  .ipoint .ii svg{width:22px; height:22px;}
+  .ipoint b{display:block; color:var(--head); font-family:'Fraunces',serif; font-size:1.08rem; margin-bottom:2px;}
+  .ipoint p{margin:0; color:var(--ink); font-size:.97rem;}
+  .ipoint.ok .ii{color:var(--green);}
+  .ipoint.no .ii{color:var(--clay);}
+  .ipoint.lock .ii{color:var(--blue);}
   @media print{ header.site, footer.site, .grain, .next, .restart, .risk .rbtns, .safety{display:none !important;} .result{padding:0 !important;} }
   @media (max-width:900px){ .panel{padding:28px 22px;} .next{grid-template-columns:1fr;} .twogrid{grid-template-columns:1fr;} .vrow{grid-template-columns:104px 1fr; gap:10px;} }
   @media (max-width:560px){
@@ -150,7 +159,24 @@
 <div class="grain"></div>
 <header id="site-header"></header>
 
-<section id="flowScreen" class="wrap flow">
+<section id="introScreen" class="wrap flow">
+  <div class="panel">
+    <span class="eyebrow lab" style="margin-bottom:10px"><span class="ink-ic" data-icon="compass"></span> перш ніж почати</span>
+    <h2>Коротко й чесно — що це таке</h2>
+    <p class="sub">Одна хвилина, щоб ви знали, чого очікувати. Це важливо для довіри.</p>
+    <div class="intro-points">
+      <div class="ipoint ok"><span class="ii" data-icon="compass"></span><div><b>Що це</b><p>Тепле дзеркало двох поглядів — ваших і дитини. Допомагає побачити, де насправді складно, і з чого почати спокійну розмову.</p></div></div>
+      <div class="ipoint no"><span class="ii" data-icon="ban"></span><div><b>Що це НЕ</b><p>Не діагноз і не заміна психологу. Ми нічого не «оцінюємо» й не вішаємо ярликів — це орієнтир для розмови, а не вирок.</p></div></div>
+      <div class="ipoint lock"><span class="ii" data-icon="lock"></span><div><b>Приватно й безпечно</b><p>Відповіді підлітка конфіденційні: ви побачите теми, де потрібна підтримка, а не дослівні слова. Дані лишаються на цьому пристрої.</p></div></div>
+    </div>
+    <div class="flow-actions" style="justify-content:space-between">
+      <a class="back" href="pro-proekt.html">Більше про проєкт</a>
+      <button class="btn btn-green" onclick="startFlow()">Зрозуміло, почати <span data-icon="step"></span></button>
+    </div>
+  </div>
+</section>
+
+<section id="flowScreen" class="wrap flow" style="display:none">
   <div class="panel">
     <div class="step" data-step="1">
       <div class="prog"><span class="lbl" data-prog>КРОК 1 з 6</span><div class="bars2" data-bars></div></div>
@@ -560,7 +586,14 @@
     if(state.concerns.length){ var n=$('#next1'); if(n) n.disabled=false; return true; }
     return false;
   })();
-  setStep(prefilled ? 2 : 1);
+  // інтро «що це / що це не» показуємо першим; тест відкривається після «Почати»
+  function startFlow(){
+    var intro=document.getElementById('introScreen'); if(intro) intro.style.display='none';
+    document.getElementById('flowScreen').style.display='flex';
+    setStep(prefilled ? 2 : 1);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  window.startFlow = startFlow;
 </script>
 </body>
 </html>
