@@ -158,5 +158,147 @@
     }
   };
 
+  // видалити всі спроби дитини (для clearAttempts у хмарному режимі)
+  MistDB.attempts.clear = function(childId){
+    return need().from('attempts').delete().eq('child_id', childId);
+  };
+
+  // ===========================================================
+  //  CLOUD-адаптер: коли користувач увійшов — дані сімʼї живуть в акаунті.
+  //  Перевизначає синхронні Site-методи поверх памʼяті + пише в Supabase.
+  //  Будь-яка помилка → тихо лишаємось у локальному режимі (нічого не ламається).
+  // ===========================================================
+  var ACTIVE_KEY = 'mist-cloud-active';
+  function isTmp(id){ return typeof id==='string' && (id.indexOf('tmp_')===0 || id.indexOf('atmp_')===0); }
+
+  function buildStore(kids){
+    var active = null;
+    try{ active = localStorage.getItem(ACTIVE_KEY); }catch(e){}
+    if(!active || !kids.some(function(k){ return k.id===active; })) active = kids.length ? kids[0].id : null;
+    return { v:2, kids:kids, activeKidId:active };
+  }
+  function persistActive(){ try{ if(cloud.store) localStorage.setItem(ACTIVE_KEY, cloud.store.activeKidId||''); }catch(e){} }
+
+  function readLocalRaw(){
+    try{
+      var raw = localStorage.getItem('mist-attempts'); if(!raw) return null;
+      var d = JSON.parse(raw);
+      if(d && Array.isArray(d.kids)) return d;
+      if(d && Array.isArray(d.attempts)) return { kids:[{ id:'l', name:'Ваша дитина', attempts:d.attempts }] };
+    }catch(e){}
+    return null;
+  }
+
+  // одноразова міграція локальних дітей+спроб у акаунт (коли в акаунті ще порожньо)
+  function migrateLocal(){
+    var local = readLocalRaw();
+    if(!local || !local.kids.length){
+      return MistDB.children.add('Ваша дитина').then(function(){});
+    }
+    var chain = Promise.resolve();
+    local.kids.forEach(function(lk){
+      chain = chain.then(function(){
+        return MistDB.children.add(lk.name || 'Ваша дитина').then(function(r){
+          var cid = r.data && r.data.id;
+          if(!cid || !lk.attempts || !lk.attempts.length) return;
+          var c2 = Promise.resolve();
+          lk.attempts.forEach(function(a){ c2 = c2.then(function(){ return MistDB.attempts.save(cid, a); }); });
+          return c2;
+        });
+      });
+    });
+    return chain;
+  }
+
+  function loadKidsWithAttempts(){
+    return MistDB.children.list().then(function(cr){
+      var kids = (cr.data||[]).map(function(c){ return { id:c.id, name:c.name, attempts:[] }; });
+      return Promise.all(kids.map(function(k){
+        return MistDB.attempts.list(k.id).then(function(ar){ k.attempts = ar.data || []; });
+      })).then(function(){ return kids; });
+    });
+  }
+
+  function finishActivate(){
+    cloud.on = true;
+    persistActive();
+    if(!window.Site) return;
+    var S = window.Site, store = cloud.store;
+    function active(){ return store.kids.filter(function(k){ return k.id===store.activeKidId; })[0] || store.kids[0] || null; }
+
+    S.getKids = function(){ return store.kids.map(function(k){ return { id:k.id, name:k.name, count:k.attempts.length, active:(k.id===store.activeKidId) }; }); };
+    S.getActiveKidId = function(){ return store.activeKidId; };
+    S.setActiveKid = function(id){ if(store.kids.some(function(k){ return k.id===id; })){ store.activeKidId=id; persistActive(); return true; } return false; };
+    S.getAttempts = function(){ var k=active(); return (k?k.attempts:[]).slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); }); };
+    S.getLatest = function(){ var all=S.getAttempts(); return all.length ? all[0] : null; };
+    S.addKid = function(name){
+      var nm = (name||'').trim() || ('Дитина '+(store.kids.length+1));
+      var tmp = 'tmp_'+Date.now().toString(36);
+      var kid = { id:tmp, name:nm, attempts:[] };
+      store.kids.push(kid); store.activeKidId = tmp; persistActive();
+      MistDB.children.add(nm).then(function(r){
+        if(r.data && r.data.id){ if(store.activeKidId===tmp) store.activeKidId = r.data.id; kid.id = r.data.id; persistActive(); }
+      }).catch(function(){ if(S.toast) S.toast('Не вдалося зберегти дитину в акаунт.'); });
+      return tmp;
+    };
+    S.renameKid = function(id, name){
+      var k = store.kids.filter(function(x){ return x.id===id; })[0]; if(!k) return false;
+      var nm = (name||'').trim(); if(!nm) return false; k.name = nm;
+      if(!isTmp(id)) MistDB.children.rename(id, nm).catch(function(){});
+      return true;
+    };
+    S.removeKid = function(id){
+      if(store.kids.length<=1) return false;
+      var i = store.kids.map(function(k){ return k.id; }).indexOf(id); if(i<0) return false;
+      store.kids.splice(i,1);
+      if(store.activeKidId===id) store.activeKidId = store.kids[0].id;
+      persistActive();
+      if(!isTmp(id)) MistDB.children.remove(id).catch(function(){});
+      return true;
+    };
+    S.saveAttempt = function(obj){
+      var k = active(); if(!k) return null;
+      var att = obj || {}; if(!att.date) att.date = new Date().toISOString();
+      var tmp = 'atmp_'+Date.now().toString(36); att.id = tmp; k.attempts.push(att);
+      (function push(n){
+        if(isTmp(k.id)){ if(n>0) setTimeout(function(){ push(n-1); }, 500); return; }
+        MistDB.attempts.save(k.id, att).then(function(r){ if(r.data && r.data.id) att.id = r.data.id; })
+          .catch(function(){ if(S.toast) S.toast('Не вдалося зберегти результат в акаунт.'); });
+      })(12);
+      return tmp;
+    };
+    S.clearAttempts = function(){
+      var k = active(); if(!k) return false; k.attempts = [];
+      if(!isTmp(k.id)) MistDB.attempts.clear(k.id).catch(function(){});
+      return true;
+    };
+    S.cloudUser = cloud.user;
+  }
+
+  var cloud = {
+    on: false,
+    user: null,
+    store: null,
+    // Promise<boolean>: true якщо хмарний режим увімкнено
+    activate: function(){
+      if(cloud.on) return Promise.resolve(true);
+      if(!configured) return Promise.resolve(false);
+      return MistDB.auth.user().then(function(u){
+        if(!u) return false;
+        cloud.user = u;
+        return loadKidsWithAttempts().then(function(kids){
+          if(kids.length===0){
+            return migrateLocal().then(loadKidsWithAttempts).then(function(kids2){
+              cloud.store = buildStore(kids2); finishActivate(); return true;
+            });
+          }
+          cloud.store = buildStore(kids); finishActivate(); return true;
+        });
+      }).catch(function(e){ try{ console.warn('cloud activate failed', e); }catch(_){ } return false; });
+    }
+  };
+  MistDB.cloud = cloud;
+  MistDB.isCloud = function(){ return cloud.on; };
+
   window.MistDB = MistDB;
 })();

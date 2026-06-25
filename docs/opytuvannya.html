@@ -167,7 +167,7 @@
     <div class="intro-points">
       <div class="ipoint ok"><span class="ii" data-icon="compass"></span><div><b>Що це</b><p>Тепле дзеркало двох поглядів — ваших і дитини. Допомагає побачити, де насправді складно, і з чого почати спокійну розмову.</p></div></div>
       <div class="ipoint no"><span class="ii" data-icon="ban"></span><div><b>Що це НЕ</b><p>Не діагноз і не заміна психологу. Ми нічого не «оцінюємо» й не вішаємо ярликів — це орієнтир для розмови, а не вирок.</p></div></div>
-      <div class="ipoint lock"><span class="ii" data-icon="lock"></span><div><b>Приватно й безпечно</b><p>Відповіді підлітка конфіденційні: ви побачите теми, де потрібна підтримка, а не дослівні слова. Дані лишаються на цьому пристрої.</p></div></div>
+      <div class="ipoint lock"><span class="ii" data-icon="lock"></span><div><b>Приватно й безпечно</b><p>Відповіді підлітка конфіденційні: ви побачите теми, де потрібна підтримка, а не дослівні слова. Дані зберігаються приватно — лише для вашої родини.</p></div></div>
     </div>
     <div class="flow-actions" style="justify-content:space-between">
       <a class="back" href="pro-proekt.html">Більше про проєкт</a>
@@ -303,6 +303,9 @@
 </section>
 
 <footer id="site-footer"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js" onerror="window.__noCfg=true"></script>
+<script src="assets/db.js"></script>
 <script src="assets/app.js"></script>
 <script>
   var TOTAL = 6;
@@ -575,6 +578,8 @@
     setStep(1);
   }
   Site.init('test');
+  // якщо користувач увійшов — увімкнути збереження результату в акаунт (інакше локально)
+  if(window.MistDB && MistDB.configured){ MistDB.cloud.activate().catch(function(){}); }
   // приймаємо вибір тривог із головної (?c=key,key) і одразу продовжуємо
   var prefilled = (function(){
     var m = location.search.match(/[?&]c=([^&]+)/); if(!m) return false;

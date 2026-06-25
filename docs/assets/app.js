@@ -243,11 +243,11 @@
     }).join('');
     return '<div class="wrap nav">'+LOGO+
       '<div class="links">'+links+
-        '<a href="#" class="nav-login-m" onclick="Site.closeNav();Site.toast(\'Вхід зʼявиться згодом. Зараз усе працює без реєстрації\');return false;">Увійти</a>'+
+        '<a href="vhid.html" class="nav-login-m" onclick="Site.closeNav()">Увійти</a>'+
       '</div>'+
       '<div class="right">'+
         '<button class="btn btn-ghost theme-toggle" aria-label="Перемкнути тему" onclick="Site.toggleTheme()"><span class="t-moon" data-icon="moon"></span><span class="t-sun" data-icon="sun"></span></button>'+
-        '<button class="btn btn-ghost nav-login" onclick="Site.toast(\'Вхід зʼявиться згодом. Зараз усе працює без реєстрації\')">Увійти</button>'+
+        '<a class="btn btn-ghost nav-login" href="vhid.html">Увійти</a>'+
         '<button class="nav-burger" aria-label="Меню" aria-expanded="false" onclick="Site.toggleNav(this)"><span></span><span></span><span></span></button>'+
       '</div>'+
     '</div>';
@@ -508,6 +508,28 @@
     '</svg>';
   }
 
+  // ---- авторизація у шапці (вантажить Supabase+config+db на будь-якій сторінці) ----
+  function loadAuthScripts(cb){
+    if(window.MistDB){ cb(); return; }
+    function add(src, done){ var s=document.createElement('script'); s.src=src; s.async=false; s.onload=done; s.onerror=done; document.head.appendChild(s); }
+    add('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2', function(){
+      add('assets/config.js', function(){
+        add('assets/db.js', function(){ cb(); });
+      });
+    });
+  }
+  function updateHeaderAuth(){
+    if(!window.MistDB || !MistDB.configured) return;
+    MistDB.auth.user().then(function(u){
+      var els = document.querySelectorAll('.nav-login, .nav-login-m');
+      Array.prototype.forEach.call(els, function(el){
+        if(u){ el.textContent='Вийти'; el.setAttribute('href','#'); el.onclick=function(){ if(Site.closeNav) Site.closeNav(); Site.logout(); return false; }; }
+        else { el.textContent='Увійти'; el.setAttribute('href','vhid.html'); el.onclick=function(){ if(Site.closeNav) Site.closeNav(); }; }
+      });
+    }).catch(function(){});
+  }
+  function ensureAuth(){ try{ loadAuthScripts(updateHeaderAuth); }catch(e){} }
+
   var Site = {
     icons: ICONS,
     paint: paintIcons,
@@ -524,6 +546,7 @@
     oksanaImg: oksanaImg,
     setOksanaAva: setOksanaAva,
     toggleTheme: toggleTheme,
+    logout: function(){ try{ if(window.MistDB && MistDB.configured){ MistDB.auth.signOut().finally(function(){ location.href='index.html'; }); return; } }catch(e){} location.href='index.html'; },
     // слой данных попыток (один источник правды; задел под бэкенд)
     saveAttempt: saveAttempt,
     getAttempts: getAttempts,
@@ -552,6 +575,7 @@
       var f = document.getElementById('site-footer');
       if(f){ f.className='site'; f.innerHTML = buildFooter(); }
       paintIcons();
+      ensureAuth();
     }
   };
   window.Site = Site;

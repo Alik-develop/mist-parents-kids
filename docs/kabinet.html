@@ -179,6 +179,9 @@
 </section>
 
 <footer id="site-footer"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js" onerror="window.__noCfg=true"></script>
+<script src="assets/db.js"></script>
 <script src="assets/app.js"></script>
 <script>
   Site.init('kabinet');
@@ -619,7 +622,10 @@
     var fresh = document.querySelector('.timeline li.fresh');
     if(fresh) fresh.scrollIntoView({block:'center', behavior:'smooth'});
   }
-  render();
+  // якщо користувач увійшов — підняти дані сімʼї з акаунту (з міграцією), потім рендер
+  if(window.MistDB && MistDB.configured){
+    MistDB.cloud.activate().then(function(){ render(); }).catch(function(){ render(); });
+  } else { render(); }
 </script>
 </body>
 </html>
