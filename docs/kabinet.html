@@ -140,6 +140,14 @@
             <div id="recsBody"></div>
           </div>
 
+          <div class="panelbox" id="navchannya" style="display:none">
+            <div class="pill-row" style="justify-content:space-between; margin-bottom:6px">
+              <h3 style="margin:0">Навчання дитини</h3>
+              <a class="lnk" href="uroky.html">Усі уроки <span data-icon="step"></span></a>
+            </div>
+            <div id="navchBody"></div>
+          </div>
+
         </div>
 
         <!-- ПРАВА КОЛОНКА -->
@@ -626,10 +634,35 @@
       document.getElementById('kabSub').textContent = 'Поки що порожньо — пройдіть тест, щоб побачити динаміку.';
     }
     Site.paint();
+    try{ renderNavchannya(); }catch(e){}
     // підсвічена свіжа спроба — підкрутимо до неї
     var fresh = document.querySelector('.timeline li.fresh');
     if(fresh) fresh.scrollIntoView({block:'center', behavior:'smooth'});
   }
+  // ---- навчання дитини (прогрес уроків — щоб батьки бачили активність) ----
+  function renderNavchannya(){
+    var panel=document.getElementById('navchannya'), body=document.getElementById('navchBody');
+    if(!panel||!body) return;
+    if(!(window.MistDB && MistDB.isCloud && MistDB.isCloud() && Site.getActiveKidId)){ panel.style.display='none'; return; }
+    var childId=Site.getActiveKidId(); if(!childId){ panel.style.display='none'; return; }
+    Promise.all([ MistDB.progress.list(childId), MistDB.lessons.list() ]).then(function(rs){
+      var prog=(rs[0]&&rs[0].data)||[]; var lessons=(rs[1]&&rs[1].data)||[];
+      var titles={}; lessons.forEach(function(l){ titles[l.id]=l.title; });
+      var done=prog.filter(function(p){ return p.status==='done'; });
+      panel.style.display='';
+      if(!done.length){
+        body.innerHTML='<div class="dynnote"><span class="ink-ic" data-icon="cap"></span><p>Поки що дитина не проходила уроків. <a href="uroky.html">Відкрийте уроки</a> — і тут зʼявиться, що пройдено.</p></div>';
+        Site.paint(panel); return;
+      }
+      done.sort(function(a,b){ return (b.updated_at||'').localeCompare(a.updated_at||''); });
+      var rows=done.slice(0,6).map(function(p){
+        return '<li><span class="dot" style="background:var(--green)"></span><div><b>'+(titles[p.lesson_id]||'Урок')+'</b><div class="when">'+(p.score!=null?'результат: '+p.score:'пройдено')+'</div></div></li>';
+      }).join('');
+      body.innerHTML='<p class="muted" style="margin:0 0 8px; font-weight:700">Пройдено уроків: '+done.length+'</p><ul class="timeline">'+rows+'</ul>';
+      Site.paint(panel);
+    }).catch(function(){ panel.style.display='none'; });
+  }
+
   // ---- акаунт + сімʼя (другий батько) ----
   function renderAccount(){
     var bar=document.getElementById('acctBar'); if(!bar) return;

@@ -3,138 +3,186 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Безкоштовний урок — Міст для Батьків та Дітей</title>
+<title>Урок — Міст для Батьків та Дітей</title>
 <meta property="og:type" content="website">
-<meta property="og:title" content="Безкоштовний урок — Міст для Батьків та Дітей">
-<meta property="og:description" content="Маленький приклад самостійного онлайн-уроку: коротко, дружньо, з миттєвою підказкою.">
+<meta property="og:title" content="Урок — Міст для Батьків та Дітей">
+<meta property="og:description" content="Короткий урок із поясненням і тестом на закріплення. Прогрес видно батькам у кабінеті.">
 <meta property="og:image" content="assets/og-cover.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/styles.css">
 <style>
-  .progress-wrap{display:flex; align-items:center; gap:14px; margin:0 0 18px;}
-  .progress-wrap .ptrack{flex:1; height:8px; border-radius:99px; background:var(--line2); overflow:hidden;}
-  .progress-wrap .pfill{height:100%; width:0; background:linear-gradient(90deg,var(--green2),var(--green)); transition:.4s;}
-  .scorebox{display:none; text-align:center; padding:10px 0 0;}
-  .scorebox.show{display:block;}
-  .scorebox .big{font-family:'Fraunces',serif; font-size:2.4rem; color:var(--green);}
-  .lesson-head{display:flex; align-items:center; gap:13px; margin:0 0 18px; padding:0 0 16px; border-bottom:1px solid var(--line2);}
-  .lesson-head .lh-av{width:46px;height:46px;border-radius:50%;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem;flex:0 0 auto;overflow:hidden;}
-  .lesson-head .lh-av img{width:100%;height:100%;object-fit:cover;}
-  .lesson-head .lh-meta{flex:1; min-width:0;}
-  .lesson-head .lh-meta b{display:block; font-family:'Fraunces',serif; color:var(--head); font-size:1.06rem; line-height:1.15;}
-  .lesson-head .lh-meta span{font-size:.85rem; color:var(--muted); font-weight:700;}
-  .lesson .hint{margin-top:12px; padding:12px 15px; border-radius:13px; background:var(--green-bg); border:1px solid var(--line); color:var(--ink); font-size:.92rem; font-weight:700; display:flex; gap:10px; align-items:flex-start;}
-  .lesson .hint .ink-ic{color:var(--green); margin-top:1px;}
+  .lwrap{max-width:760px; margin:0 auto; padding:18px 0 60px;}
+  .lhead{margin-bottom:18px;}
+  .lmeta{display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 0;}
+  .lpill{font-size:.78rem; font-weight:800; letter-spacing:.3px; padding:4px 11px; border-radius:999px; background:var(--green-bg); color:var(--green); border:1px solid var(--line);}
+  .lcard{background:var(--paper); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--sh-s); padding:22px 24px; margin-bottom:16px;}
+  .lvideo{aspect-ratio:16/9; border-radius:16px; overflow:hidden; border:1px solid var(--line); background:var(--green-bg); display:flex; align-items:center; justify-content:center; color:var(--green); margin-bottom:16px;}
+  .lvideo iframe{width:100%; height:100%; border:0;}
+  .lvideo .vph{text-align:center; padding:20px;}
+  .lvideo .vph .ic{width:46px;height:46px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;}
+  .lvideo .vph .ic svg{width:34px;height:34px;}
+  .lmaterial{color:var(--ink); line-height:1.6;}
+  .lmaterial p{margin:0 0 10px;}
+  .quiz h3{margin:0 0 4px; font-size:1.3rem;}
+  .q{padding:14px 0; border-top:1px solid var(--line2);}
+  .q:first-of-type{border-top:none;}
+  .q .qq{font-weight:800; margin:0 0 10px; color:var(--ink);}
+  .q .opts{display:flex; flex-wrap:wrap; gap:9px;}
+  .q .opt{padding:9px 16px; border-radius:12px; border:1.5px solid var(--line); background:var(--paper2); font-weight:700; font-size:.95rem; color:var(--ink); cursor:pointer; transition:.12s;}
+  .q .opt:hover{border-color:var(--green2);}
+  .q .opt.sel{background:var(--green); color:var(--on-accent); border-color:var(--green);}
+  .q.done .opt{cursor:default;}
+  .q.done .opt.correct{background:var(--green-bg); border-color:var(--green); color:var(--green);}
+  .q.done .opt.wrong{background:var(--clay-bg); border-color:var(--clay); color:var(--clay);}
+  .lresult{background:var(--green-bg); border:1px solid var(--line); border-radius:16px; padding:18px 20px; margin-top:6px; display:none;}
+  .lresult.show{display:block;}
+  .lresult b{color:var(--head);}
+  .lnav{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;}
+  .lnote{font-size:.88rem; color:var(--muted); margin-top:10px;}
 </style>
 </head>
 <body>
 <div class="grain"></div>
 <header id="site-header"></header>
 
-<section class="wrap narrow">
-  <div class="phero">
-    <span class="eyebrow lab"><span class="ink-ic" data-icon="book"></span> демо · математика</span>
-    <h1>Безкоштовний урок</h1>
-    <p>Маленький приклад того, як виглядатиме самостійний онлайн-урок: коротко, дружньо, з миттєвою підказкою. Тема — дроби та відсотки, 6–7 клас.</p>
-  </div>
-
-  <div class="section">
-    <div class="note-box"><span class="ink-ic" data-icon="spark"></span><span>Це демо на 3 завдання. У повній версії — серія уроків, які підліток проходить сам за компʼютером, з поясненнями голосом Оксани.</span></div>
-
-    <div class="lesson">
-      <div class="lesson-head">
-        <span class="lh-av" id="oksanaLessonAva">О</span>
-        <div class="lh-meta"><b>Дроби та відсотки</b><span>веде Оксана · 6–7 клас</span></div>
-        <span class="pill ochre"><span data-icon="clock"></span> ~5 хв</span>
-      </div>
-      <div class="hint"><span class="ink-ic" data-icon="handheart"></span><span>Тут немає поспіху й оцінок. Помилився — нічого, просто спробуй ще раз. Кожна маленька перемога повертає віру в себе.</span></div>
-      <div class="progress-wrap" style="margin-top:18px"><span class="lab" style="color:var(--green)">Прогрес</span><div class="ptrack"><div class="pfill" id="pfill"></div></div><span id="pnum" class="muted" style="font-weight:800">0 / 3</span></div>
-
-      <div class="problem" data-correct="1">
-        <div class="pq">1. Скільки це: <b>1/2 від 80</b>?</div>
-        <div class="opts">
-          <button class="opt" onclick="answer(this,0)">20</button>
-          <button class="opt" onclick="answer(this,1)">40</button>
-          <button class="opt" onclick="answer(this,0)">60</button>
-        </div>
-        <div class="fb"></div>
-      </div>
-
-      <div class="problem" data-correct="2">
-        <div class="pq">2. <b>25%</b> від 200 — це…</div>
-        <div class="opts">
-          <button class="opt" onclick="answer(this,0)">25</button>
-          <button class="opt" onclick="answer(this,0)">75</button>
-          <button class="opt" onclick="answer(this,1)">50</button>
-        </div>
-        <div class="fb"></div>
-      </div>
-
-      <div class="problem" data-correct="0">
-        <div class="pq">3. Що більше: <b>3/4</b> чи <b>2/3</b>?</div>
-        <div class="opts">
-          <button class="opt" onclick="answer(this,1)">3/4</button>
-          <button class="opt" onclick="answer(this,0)">2/3</button>
-          <button class="opt" onclick="answer(this,0)">вони рівні</button>
-        </div>
-        <div class="fb"></div>
-      </div>
-
-      <div class="scorebox" id="scorebox">
-        <div class="big" id="scoreval">3 / 3</div>
-        <p class="muted" id="scoremsg">Чудово! Саме так і виглядає маленька перемога, яка повертає віру в себе.</p>
-        <div class="pill-row" style="justify-content:center; margin-top:10px">
-          <a class="btn btn-green" href="pro-oksanu.html">Заняття з Оксаною <span data-icon="step"></span></a>
-          <a class="btn btn-soft" href="opytuvannya.html">Пройти тест <span data-icon="step"></span></a>
-        </div>
-      </div>
+<section class="wrap">
+  <div class="lwrap">
+    <a class="back" href="uroky.html" style="color:var(--muted); font-weight:800; font-size:.94rem;">← Усі уроки</a>
+    <div id="lessonBody" style="margin-top:12px">
+      <div class="lcard"><p class="muted" style="margin:0">Завантажуємо урок…</p></div>
     </div>
   </div>
-  <div class="spacer-lg"></div>
 </section>
 
 <footer id="site-footer"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js" onerror="window.__noCfg=true"></script>
+<script src="assets/db.js"></script>
 <script src="assets/app.js"></script>
 <script>
-  Site.init('home');
-  Site.setOksanaAva('oksanaLessonAva', 'О'); // фото Оксани у шапці уроку (фолбек на літеру)
-  var total = document.querySelectorAll('.problem').length;
-  var done = 0, correct = 0;
+  Site.init('urok');
+  var SUBJ = { math:'Математика', history:'Історія України', ukr:'Українська', physics:'Фізика' };
+  var state = { lesson:null, questions:[], answers:{}, childId:null, lessonId:null, graded:false };
 
-  function answer(btn, isRight){
-    var prob = btn.closest('.problem');
-    if(prob.dataset.answered) return;
-    prob.dataset.answered = '1';
-    var fb = prob.querySelector('.fb');
-    if(isRight){
-      btn.classList.add('right'); correct++;
-      fb.textContent = 'Правильно! Так і є.'; fb.style.color = 'var(--green)';
-    } else {
-      btn.classList.add('wrong');
-      // підсвітити правильний
-      var opts = prob.querySelectorAll('.opt');
-      opts.forEach(function(o){ if(o.getAttribute('onclick').indexOf(',1)')>-1) o.classList.add('right'); });
-      fb.textContent = 'Майже! Подивись на правильну відповідь — наступного разу вийде.'; fb.style.color = 'var(--clay)';
+  function ytEmbed(url){
+    if(!url) return null;
+    var m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{11})/);
+    if(m) return 'https://www.youtube.com/embed/'+m[1];
+    return url;
+  }
+  function esc(s){ return (s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function render(){
+    var L = state.lesson, qs = state.questions;
+    if(!L){ document.getElementById('lessonBody').innerHTML = '<div class="lcard"><p>Поки що уроків немає. Зазирніть пізніше.</p><div class="lnav"><a class="btn btn-soft" href="uroky.html">До каталогу</a></div></div>'; return; }
+    if(L.external_url){
+      document.getElementById('lessonBody').innerHTML =
+        '<div class="lhead"><h1 style="margin:0">'+esc(L.title)+'</h1><div class="lmeta"><span class="lpill">'+(SUBJ[L.subject]||L.subject)+'</span><span class="lpill">ВШО</span></div>'+(L.summary?'<p class="muted" style="margin:10px 0 0">'+esc(L.summary)+'</p>':'')+'</div>'+
+        '<div class="lcard"><p class="lmaterial">Цей урок — на безкоштовній платформі ВШО (Всеукраїнська школа онлайн). Відкрий його там, а коли позаймаєшся — познач тут, щоб батьки бачили в кабінеті.</p>'+
+        '<div class="lnav"><a class="btn btn-primary" href="'+L.external_url+'" target="_blank" rel="noopener">Відкрити на ВШО <span data-icon="step"></span></a>'+
+        '<button class="btn btn-green" id="extDone" onclick="markExtDone()">Я позаймався <span data-icon="check"></span></button></div>'+
+        '<div class="lresult" id="lresult"></div></div>';
+      Site.paint(); return;
     }
-    fb.classList.add('show');
-    done++;
-    var pct = Math.round(done/total*100);
-    document.getElementById('pfill').style.width = pct+'%';
-    document.getElementById('pnum').textContent = done+' / '+total;
-    if(done===total) finish();
+    var emb = ytEmbed(L.video_url);
+    var video = emb
+      ? '<div class="lvideo"><iframe src="'+emb+'" allowfullscreen loading="lazy"></iframe></div>'
+      : '<div class="lvideo"><div class="vph"><div class="ic" data-icon="play"></div>Відео-пояснення зʼявиться тут</div></div>';
+    var quiz = qs.length ? (
+      '<div class="lcard quiz"><h3>Перевір себе</h3><p class="muted" style="margin:0 0 6px">Короткий тест на закріплення.</p><div id="qlist"></div>'+
+      '<button class="btn btn-primary" id="finishBtn" style="margin-top:8px" disabled onclick="finish()">Завершити урок <span data-icon="check"></span></button>'+
+      '<div class="lresult" id="lresult"></div></div>'
+    ) : '';
+    document.getElementById('lessonBody').innerHTML =
+      '<div class="lhead"><h1 style="margin:0">'+esc(L.title)+'</h1>'+
+        '<div class="lmeta"><span class="lpill">'+(SUBJ[L.subject]||L.subject)+'</span>'+
+          (L.grade?'<span class="lpill">'+L.grade+' клас</span>':'')+
+          '<span class="lpill">'+(L.duration_min||20)+' хв</span></div>'+
+        (L.summary?'<p class="muted" style="margin:10px 0 0">'+esc(L.summary)+'</p>':'')+
+      '</div>'+
+      '<div class="lcard">'+video+'<div class="lmaterial">'+(L.material||'<p>Матеріал уроку зʼявиться тут.</p>')+'</div></div>'+
+      quiz;
+    if(qs.length) renderQuiz();
+    Site.paint();
   }
+  function renderQuiz(){
+    document.getElementById('qlist').innerHTML = state.questions.map(function(q,i){
+      var opts = (q.options||[]).map(function(o,j){
+        return '<button class="opt" data-q="'+i+'" data-o="'+j+'" onclick="pick('+i+','+j+')">'+esc(String(o))+'</button>';
+      }).join('');
+      return '<div class="q" data-qi="'+i+'"><p class="qq">'+(i+1)+'. '+esc(q.question)+'</p><div class="opts">'+opts+'</div></div>';
+    }).join('');
+  }
+  function pick(qi, oi){
+    if(state.graded) return;
+    state.answers[qi] = oi;
+    var q = document.querySelector('.q[data-qi="'+qi+'"]');
+    q.querySelectorAll('.opt').forEach(function(b){ b.classList.toggle('sel', +b.dataset.o===oi); });
+    var done = state.questions.every(function(_,i){ return state.answers[i]!==undefined; });
+    var btn = document.getElementById('finishBtn'); if(btn) btn.disabled = !done;
+  }
+  window.pick = pick;
+
   function finish(){
-    var box = document.getElementById('scorebox'); box.classList.add('show');
-    document.getElementById('scoreval').textContent = correct+' / '+total;
-    var msg = correct===total ? 'Чудово! Саме так і виглядає маленька перемога, яка повертає віру в себе.'
-      : correct>=2 ? 'Гарно! Ще трохи практики — і буде впевнено.'
-      : 'Це нормально — з цього й починається навчання. Головне, що ти спробував.';
-    document.getElementById('scoremsg').textContent = msg;
-    box.scrollIntoView({behavior:'smooth', block:'center'});
+    if(state.graded) return; state.graded = true;
+    var correct = 0;
+    state.questions.forEach(function(q,i){
+      var qEl = document.querySelector('.q[data-qi="'+i+'"]'); qEl.classList.add('done');
+      var ans = state.answers[i];
+      if(ans===q.correct) correct++;
+      qEl.querySelectorAll('.opt').forEach(function(b){
+        var o=+b.dataset.o;
+        if(o===q.correct) b.classList.add('correct');
+        else if(o===ans) b.classList.add('wrong');
+      });
+    });
+    var total = state.questions.length;
+    var res = document.getElementById('lresult');
+    var ok = correct===total;
+    var msg = '<b>Урок пройдено!</b> Результат: '+correct+' з '+total+'. '+(ok?'Чудова робота!':'Гарний старт — можна повторити, щоб закріпити.');
+    if(state.childId && state.lessonId && window.MistDB){
+      MistDB.progress.set(state.childId, state.lessonId, 'done', correct).then(function(){
+        res.innerHTML = msg + '<div class="lnote">Збережено в кабінет — батьки побачать, що ти позаймався. 👏</div>';
+      }).catch(function(){ res.innerHTML = msg + '<div class="lnote">Не вдалося зберегти в кабінет (спробуйте пізніше).</div>'; });
+    } else {
+      res.innerHTML = msg + '<div class="lnote"><a href="vhid.html">Увійдіть</a>, щоб зберігати прогрес у кабінеті.</div>';
+    }
+    res.classList.add('show');
+    var btn=document.getElementById('finishBtn'); if(btn) btn.disabled=true;
+    res.scrollIntoView({behavior:'smooth', block:'center'});
   }
-  window.answer = answer;
+  window.finish = finish;
+
+  function markExtDone(){
+    var res=document.getElementById('lresult'); if(!res) return;
+    if(state.childId && state.lessonId && window.MistDB){
+      MistDB.progress.set(state.childId, state.lessonId, 'done', null).then(function(){
+        res.innerHTML='<b>Зараховано!</b> Батьки побачать у кабінеті, що ти позаймався. 👏'; res.classList.add('show');
+        var b=document.getElementById('extDone'); if(b){ b.disabled=true; b.textContent='Позначено ✓'; }
+      }).catch(function(){ res.innerHTML='Не вдалося зберегти. Спробуйте пізніше.'; res.classList.add('show'); });
+    } else { res.innerHTML='<a href="vhid.html">Увійдіть</a>, щоб зберегти, що ви позаймались.'; res.classList.add('show'); }
+  }
+  window.markExtDone=markExtDone;
+
+  (function init(){
+    if(!(window.MistDB && MistDB.configured)){
+      document.getElementById('lessonBody').innerHTML='<div class="lcard"><p>Уроки запрацюють після підключення бази.</p></div>'; return;
+    }
+    var id = (location.search.match(/[?&]id=([^&]+)/)||[])[1];
+    if(id) id = decodeURIComponent(id);
+    MistDB.cloud.activate().catch(function(){}).then(function(){
+      try{ if(MistDB.isCloud && MistDB.isCloud() && window.Site.getActiveKidId) state.childId = Site.getActiveKidId(); }catch(e){}
+      return id ? MistDB.lessons.get(id) : MistDB.lessons.list().then(function(r){
+        var first = (r.data||[])[0];
+        return first ? MistDB.lessons.get(first.id) : { lesson:null, questions:[] };
+      });
+    }).then(function(res){
+      if(res && res.lesson){ state.lesson=res.lesson; state.questions=res.questions||[]; state.lessonId=res.lesson.id; }
+      render();
+    }).catch(function(){ render(); });
+  })();
 </script>
 </body>
 </html>
