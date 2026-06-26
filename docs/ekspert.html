@@ -60,13 +60,15 @@
   var avaInner = e.photo
     ? '<img src="'+e.photo+'" alt="'+e.name+'" loading="lazy" onerror="this.onerror=null;this.outerHTML=\''+initials+'\'">'
     : initials;
-  var ratingHTML = e.rating
-    ? '<div class="stars">'+stars(e.rating)+' <span class="muted" style="font-weight:700">'+e.rating.toFixed(1)+' · '+e.n+' відгуків</span></div>'
-    : '<div class="stars" style="color:var(--green)">Перше заняття безкоштовне</div>';
+  var ratingHTML = e.example
+    ? '<div class="stars" style="color:var(--muted); font-weight:700"><span class="ink-ic" data-icon="compass"></span> Приклад картки</div>'
+    : (e.rating
+      ? '<div class="stars">'+stars(e.rating)+' <span class="muted" style="font-weight:700">'+e.rating.toFixed(1)+' · '+e.n+' відгуків</span></div>'
+      : '<div class="stars" style="color:var(--green)">Перше заняття безкоштовне</div>');
   var kindBadge = '<span class="ekind '+e.kind+'"><span data-icon="'+(KIND_IC[e.kind]||'users')+'"></span> '+(KIND[e.kind]||'')+'</span>';
   var tags = e.tags.map(function(t){ return '<span class="tag '+t+'">'+SCALES[t]+'</span>'; }).join(' ');
   var method = (e.method||[]).map(function(m){ return '<li><span class="mi" data-icon="check"></span><span>'+m+'</span></li>'; }).join('');
-  var reviews = (e.reviews||[]).map(function(r){ return '<div class="review"><div class="stars">★★★★★</div>«'+r.text+'»<div class="who">'+r.who+'</div></div>'; }).join('');
+  var reviews = (e.example ? [] : (e.reviews||[])).map(function(r){ return '<div class="review"><div class="stars">★★★★★</div>«'+r.text+'»<div class="who">'+r.who+'</div></div>'; }).join('');
 
   document.getElementById('prof').innerHTML =
     '<div class="ehero">'+

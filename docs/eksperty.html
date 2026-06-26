@@ -25,6 +25,7 @@
   </div>
 
   <div class="section">
+    <div class="note-box" style="border-color:var(--ochre); background:var(--ochre-bg)"><span class="ink-ic" data-icon="shield" style="color:var(--ochre)"></span><span><b>Каталог наповнюється.</b> Зараз перевірений фахівець — <a href="pro-oksanu.html">Оксана</a>. Решта карток — приклади: вони показують, як працюватиме підбір за типом і темою. Реальних фахівців додаємо лише після перевірки, без вигаданих рейтингів.</span></div>
     <div class="note-box"><span class="ink-ic" data-icon="compass"></span><span>Фільтр за темою допомагає знайти того, хто потрібен саме зараз. Пройдете тест — і ми підкажемо зону автоматично. <a href="opytuvannya.html">Пройти тест →</a></span></div>
     <div class="filters" id="filters"></div>
     <div class="grid g3" id="cards"></div>
@@ -53,9 +54,11 @@
     var tags = e.tags.map(function(t){ return '<span class="tag '+t+'">'+SCALES[t]+'</span>'; }).join('');
     var kind = '<span class="ekind '+e.kind+'"><span data-icon="'+(KIND_IC[e.kind]||'users')+'"></span> '+(KIND[e.kind]||'')+'</span>';
     var btn = '<a class="btn btn-green" href="'+profile+'" style="justify-content:center; width:100%">Переглянути профіль <span data-icon="step"></span></a>';
-    var ratingHTML = e.rating
-      ? '<div class="stars">'+stars(e.rating)+' <span class="muted" style="font-weight:700">'+e.rating.toFixed(1)+' · '+e.n+' відгуків</span></div>'
-      : '<div class="stars" style="color:var(--green)">Перше заняття безкоштовне</div>';
+    var ratingHTML = e.example
+      ? '<div class="stars" style="color:var(--muted); font-weight:700"><span class="ink-ic" data-icon="compass"></span> Приклад картки</div>'
+      : (e.rating
+        ? '<div class="stars">'+stars(e.rating)+' <span class="muted" style="font-weight:700">'+e.rating.toFixed(1)+' · '+e.n+' відгуків</span></div>'
+        : '<div class="stars" style="color:var(--green)">Перше заняття безкоштовне</div>');
     var fmt = e.format ? '<div class="efmt"><span class="ink-ic" data-icon="compass"></span><span>'+e.format+'</span></div>' : '';
     return '<div class="expert" data-tags="'+e.tags.join(',')+'">'+
       '<div class="ehead">'+ava+'<div><div class="en"><a href="'+profile+'" style="color:inherit">'+e.name+'</a></div><div class="er">'+e.city+'</div></div></div>'+

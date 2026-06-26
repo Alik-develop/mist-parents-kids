@@ -6,7 +6,7 @@
 <title>Кабінет батьків — Міст для Батьків та Дітей</title>
 <meta property="og:type" content="website">
 <meta property="og:title" content="Кабінет батьків — Міст для Батьків та Дітей">
-<meta property="og:description" content="Прогрес за предметами, фокус і мотивація, рекомендовані кроки та план на тиждень — спокійна картина замість тривоги.">
+<meta property="og:description" content="Аналіз звітів ВШО, фокус і мотивація та рекомендовані наступні кроки — спокійна картина замість тривоги.">
 <meta property="og:image" content="assets/og-cover.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -127,7 +127,7 @@
         </div>
       </section>
 
-      <div class="demo-banner demo-only" id="demoBanner" style="margin:14px 0 0; display:none; justify-content:space-between"><span><span class="ink-ic" data-icon="spark" style="color:var(--ochre)"></span> Демонстраційні дані — це приклад того, який вигляд матиме кабінет. Ваші реальні дані зʼявляться після проходження тесту.</span><button class="btn btn-soft btn-sm" onclick="setDemo(false)">Приховати приклад</button></div>
+      <div class="demo-banner demo-only" id="demoBanner" style="margin:14px 0 0; display:none; justify-content:space-between"><span><span class="ink-ic" data-icon="spark" style="color:var(--ochre)"></span> Демонстраційні дані — це приклад того, який вигляд матиме кабінет. Ваші реальні дані зʼявляться після проходження тесту або завантаження звіту ВШО.</span><button class="btn btn-soft btn-sm" onclick="setDemo(false)">Приховати приклад</button></div>
 
       <!-- ПРЕДМЕТИ + ПРАВА КОЛОНКА -->
       <div class="section dashgrid" id="dashGrid" style="padding-top:20px; display:none">
@@ -138,7 +138,7 @@
           <div class="panelbox demo-only" id="predmety">
             <div class="pill-row" style="justify-content:space-between; margin-bottom:14px">
               <h3 style="margin:0">Як справи в навчанні</h3>
-              <span class="trend up"><span class="ink-ic" data-icon="chartup"></span> загалом росте</span>
+              <span class="muted" style="font-size:.85rem; font-weight:700">приклад за звітом ВШО</span>
             </div>
             <div class="subjects" id="subjects"></div>
           </div>
@@ -377,24 +377,30 @@
   var demoMode = false;
   function setDemo(on){ demoMode = on; render(); window.scrollTo({top:0, behavior:'smooth'}); }
   function renderDemoSubjects(){
-    if(document.getElementById('subjects').dataset.done) return;
-    var SUBJ = [
-      ['Математика', 78, 'up',   'sigma', 'var(--green)', [.42,.4,.5,.55,.62,.7,.78]],
-      ['Українська', 84, 'up',   'book',  'var(--blue)',  [.6,.62,.66,.7,.74,.8,.84]],
-      ['Англійська', 65, 'flat', 'globe', 'var(--ochre)', [.66,.62,.6,.64,.63,.65,.65]],
-      ['Природа',    72, 'up',   'flask', 'var(--clay)',  [.5,.48,.55,.6,.64,.68,.72]]
-    ];
-    var trendIc = {up:'chartup', down:'chartdown', flat:'sliders'};
-    var trendTx = {up:'росте', down:'спадає', flat:'стабільно'};
-    document.getElementById('subjects').innerHTML = SUBJ.map(function(s){
-      var ticCls = s[4].indexOf('green')>-1?'green':(s[4].indexOf('blue')>-1?'blue':(s[4].indexOf('ochre')>-1?'ochre':'clay'));
-      return '<div class="subj">'+
-        '<div class="stop"><span class="sic tic '+ticCls+'" data-icon="'+s[3]+'"></span><span class="sn">'+s[0]+'</span><span class="sv">'+s[1]+'%</span></div>'+
-        Site.spark(s[5], s[4])+
-        '<div class="sfoot"><span class="trend '+s[2]+'"><span class="ink-ic" data-icon="'+trendIc[s[2]]+'" style="color:inherit"></span> '+trendTx[s[2]]+'</span><span>за 6 тижнів</span></div>'+
-      '</div>';
-    }).join('');
-    document.getElementById('subjects').dataset.done = 1;
+    var box=document.getElementById('subjects');
+    if(box.dataset.done) return;
+    if(!window.VSHO){ box.innerHTML=''; return; }
+    // Приклад — той самий формат, що й реальний імпорт звіту ВШО:
+    // один предмет → розділи з %, сильні сторони/прогалини, рекомендації.
+    var demoReport = {
+      source:'vsho', name:'', course:'Математика. Діагностичне тестування за курс 5 класу',
+      date:'12.05.2026',
+      overall:{ score:14, total:24, pct:58.3 },
+      sections:[
+        { name:'Натуральні числа', status:'scored', pct:90 },
+        { name:'Дроби та дії з ними', status:'scored', pct:60 },
+        { name:'Геометричні фігури', status:'scored', pct:36 },
+        { name:'Текстові задачі', status:'scored', pct:24 }
+      ],
+      gaps:[
+        { n:1, theme:'Площа прямокутника', material:'' },
+        { n:2, theme:'Додавання і віднімання дробів', material:'' },
+        { n:3, theme:'Задачі на рух', material:'' }
+      ]
+    };
+    box.innerHTML = VSHO.renderCard(demoReport, { compact:true });
+    box.dataset.done = 1;
+    Site.paint(box);
   }
   function renderDemoFocus(){
     document.getElementById('focusBody').innerHTML =
