@@ -52,6 +52,15 @@
   .invite{margin-top:10px; background:var(--green-bg); border:1px solid var(--line); border-radius:14px; padding:14px 16px;}
   .invite p{margin:0 0 10px; font-size:.94rem; color:var(--ink);}
   .invite input{width:100%; border:1.5px solid var(--line); border-radius:10px; padding:9px 11px; font-size:.84rem; color:var(--ink); background:var(--paper); margin-bottom:8px;}
+  /* ЄДИНИЙ НАСТУПНИЙ КРОК — головна дія зверху кабінету */
+  .nextstep{display:flex; gap:16px; align-items:flex-start; background:linear-gradient(160deg,var(--green-bg),var(--paper)); border:1px solid var(--line); border-radius:var(--r); padding:18px 20px; box-shadow:var(--sh-s); margin:14px 0 0;}
+  .nextstep .nsic{width:50px; height:50px; border-radius:14px; background:var(--paper); display:flex; align-items:center; justify-content:center; flex:0 0 auto; box-shadow:var(--sh-s);}
+  .nextstep .nsic svg{width:26px; height:26px;}
+  .nextstep .nslabel{display:inline-block; font-size:.7rem; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:var(--green2); margin-bottom:4px;}
+  .nextstep h3{margin:0 0 5px; font-size:1.18rem; color:var(--head);}
+  .nextstep p{margin:0 0 12px; font-size:.96rem; color:var(--ink);}
+  .nextstep .nsbtns{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  @media (max-width:560px){ .nextstep{flex-direction:column; gap:12px;} .nextstep .nsbtns .btn{width:100%; justify-content:center;} }
 </style>
 </head>
 <body>
@@ -91,6 +100,9 @@
 
       <!-- М'ЯКИЙ ПОРІГ УВАГИ: зʼявляється лише за умовою (теплий, без алармізму) -->
       <div id="careBanner" style="display:none"></div>
+
+      <!-- ЄДИНИЙ НАСТУПНИЙ КРОК: одна головна дія, зведена з усіх сигналів -->
+      <div id="nextStep" style="display:none"></div>
 
       <!-- ЗОВНІШНІ РЕЗУЛЬТАТИ (ВШО): показуємо, коли є збережені звіти (навіть без нашого тесту) -->
       <div class="panelbox" id="zvitpanel" style="display:none; margin-top:14px">
@@ -221,6 +233,7 @@
   var ZONE_COLOR = { peers:'var(--ochre)', teacher:'var(--blue)', parents:'var(--clay)', motivation:'var(--green)' };
   var ZONE_TIC   = { peers:'ochre', teacher:'blue', parents:'clay', motivation:'green' };
   var ZONE_ICON  = { peers:'users', teacher:'cap', parents:'home', motivation:'spark' };
+  var TIC_COLOR  = { green:'var(--green)', blue:'var(--blue)', ochre:'var(--ochre)', clay:'var(--clay)' };
   var MONTHS = ['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
   function fmtDate(iso){
     var d = new Date(iso); if(isNaN(d)) return '';
@@ -259,6 +272,37 @@
         '<div class="rt"><b>'+r[2]+'</b><span>'+r[3]+'</span></div>'+
         '<a class="btn '+btnCls+' btn-sm" href="'+r[5]+'">'+r[4]+'</a></div>';
     }).join('');
+  }
+
+  // ----- ЄДИНИЙ «НАСТУПНИЙ КРОК» (зведення розкиданих рекомендацій в одну дію) -----
+  function hideNextStep(){ var b=document.getElementById('nextStep'); if(b){ b.style.display='none'; b.innerHTML=''; } }
+  function showNextStep(step){
+    var box=document.getElementById('nextStep'); if(!box||!step) return;
+    var sec = step.secHref ? '<a class="btn btn-soft" href="'+step.secHref+'">'+escapeHtml(step.secLabel||'')+'</a>' : '';
+    box.innerHTML =
+      '<div class="nextstep">'+
+        '<span class="nsic" style="color:'+(TIC_COLOR[step.tic]||'var(--green)')+'" data-icon="'+step.icon+'"></span>'+
+        '<div style="flex:1">'+
+          '<span class="nslabel">Ваш наступний крок</span>'+
+          '<h3>'+escapeHtml(step.title)+'</h3>'+
+          '<p>'+escapeHtml(step.text)+'</p>'+
+          '<div class="nsbtns"><a class="btn btn-green" href="'+step.href+'">'+escapeHtml(step.btn)+'</a>'+sec+'</div>'+
+        '</div>'+
+      '</div>';
+    box.style.display='block';
+    Site.paint(box);
+  }
+  // крок із результату тесту (головна дія = перша рекомендація за зоною).
+  // При ризику головний крок — care-банер, тож тут ховаємось, щоб не дублювати.
+  function renderNextStepFromTest(attempts){
+    if(!attempts || !attempts.length){ hideNextStep(); return; }
+    var sig = attentionSignal(attempts);
+    var riskNow = (attempts[0] && attempts[0].risk) || (sig && sig.risk);
+    if(riskNow){ hideNextStep(); return; }
+    var top = recsFor(attempts[0])[0];   // [tic, icon, title, text, btn, href]
+    if(!top){ hideNextStep(); return; }
+    showNextStep({ tic:top[0], icon:top[1], title:top[2], text:top[3], btn:top[4], href:top[5],
+      secHref:'#kroky', secLabel:'Усі кроки нижче' });
   }
 
   // ----- ФОКУС І МОТИВАЦІЯ за останньою спробою -----
@@ -620,6 +664,7 @@
       document.getElementById('kabTitle').textContent = 'Ваш кабінет';
       document.getElementById('kabSub').textContent = 'Головне з останнього проходження від '+fmtDate(latest.date)+'.';
       renderCareBanner(attempts);
+      renderNextStepFromTest(attempts);
       renderFocus(latest);
       renderDynamics(attempts);
       renderRecs(latest);
@@ -627,6 +672,7 @@
     } else if(demoMode){
       // ПРИКЛАД (демо)
       document.getElementById('careBanner').style.display='none';
+      hideNextStep();
       document.getElementById('emptyState').style.display='none';
       document.getElementById('dashGrid').style.display='';
       showDemoOnly(true);
@@ -639,8 +685,9 @@
       renderDemoRecs();
       renderDemoHistory();
     } else {
-      // ПОРОЖНІЙ СТАН
+      // ПОРОЖНІЙ СТАН (renderZvit нижче може показати крок із звіту ВШО, якщо тесту ще немає)
       document.getElementById('careBanner').style.display='none';
+      hideNextStep();
       document.getElementById('dashGrid').style.display='none';
       showDemoOnly(false);
       document.getElementById('emptyState').style.display='';
@@ -689,6 +736,18 @@
       if(!rows.length || !window.VSHO){ panel.style.display='none'; return; }
       var reports=rows.map(function(r){ return MistDB.reportFromRow(r); });
       var latest=reports[0];
+      // якщо тесту ще немає — головним «наступним кроком» стає дія зі звіту ВШО
+      try{
+        var noTest = !(Site.getAttempts && Site.getAttempts().length);
+        if(noTest && !demoMode && VSHO.analyze){
+          var az = VSHO.analyze(latest); var ar = az.recs && az.recs[0];
+          if(ar){
+            showNextStep({ tic:ar.tic, icon:ar.icon, title:ar.title, text:ar.text, btn:ar.btn, href:ar.href,
+              secHref:'#zvity', secLabel:'Детальний розбір' });
+            var es=document.getElementById('emptyState'); if(es) es.style.display='none';
+          }
+        }
+      }catch(e){}
       var dyn = reports.length>1 ? VSHO.renderDynamics(reports) : '';
       var dynBlock = dyn
         ? '<div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line2)"><h4 style="margin:0 0 8px; font-size:.86rem; font-weight:800; letter-spacing:.3px; color:var(--head)">Динаміка між звітами</h4>'+dyn+'</div>'

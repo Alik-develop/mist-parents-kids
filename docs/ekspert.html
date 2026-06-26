@@ -40,6 +40,9 @@
 </section>
 
 <footer id="site-footer"></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/config.js" onerror="window.__noCfg=true"></script>
+<script src="assets/db.js"></script>
 <script src="assets/app.js"></script>
 <script>
   Site.init('eksperty');
@@ -75,7 +78,8 @@
           '<div style="margin:10px 0">'+ratingHTML+'</div>'+
           '<div class="price">'+(e.price||'Перша зустріч — знайомство')+'</div>'+
           '<div class="fmt">'+(e.format||'')+'</div>'+
-          '<button class="btn btn-green" style="width:100%; justify-content:center" onclick="Site.toast(\'Запис до фахівця зʼявиться у наступній версії\')">Записатися <span data-icon="step"></span></button>'+
+          '<button class="btn btn-green" style="width:100%; justify-content:center" onclick="openLead()">Залишити запит на консультацію <span data-icon="step"></span></button>'+
+          '<div id="leadWrap" style="margin-top:9px"></div>'+
           '<div style="height:9px"></div>'+
           '<a class="btn btn-soft" href="opytuvannya.html" style="width:100%; justify-content:center">Спершу пройти тест <span data-icon="step"></span></a>'+
         '</div>'+
@@ -92,6 +96,70 @@
       '</div>'+
     '</div>';
   Site.paint();
+
+  // ── Чесна заявка до фахівця (без імітації запису) ──
+  // ОСНОВНИЙ шлях: заявка зберігається в Supabase (таблиця leads) — її видно
+  // в дашборді, вона не залежить від поштового застосунку користувача.
+  // CONTACT_EMAIL — лише ЗАПАСНИЙ шлях (mailto), якщо база недоступна.
+  // Коли зʼявиться окрема пошта проєкту — заміни тут (особисту краще прибрати).
+  var CONTACT_EMAIL = 'ashot4444@gmail.com';
+  function escq(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  var inpStyle = 'width:100%; border:1.5px solid var(--line); background:var(--paper); border-radius:11px; padding:11px 13px; font-family:inherit; font-size:.95rem; color:var(--ink); margin-bottom:8px';
+  function openLead(){
+    var w = document.getElementById('leadWrap'); if(!w) return;
+    if(w.dataset.open){ w.innerHTML=''; w.dataset.open=''; return; }
+    w.dataset.open='1';
+    w.innerHTML =
+      '<div style="text-align:left; border:1px solid var(--line); border-radius:14px; padding:14px; background:var(--paper2)">'+
+        '<p style="margin:0 0 10px; font-size:.84rem; color:var(--muted); font-weight:700">Це заявка, а не миттєвий запис. Ми звʼяжемося з вами й підкажемо зручний час.</p>'+
+        '<input id="lName" type="text" placeholder="Як вас звати" style="'+inpStyle+'">'+
+        '<input id="lContact" type="text" placeholder="Пошта або телефон" style="'+inpStyle+'">'+
+        '<textarea id="lMsg" rows="2" placeholder="Коротко про ситуацію (необовʼязково)" style="'+inpStyle+'; resize:vertical"></textarea>'+
+        '<button class="btn btn-green" style="width:100%; justify-content:center" onclick="submitLead()">Надіслати запит <span data-icon="step"></span></button>'+
+        '<div id="lErr" style="display:none; color:var(--clay); font-size:.84rem; font-weight:700; margin-top:8px"></div>'+
+      '</div>';
+    Site.paint();
+  }
+  function leadThanks(){
+    var w=document.getElementById('leadWrap'); if(!w) return;
+    w.innerHTML='<div style="text-align:left; border:1px solid var(--line); border-radius:14px; padding:14px; background:var(--green-bg)">'+
+      '<b style="color:var(--head)">Дякуємо!</b>'+
+      '<p style="margin:6px 0 0; font-size:.9rem; color:var(--ink)">Ваш запит прийнято — ми звʼяжемося з вами найближчим часом і підкажемо зручний час.</p></div>';
+  }
+  function leadMailtoFallback(name, contact, note){
+    // запасний шлях: база недоступна → формуємо лист (відкриється поштовий застосунок)
+    var subject='Запит на консультацію — '+e.name;
+    var body='Заявка з сайту «Міст для Батьків та Дітей»\n\nФахівець: '+e.name+' ('+(KIND[e.kind]||'')+')\nІмʼя: '+name+'\nКонтакт: '+contact+'\nПовідомлення: '+(note||'—');
+    window.location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    var w=document.getElementById('leadWrap'); if(!w) return;
+    w.innerHTML='<div style="text-align:left; border:1px solid var(--line); border-radius:14px; padding:14px; background:var(--green-bg)">'+
+      '<b style="color:var(--head)">Дякуємо, '+escq(name)+'!</b>'+
+      '<p style="margin:6px 0 0; font-size:.9rem; color:var(--ink)">Ваш запит сформовано. Якщо поштовий застосунок не відкрився, напишіть нам на <a href="mailto:'+CONTACT_EMAIL+'">'+CONTACT_EMAIL+'</a>.</p></div>';
+  }
+  function submitLead(){
+    var name=(document.getElementById('lName').value||'').trim();
+    var contact=(document.getElementById('lContact').value||'').trim();
+    var note=(document.getElementById('lMsg').value||'').trim();
+    var err=document.getElementById('lErr');
+    if(name.length<2 || contact.length<3){ err.textContent='Вкажіть, будь ласка, імʼя та контакт.'; err.style.display='block'; return; }
+    err.style.display='none';
+    var btn=document.querySelector('#leadWrap .btn-green');
+    if(btn){ btn.disabled=true; btn.textContent='Надсилаємо…'; }
+    // якщо людина проходила тест — додамо головну зону з результату (необовʼязково)
+    var zone=null; try{ var lt=(Site.getLatest&&Site.getLatest())||null; zone=lt?lt.zone:null; }catch(_){}
+    // ОСНОВНИЙ шлях — зберегти заявку в Supabase (leads). mailto лише як запас.
+    if(window.MistDB && MistDB.configured && MistDB.leads){
+      MistDB.leads.save({ expertName:e.name, expertKind:e.kind, name:name, contact:contact, note:note, zone:zone })
+        .then(function(r){
+          if(r && r.error) throw r.error;
+          leadThanks();
+        })
+        .catch(function(e2){ try{ console.warn('lead save failed → mailto fallback', e2); }catch(_){ } leadMailtoFallback(name, contact, note); });
+    } else {
+      leadMailtoFallback(name, contact, note);
+    }
+  }
+  window.openLead=openLead; window.submitLead=submitLead;
 </script>
 </body>
 </html>

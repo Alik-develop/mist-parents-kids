@@ -203,6 +203,25 @@
     return need().from('attempts').delete().eq('child_id', childId);
   };
 
+  // ---- заявки до фахівця (lead-форма ekspert.html) ----
+  // Будь-хто може ЛИШЕ додати заявку (anon insert). Читати — тільки в дашборді
+  // Supabase. НЕ чіпляємо .select() — щоб не вимагати привілею читання.
+  MistDB.leads = {
+    save: function(lead){
+      lead = lead || {};
+      return need().from('leads').insert({
+        expert_name: lead.expertName || null,
+        expert_kind: lead.expertKind || null,
+        name: lead.name || null,
+        contact: lead.contact || null,
+        note: lead.note || null,
+        zone: lead.zone || null,
+        source_page: lead.sourcePage || (typeof location !== 'undefined' ? location.href : null),
+        user_agent: (typeof navigator !== 'undefined' ? navigator.userAgent : null)
+      });
+    }
+  };
+
   // ---- сімʼя: свій id (код запрошення), учасники, приєднання другого батька ----
   MistDB.family.myId = function(){
     return need().from('families').select('id').limit(1).maybeSingle().then(function(r){ return r.data ? r.data.id : null; });

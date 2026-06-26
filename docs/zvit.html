@@ -19,6 +19,12 @@
   .privacy-note{display:flex; gap:11px; align-items:flex-start; background:var(--paper2); border:1px solid var(--line); border-radius:14px; padding:13px 15px; margin-top:16px; font-size:.86rem; color:var(--muted);}
   .privacy-note .ink-ic{color:var(--green); flex:0 0 auto; margin-top:1px;}
   .prevactions{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;}
+  .consent-box{margin-top:16px; padding:14px 16px; background:var(--paper2); border:1px solid var(--line); border-radius:14px;}
+  .consent-for{margin:0 0 10px; font-size:.92rem; color:var(--ink);}
+  .consent-row{display:flex; gap:10px; align-items:flex-start; font-size:.92rem; color:var(--ink); font-weight:700; cursor:pointer;}
+  .consent-row input{margin-top:3px; width:18px; height:18px; flex:0 0 auto; accent-color:var(--green); cursor:pointer;}
+  .consent-row input:disabled{cursor:default;}
+  .consent-note{margin:8px 0 0 28px; font-size:.83rem; color:var(--muted);}
 </style>
 </head>
 <body>
@@ -171,6 +177,20 @@
     var c = activeChild();
     var box = $('preview');
     var canSave = !!c.id;
+    var parsedName = (rep.name || '').trim();
+    // ── Екран згоди перед збереженням імені дитини (student_name) ──
+    // Приватність за замовчуванням: імʼя НЕ зберігається, поки батько свідомо не дозволить.
+    var consentBlock = '';
+    if(canSave){
+      consentBlock = '<div class="consent-box">'+
+        (parsedName
+          ? '<p class="consent-for">У звіті вказано: <b>'+escapeHtml(parsedName)+'</b>. Звіт збережеться для профілю <b>'+escapeHtml(c.name||'дитини')+'</b> — перевірте, що це та сама дитина.</p>'
+          : '')+
+        '<label class="consent-row"><input type="checkbox" id="consentName"'+(parsedName?'':' disabled')+'>'+
+          '<span>Зберегти імʼя дитини зі звіту в кабінеті'+(parsedName?' (необовʼязково)':' — у цьому звіті імʼя не розпізнано')+'</span></label>'+
+        '<p class="consent-note">За замовчуванням імʼя <b>не зберігається</b> — у кабінет потрапляють лише бали й теми навчання. Імʼя бачите лише ви, у своєму акаунті.</p>'+
+      '</div>';
+    }
     var actions = '<div class="prevactions">'+
       (canSave
         ? '<button class="btn btn-green" id="saveBtn"><span data-icon="check"></span> Зберегти у кабінет</button>'
@@ -181,6 +201,7 @@
       '<div class="pill-row" style="justify-content:space-between; margin-bottom:10px"><h3 style="margin:0">Що показав звіт</h3>'+
       '<span class="muted" style="font-size:.85rem; font-weight:700">попередній перегляд</span></div>'+
       VSHO.renderCard(rep, { compact:false, lessons:allLessons })+
+      consentBlock+
       actions+
     '</div>';
     box.style.display='block';
@@ -196,7 +217,11 @@
     if(!c.id){ Site.toast('Спершу увійдіть і оберіть дитину в кабінеті.'); return; }
     if(!lastParsed){ Site.toast('Спершу завантажте звіт.'); return; }
     var sb = $('saveBtn'); if(sb){ sb.disabled=true; sb.textContent='Зберігаємо…'; }
-    MistDB.reports.save(c.id, lastParsed).then(function(r){
+    // згода на збереження імені: без галочки імʼя не пишемо в БД (student_name → null)
+    var keepName = !!(document.getElementById('consentName') && document.getElementById('consentName').checked);
+    var toSave = {}; for(var k in lastParsed){ if(Object.prototype.hasOwnProperty.call(lastParsed, k)) toSave[k] = lastParsed[k]; }
+    toSave.name = keepName ? (lastParsed.name || '') : '';
+    MistDB.reports.save(c.id, toSave).then(function(r){
       if(r && r.error) throw r.error;
       Site.toast('Звіт збережено в кабінет для «'+(c.name||'дитини')+'». 📊');
       clearPreview();
