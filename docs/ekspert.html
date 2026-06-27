@@ -103,8 +103,8 @@
   // ОСНОВНИЙ шлях: заявка зберігається в Supabase (таблиця leads) — її видно
   // в дашборді, вона не залежить від поштового застосунку користувача.
   // CONTACT_EMAIL — лише ЗАПАСНИЙ шлях (mailto), якщо база недоступна.
-  // Коли зʼявиться окрема пошта проєкту — заміни тут (особисту краще прибрати).
-  var CONTACT_EMAIL = 'ashot4444@gmail.com';
+  // Єдине джерело правди — Site.CONTACT_EMAIL (assets/app.js, плейсхолдер до запуску).
+  var CONTACT_EMAIL = (window.Site && Site.CONTACT_EMAIL) || 'kontakt@mist.example';
   function escq(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   var inpStyle = 'width:100%; border:1.5px solid var(--line); background:var(--paper); border-radius:11px; padding:11px 13px; font-family:inherit; font-size:.95rem; color:var(--ink); margin-bottom:8px';
   function openLead(){

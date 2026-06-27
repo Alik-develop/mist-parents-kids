@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Приватність і ваші дані — Міст для Батьків та Дітей</title>
+<meta name="description" content="Які дані збирає «Міст», де вони зберігаються (захищений сервер у Європі), конфіденційність підлітка, що ми ніколи не продаємо й не передаємо, і як видалити свої дані.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Приватність і ваші дані — Міст для Батьків та Дітей">
+<meta property="og:description" content="Збираємо мінімум, тримаємо в безпеці, нічого не продаємо. Чесно й простими словами про ваші дані.">
+<meta property="og:image" content="assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+<!--
+  ⚠ Робоча версія політики приватності для прототипу. Тон навмисно теплий і простий.
+  Це НЕ юридична консультація. Перед публічним запуском звірити з українським юристом
+  (ЗУ «Про захист персональних даних»; GDPR, якщо будуть користувачі з ЄС) та узгодити
+  з реальною контактною поштою (зараз Site.CONTACT_EMAIL — плейсхолдер).
+-->
+<style>
+  .policy{max-width:46em;}
+  .policy h2{font-family:'Fraunces',serif; font-size:1.32rem; color:var(--head); margin:30px 0 8px; display:flex; align-items:center; gap:11px;}
+  .policy h2 .hic{width:34px;height:34px;border-radius:10px;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .policy h2 .hic svg{width:19px;height:19px;}
+  .policy p{color:var(--ink); margin:0 0 12px;}
+  .policy ul{margin:0 0 14px; padding:0; list-style:none; display:grid; gap:11px;}
+  .policy ul li{display:flex; gap:11px; align-items:flex-start; color:var(--ink);}
+  .policy ul li .li-ic{color:var(--green); flex:0 0 auto; margin-top:2px;}
+  .policy ul.nay li .li-ic{color:var(--clay);}
+  .policy ul li b{color:var(--head);}
+  .policy .updated{color:var(--muted); font-size:.88rem; font-weight:700; margin-top:6px;}
+  .policy a.mail{color:var(--green); font-weight:800;}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header id="site-header"></header>
+
+<section class="wrap">
+  <div class="phero">
+    <span class="eyebrow lab"><span class="ink-ic" data-icon="lock"></span> приватність · просто й чесно</span>
+    <h1>Приватність і ваші дані</h1>
+    <p>«Міст» працює з чутливими темами — стосунками, настроєм і навчанням дитини. Тому ми збираємо мінімум, тримаємо дані в безпеці й нічого не продаємо. Нижче — простими словами, що саме ми зберігаємо, де це лежить і як усе видалити.</p>
+  </div>
+
+  <div class="section policy" style="padding-top:10px">
+
+    <!-- КОРОТКО -->
+    <div class="note-box" style="align-items:flex-start; margin-bottom:8px">
+      <span class="ink-ic" data-icon="shield"></span>
+      <span>
+        <b>Якщо коротко:</b> ми збираємо лише пошту для входу й бали-зони тесту (не дослівні відповіді). Звіт ВШО — тільки якщо ви самі його завантажите. Слова підлітка не бачить ніхто, крім нього. Дані лежать на захищеному сервері в Європі. Ми нічого не продаємо й не показуємо реклами. Видалити можна будь-коли.
+      </span>
+    </div>
+
+    <h2><span class="hic" data-icon="leaf"></span> Хто відповідає за дані</h2>
+    <p>«Міст для Батьків та Дітей» — освітньо-підтримувальний проєкт (зараз — прототип, який ми відкрито розвиваємо). З будь-яким питанням про ваші дані пишіть нам на <a class="mail" id="contactEmail1" href="#">пошту проєкту</a>.</p>
+
+    <h2><span class="hic" data-icon="grid"></span> Які дані ми збираємо — і коли</h2>
+    <ul>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span><b>Пошта для акаунта</b> — коли ви реєструєтесь (через сервіс Supabase). Потрібна лише щоб ви могли увійти й бачити свій кабінет на різних пристроях.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span><b>Результати тесту</b> — бали по чотирьох зонах (однолітки, школа, дім, мотивація) і розходження між поглядом батька й підлітка. Дослівних відповідей ми <b>не зберігаємо</b> — лише числові зони.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span><b>Звіт ВШО (необовʼязково)</b> — якщо ви самі завантажуєте звіт у кабінет: предмет, бали й теми-прогалини. Імʼя дитини зі звіту зберігається <b>лише якщо ви свідомо поставите галочку</b> (за замовчуванням — ні).</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span><b>Заявка фахівцю</b> — коли ви залишаєте запит на консультацію: імʼя й контакт, які ви вказали, і (необовʼязково) головна зона з тесту. Щоб ми могли звʼязатися й підказати зручний час.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span><b>Локально на пристрої</b> — обрана тема (світла/темна) і, до входу в акаунт, чернетки результатів. Це залишається у вашому браузері й не йде на сервер.</span></li>
+    </ul>
+    <p>Ми <b>не</b> використовуємо рекламні трекери й не профілюємо вас для реклами.</p>
+
+    <h2><span class="hic" data-icon="lock"></span> Конфіденційність підлітка</h2>
+    <p>Це для нас принцип, а не дрібниця. Підліток відповідає чесно лише тоді, коли впевнений, що його слова залишаться приватними.</p>
+    <ul>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span>Батько в кабінеті бачить <b>теми й зони</b> (де дитині складно), а не дослівні відповіді.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span>Для самого підлітка є <b>окреме дзеркало</b> «А це — тобі», яке належить лише йому.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span>Дослівні відповіді підлітка <b>ніде не зберігаються</b> й не потрапляють в експорт.</span></li>
+    </ul>
+
+    <h2><span class="hic" data-icon="globe"></span> Де зберігаються дані</h2>
+    <ul>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span>Акаунт і збережені результати — у сервісі <b>Supabase</b>, на серверах у <b>Європейському Союзі</b> (регіон Ірландія).</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span>Самі сторінки сайту розміщені статично (GitHub Pages); вони не мають власної бази й нічого про вас не записують, поки ви не увійдете.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span>Передача даних — захищеним зʼєднанням (HTTPS).</span></li>
+    </ul>
+
+    <h2><span class="hic" data-icon="handheart"></span> Дані дитини й згода батьків (13+)</h2>
+    <p>«Міст» розрахований на батьків і підлітків від 13 років. Акаунт створює дорослий — батько чи опікун.</p>
+    <ul>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span>Створюючи профіль дитини й зберігаючи її результати, ви як <b>батько / опікун даєте згоду</b> на обробку цих даних з однією метою — допомогти вашій дитині.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span>Що саме про дитину: <b>імʼя профілю</b> (можна умовне), <b>бали-зони</b> тесту і, за вашим бажанням, <b>звіт ВШО</b>. Дослівних відповідей дитини ми не зберігаємо.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span>Імʼя дитини зі звіту ВШО зберігається <b>лише за окремою згодою</b> — галочка в кабінеті, за замовчуванням вимкнена.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span><b>Право відкликати:</b> ви будь-коли можете видалити профіль дитини, окремий звіт або весь акаунт — і дані зникають.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span>Підліток теж має голос: ми пояснюємо, що це <b>дзеркало, а не оцінка</b>, і що його слова приватні.</span></li>
+    </ul>
+
+    <h2><span class="hic" data-icon="ban"></span> Чого ми ніколи не робимо</h2>
+    <ul class="nay">
+      <li><span class="li-ic ink-ic" data-icon="ban"></span><span>Не продаємо й не передаємо ваші дані третім особам заради вигоди.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="ban"></span><span>Не показуємо рекламу й не використовуємо рекламні трекери.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="ban"></span><span>Не зберігаємо дослівні відповіді підлітка.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="ban"></span><span>Не ставимо діагнозів — «Міст» не лікар і не заміна фахівцю.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="ban"></span><span>Не беремо грошей за тест, результати чи доступ до ліній підтримки.</span></li>
+    </ul>
+
+    <h2><span class="hic" data-icon="pencil"></span> Як видалити свої дані</h2>
+    <ul>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span><b>Вийти й очистити чернетки:</b> кнопка «Вийти» в шапці; локальні чернетки прибираються очищенням даних сайту у вашому браузері.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span><b>Видалити профіль дитини чи окремий звіт</b> — у кабінеті.</span></li>
+      <li><span class="li-ic ink-ic" data-icon="check"></span><span><b>Видалити акаунт повністю</b> — напишіть нам на <a class="mail" id="contactEmail2" href="#">пошту проєкту</a>, і ми видалимо ваш акаунт та повʼязані з ним дані.</span></li>
+    </ul>
+
+    <h2><span class="hic" data-icon="bell"></span> Зміни цієї політики</h2>
+    <p>Ми можемо оновлювати цей текст у міру розвитку проєкту. Про істотні зміни повідомимо на сайті.</p>
+    <p class="updated">Чинна редакція: 26 червня 2026 · робоча версія для прототипу.</p>
+
+    <div class="note-box" style="margin-top:22px"><span class="ink-ic" data-icon="handheart"></span><span><b>Маєте питання про дані?</b> Напишіть нам на <a class="mail" id="contactEmail3" href="#">пошту проєкту</a>. А якщо зараз просто важко — поряд є безкоштовні <a href="dopomoga.html" style="color:var(--green); font-weight:800">лінії підтримки</a>.</span></div>
+
+  </div>
+  <div class="spacer-lg"></div>
+</section>
+
+<footer id="site-footer"></footer>
+<script src="assets/app.js"></script>
+<script>
+  Site.init('proekt');
+  // Єдине джерело правди для пошти — Site.CONTACT_EMAIL (плейсхолдер до публічного запуску).
+  (function(){
+    var mail = (Site && Site.CONTACT_EMAIL) || 'kontakt@mist.example';
+    ['contactEmail1','contactEmail2','contactEmail3'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el){ el.textContent = mail; el.setAttribute('href', 'mailto:'+mail); }
+    });
+  })();
+  Site.paint();
+</script>
+</body>
+</html>
